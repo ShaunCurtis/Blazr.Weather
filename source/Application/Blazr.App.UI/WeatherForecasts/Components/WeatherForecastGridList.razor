@@ -4,7 +4,7 @@
 <BlazrPaginator State="Pagination" />
 <div class="@this.GridCss" tabindex="-1">
     <QuickGrid Theme="None" TGridItem="DmoWeatherForecast" ItemsProvider="this.GetItemsAsync" Pagination="Pagination" @ref="this.quickGrid" Class="@this.TableCss">
-@*         <DataSetPropertyColumn DataSetName="@AppDictionary.WeatherForecast.WeatherForecastId" Class="nowrap-column" Sortable="true" Title="ID">
+        <DataSetPropertyColumn DataSetName="@AppDictionary.WeatherForecast.WeatherForecastId" Class="nowrap-column" Sortable="true" Title="ID">
             @context.Id.Value.ToDisplayId()
         </DataSetPropertyColumn>
         <DataSetPropertyColumn DataSetName="@AppDictionary.WeatherForecast.Date" Class="nowrap-column" Sortable="true" Title="Date">
@@ -14,7 +14,7 @@
             @context.Temperature.TemperatureC
         </DataSetPropertyColumn>
         <PropertyColumn Property="(context) =>  context.Summary" Class="nowrap-column" Sortable="true" />
- *@        <TemplateColumn>
+        <TemplateColumn>
             <UIButtonGroup>
                 <button class="btn btn-sm btn-secondary" @onclick="() => OnViewAsync(context.Id)">View</button>
                 <button class="btn btn-sm btn-primary" @onclick="() => OnEditAsync(context.Id)">Edit</button>

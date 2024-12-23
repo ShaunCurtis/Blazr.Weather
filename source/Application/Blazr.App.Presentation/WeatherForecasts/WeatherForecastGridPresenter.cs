@@ -14,7 +14,7 @@ public class WeatherForecastGridPresenter : GridPresenter<DmoWeatherForecast>
         : base(mediator, messageBus, keyedFluxGateStore)
     { }
 
-    protected override Task<ListQueryResult<DmoWeatherForecast>> GetItemsAsync(GridState state)
+    protected override async Task<ListQueryResult<DmoWeatherForecast>> GetItemsAsync(GridState state)
     {
         // Get the list request from the Flux Context and get the result
         var listRequest = new WeatherForecastListRequest()
@@ -25,6 +25,8 @@ public class WeatherForecastGridPresenter : GridPresenter<DmoWeatherForecast>
             SortDescending = state.Sorter?.SortDescending ?? false
         };
 
-        return _dataBroker.Send(listRequest);
+        var result = await _dataBroker.Send(listRequest);
+
+        return result;
     }
 }
