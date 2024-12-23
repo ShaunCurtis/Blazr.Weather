@@ -11,32 +11,36 @@ namespace Blazr.App.Core;
 
 public static class FieldFormatting
 {
-    public static string AsDateFormat(DateTime Date)
+    public static string AsGlobalDateFormat(this DateTime Date)
+    {
+        return Date.ToString("dd-MMM-yyyy");
+    }
+    public static string AsGlobalDateFormat(this DateOnly Date)
     {
         return Date.ToString("dd-MMM-yyyy");
     }
 
-    public static string AsPercentage(decimal value)
+    public static string AsPercentage(this decimal value)
     {
         return string.Format("{0}%", value.ToString("#0.##"));
     }
 
-    public static string AsMoney(decimal value)
+    public static string AsMoney(this decimal value)
     {
         return string.Format("£{0}", value.ToString("#0.00"));
     }
 
-    public static string AsWeight(decimal value)
+    public static string AsWeight(this decimal value)
     {
         return value.ToString("#0.000", CultureInfo.CurrentCulture);
     }
 
-    public static string AsYesNo(bool value)
+    public static string AsYesNo(this bool value)
     {
         return value ? "Yes" : "No";
     }
 
-    public static string AsSizedString(string value, bool dotting, int size = 50)
+    public static string AsSizedString(this string value, bool dotting, int size = 50)
     {
         if (value != null)
         {
@@ -47,12 +51,12 @@ public static class FieldFormatting
         return string.Empty;
     }
 
-    public static string AsSeparatedString(string value)
+    public static string AsSeparatedString(this string value)
     {
         return Regex.Replace(value, @"\B[A-Z]", " $0");
     }
 
-    public static string TextToHtmlNewLines(string text)
+    public static string TextToHtmlNewLines(this string text)
     {
 
         var t = text.Replace(System.Environment.NewLine, "<br />");

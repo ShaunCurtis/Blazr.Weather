@@ -45,7 +45,7 @@ public abstract class EditPresenter<TRecord, TRecordEditContext, TKey> : IEditPr
         }
 
         // check if we have a real Id to get
-        if (id is TKey key && !key.IsDefaultOrNew)
+        if (id is TKey key && !key.IsDefault)
         {
             this.EntityId = key;
             await GetRecordItemAsync();

@@ -1,10 +1,19 @@
 using Blazr.Weather.Server.Components;
+using Blazr.App.Infrastructure;
+using Blazr.App.Presentation;
+using Blazr.App.UI;
+using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddAppServerInfrastructureServices();
+builder.Services.AddAppUIServices();
+builder.Services.AddAppPresentationServices();
 
 var app = builder.Build();
 
@@ -16,12 +25,18 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+// get the DbContext factory and add the test data
+var factory = app.Services.GetService<IDbContextFactory<InMemoryTestDbContext>>();
+if (factory is not null)
+    TestDataProvider.Instance().LoadDbContext<InMemoryTestDbContext>(factory);
+
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode()
+    .AddAdditionalAssemblies(typeof(Blazr.App.UI._Imports).Assembly);
 
 app.Run();

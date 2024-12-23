@@ -14,12 +14,12 @@ public static class AppDictionary
 
     public static class WeatherForecast
     {
-        public const string CustomerId = "WeatherForecastId";
-        public const string CustomerID = "WeatherForecastID";
+        public const string WeatherForecastId = "WeatherForecastId";
+        public const string WeatherForecastID = "WeatherForecastID";
         public const string Date = "Date";
         public const string Temperature = "Temperature";
+        public const string TemperatureC = "TemperatureC";
         public const string Summary = "Summary";
-        public const string WeatherForecastFilterBySummarySpecification = "WeatherForecastFilterBySummarySpecification";
 
         public const string WeatherForecastListAPIUrl = "/API/WeatherForecast/GetItems";
         public const string WeatherForecastItemAPIUrl = "/API/WeatherForecast/GetItem";

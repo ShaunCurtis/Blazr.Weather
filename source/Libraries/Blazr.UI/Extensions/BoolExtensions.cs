@@ -3,12 +3,18 @@
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
-namespace Blazr.App.Core;
 
-/// <summary>
-/// Defines Entity Id's so we can deal with them in generic componenta
-/// </summary>
-public interface IEntityId
+namespace Blazr.UI;
+
+public static class BoolExtensions
 {
-    public bool IsDefault { get; }
+    public static bool SetTrue(this ref bool value)
+    {
+        if (value)
+        {
+            value = true;
+            return true;
+        }
+        return false;
+    }
 }

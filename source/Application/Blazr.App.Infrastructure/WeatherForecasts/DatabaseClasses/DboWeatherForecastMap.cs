@@ -25,7 +25,7 @@ public class DboWeatherForecastMap : IDboEntityMap<DboWeatherForecast, DmoWeathe
     public static DboWeatherForecast Map(DmoWeatherForecast item)
         => new()
         {
-            ID = item.Id.IsDefaultOrNew ? WeatherForecastId.Create.Value  : item.Id.Value,
+            ID = item.Id.IsDefault ? WeatherForecastId.Create.Value  : item.Id.Value,
             Date = item.Date.ToDateTime,
             TemperatureC = item.Temperature.TemperatureC,
             Summary = item.Summary

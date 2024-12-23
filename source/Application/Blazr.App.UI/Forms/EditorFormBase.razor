@@ -1,7 +1,7 @@
 ﻿@namespace Blazr.App.UI
 
 @typeparam TRecord where TRecord : class, new()
-@typeparam TKey where TKey : notnull
+@typeparam TKey where TKey : notnull, IEntityId
 
 @typeparam TEditContext where TEditContext : class, IRecordEditContext<TRecord>, new()
 @typeparam TEntityService where TEntityService : class, IUIEntityService<TRecord>
@@ -55,7 +55,7 @@
 
     protected virtual RenderFragment FormControlContent => (__builder) =>
     {
-        <BlazrValidator TRecord=TEditContext TValidator=TRecordValidator />
+        <Blazr.FluentValidation.BlazrFluentValidator TRecord=TEditContext TValidator=TRecordValidator />
         <BlazrEditStateTracker LockNavigation=this.LockNavigation />
     };
 }

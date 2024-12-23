@@ -1,17 +1,23 @@
-﻿@inherits GridFormBase<DcoGroup,GroupId>
+﻿@inherits GridFormBase<DmoWeatherForecast,WeatherForecastId>
 @namespace Blazr.App.UI
 
 <BlazrPaginator State="Pagination" />
 <div class="@this.GridCss" tabindex="-1">
-    <QuickGrid Theme="None" TGridItem="DcoGroup" ItemsProvider="this.GetItemsAsync" Pagination="Pagination" @ref="this.quickGrid" Class="@this.TableCss">
-        <DataSetPropertyColumn DataSetName="@AppConstants.Group.GroupID" Class="nowrap-column" Sortable="true" Title="ID">
-            @context.GroupId.Value
+    <QuickGrid Theme="None" TGridItem="DmoWeatherForecast" ItemsProvider="this.GetItemsAsync" Pagination="Pagination" @ref="this.quickGrid" Class="@this.TableCss">
+@*         <DataSetPropertyColumn DataSetName="@AppDictionary.WeatherForecast.WeatherForecastId" Class="nowrap-column" Sortable="true" Title="ID">
+            @context.Id.Value.ToDisplayId()
         </DataSetPropertyColumn>
-        <PropertyColumn Class="max-column" Sortable="true" Title="Group Name" Property="@(context => context.GroupName)" />
-        <TemplateColumn>
+        <DataSetPropertyColumn DataSetName="@AppDictionary.WeatherForecast.Date" Class="nowrap-column" Sortable="true" Title="Date">
+            @context.Date.Value.AsGlobalDateFormat()
+        </DataSetPropertyColumn>
+        <DataSetPropertyColumn DataSetName="@AppDictionary.WeatherForecast.TemperatureC" Class="nowrap-column" Sortable="true" Title="Temp. (C)">
+            @context.Temperature.TemperatureC
+        </DataSetPropertyColumn>
+        <PropertyColumn Property="(context) =>  context.Summary" Class="nowrap-column" Sortable="true" />
+ *@        <TemplateColumn>
             <UIButtonGroup>
-                <button class="btn btn-sm btn-secondary" @onclick="() => OnViewAsync(context.GroupId)">View</button>
-                <button class="btn btn-sm btn-primary" @onclick="() => OnEditAsync(context.GroupId)">Edit</button>
+                <button class="btn btn-sm btn-secondary" @onclick="() => OnViewAsync(context.Id)">View</button>
+                <button class="btn btn-sm btn-primary" @onclick="() => OnEditAsync(context.Id)">Edit</button>
             </UIButtonGroup>
         </TemplateColumn>
     </QuickGrid>
@@ -19,5 +25,5 @@
 
 @code {
     protected override RenderFragment? HeaderButtonContent =>
-    @<button class="btn btn-sm btn-primary" @onclick="() => OnAddAsync()">Add New Group</button>;
+    @<button class="btn btn-sm btn-primary" @onclick="() => OnAddAsync()">Add New Weather Forecast</button>;
 }

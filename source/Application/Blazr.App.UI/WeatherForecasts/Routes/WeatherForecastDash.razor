@@ -1,8 +1,9 @@
-﻿@page "/Group"
-@page "/Groups"
+﻿@page "/Weather"
+@page "/WeatherForecast"
+@page "/WeatherForecasts"
 @inherits BlazrControlBase
 
-<GroupGridList GridContextId="RouteId" />
+<WeatherForecastGridList GridContextId="RouteId" />
 
 @code {
     private static Guid RouteId = Guid.NewGuid();

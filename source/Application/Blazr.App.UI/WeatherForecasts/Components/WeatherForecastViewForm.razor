@@ -1,26 +1,14 @@
 ﻿@namespace Blazr.App.UI
-@inherits ViewerFormBase<DcoGroup, GroupId>
+@inherits ViewerFormBase<DmoWeatherForecast, WeatherForecastId>
 
 <div class="row">
 
     <div class="col-12 col-lg-6 mb-2">
-        <BlazrTextViewControl Label="Name" Value="@this.Presenter.Item.GroupName" />
+        <BlazrTextViewControl Label="Id" Value="@this.Presenter.Item.Id.Value.ToDisplayId()" />
     </div>
 
     <div class="col-12 col-lg-6 mb-2">
-        <BlazrTextViewControl Label="Address" Value="@((MarkupString)this.Presenter.Item.Address.FullAddress())" />
-    </div>
-
-</div>
-
-<div class="row">
-
-    <div class="col-12 col-lg-4 mb-2">
-        <BlazrTextViewControl Label="VAT No" Value="@this.Presenter.Item.VATNo" />
-    </div>
-
-    <div class="col-12 col-lg-8 mb-2">
-        <BlazrTextViewControl Label="Tags" Value="@this.Presenter.Item.Tags.Tags" />
+        <BlazrTextViewControl Label="Date" Value="@(this.Presenter.Item.Date)" />
     </div>
 
 </div>
@@ -28,7 +16,19 @@
 <div class="row">
 
     <div class="col-12 col-lg-6 mb-2">
-        <BlazrTextViewControl Label="Record Id" Value="@this.Presenter.Item.GroupId.Value" />
+        <BlazrTextViewControl Label="Temperature &deg;c" Value="@this.Presenter.Item.Temperature.TemperatureC" />
+    </div>
+
+    <div class="col-12 col-lg-6 mb-2">
+        <BlazrTextViewControl Label="Temperature &deg;f" Value="@this.Presenter.Item.Temperature.TemperatureF" />
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div class="col-12 col-lg-10 mb-2">
+        <BlazrTextViewControl Label="Summary" Value="@this.Presenter.Item.Summary" />
     </div>
 
 </div>

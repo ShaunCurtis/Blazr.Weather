@@ -3,12 +3,16 @@
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
+
 namespace Blazr.App.Core;
 
 /// <summary>
-/// Defines Entity Id's so we can deal with them in generic componenta
+/// IFkItem defines the common interface for all Foreign key objects
+/// These are normally used in UI select controls.  Choose a Name and the
+/// GUID is the foreign key.
 /// </summary>
-public interface IEntityId
+public interface IFkItem
 {
-    public bool IsDefault { get; }
+    public long Id { get; }
+    public string Name { get; }
 }

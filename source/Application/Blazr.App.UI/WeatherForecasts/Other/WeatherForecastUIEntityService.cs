@@ -5,11 +5,11 @@
 /// ============================================================
 namespace Blazr.App.UI;
 
-public sealed record GroupUIEntityService : IUIEntityService<DmoWeatherForecast>
+public sealed record WeatherForecastUIEntityService : IUIEntityService<DmoWeatherForecast>
 {
     public string SingleDisplayName { get; } = "Weather Forecast";
     public string PluralDisplayName { get; } = "WeatherForecasts";
-    public Type? EditForm { get; } = typeof(GroupEditForm);
-    public Type? ViewForm { get; } = typeof(GroupViewForm);
+    public Type? EditForm { get; } = typeof(WeatherForecastEditForm);
+    public Type? ViewForm { get; } = typeof(WeatherForecastViewForm);
     public string Url { get; } = "/weatherforecast";
 }

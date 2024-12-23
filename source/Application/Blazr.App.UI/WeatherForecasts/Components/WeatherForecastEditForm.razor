@@ -1,85 +1,36 @@
 ﻿@namespace Blazr.App.UI
-@inherits EditorFormBase<DcoGroup, GroupId, GroupEditContext, GroupUIEntityService, GroupValidator>
+@inherits EditorFormBase<DmoWeatherForecast, WeatherForecastId, WeatherForecastEditContext, WeatherForecastUIEntityService, WeatherForecastEditContextValidator>
+
+<div class="row">
+
+    <BlazrDateControl class="form-control mb-2"
+                      ColumnCss="col-12 col-md-6 mb-2"
+                      Label="Date"
+                      @bind-Value="this.Presenter.EditMutator.Date" />
+
+    <BlazrNumberControl UpdateOnInput
+                        class="form-control mb-2"
+                        ColumnCss="col-12 col-md-6 mb-2"
+                        Label="Temperature &deg;C"
+                        @bind-Value="this.Presenter.EditMutator.Temperature" />
+
+</div>
 
 <div class="row">
 
     <BlazrTextControl UpdateOnInput
-                       class="form-control mb-2"
-                       ColumnCss="col-12 col-md-8 mb-2"
-                       Label="Group Name"
-                      @bind-Value="this.Presenter.EditMutator.GroupName" />
+                      class="form-control mb-2"
+                      ColumnCss="col-12 col-md-8 mb-2"
+                      Label="Summary"
+                      @bind-Value="this.Presenter.EditMutator.Summary" />
+</div>
 
-     <BlazrSelectControl class="form-select mb-2"
-                         Label="Type"
-                         ColumnCss="col-12 col-md-4 mb-2"
-                        @bind-Value=this.Presenter.EditMutator.GroupTypeID
-                         DisplayOptionsItems=_groupList
-                         OptionValueDelegate="(item) => item.Id.ToString()"
-                         OptionTextDelegate="(item) => item.Name"
-                         PlaceholderText="Select a Group Type" />
-
- </div>
-
- <div class="row">
-
-     <BlazrTextControl UpdateOnInput
-                       class="form-control mb-2"
-                       ColumnCss="col-12 mb-2"
-                       Label="Address Line 1"
-                      @bind-Value="this.Presenter.EditMutator.AddressLine1" />
- </div>
-
- <div class="row">
-
-     <BlazrTextControl UpdateOnInput
-                       class="form-control mb-2"
-                       ColumnCss="col-12 mb-2"
-                       Label="Address Line 2"
-                      @bind-Value="this.Presenter.EditMutator.AddressLine2" />
- </div>
-
- <div class="row">
-
-     <BlazrTextControl UpdateOnInput
-                       class="form-control mb-2"
-                       ColumnCss="col-12 col-md-6 mb-2"
-                       Label="Town"
-                      @bind-Value="this.Presenter.EditMutator.Town" />
-
-     <BlazrTextControl UpdateOnInput
-                       class="form-control mb-2"
-                       ColumnCss="col-12 col-md-6 mb-2"
-                       Label="County"
-                      @bind-Value="this.Presenter.EditMutator.County" />
- </div>
-
- <div class="row">
-
-     <BlazrTextControl UpdateOnInput
-                       class="form-control mb-2"
-                       ColumnCss="col-12 col-md-6 mb-2"
-                       Label="Post Code"
-                      @bind-Value="this.Presenter.EditMutator.PostCode" />
-
-     <BlazrTextControl UpdateOnInput
-                       class="form-control mb-2"
-                       ColumnCss="col-12 col-md-6 mb-2"
-                       Label="VAT No"
-                      @bind-Value="this.Presenter.EditMutator.VATNo" />
- </div>
-
- @code {
-    private record GroupTypeItem(int Id, string Name);
-
-    private readonly List<GroupTypeItem> _groupList = new();
+@code {
 
     protected override Task OnParametersSetAsync()
     {
         if (!this.Initialized)
         {
-            // Populate the group list
-            foreach (int group in Enum.GetValues(typeof(FarmGroupType)))
-                _groupList.Add(new(group, Enum.GetName(typeof(FarmGroupType), group) ?? "Not Set" ));
         }
 
         return base.OnParametersSetAsync();

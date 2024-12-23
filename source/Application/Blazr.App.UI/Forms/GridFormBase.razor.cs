@@ -3,8 +3,6 @@
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
-using Microsoft.AspNetCore.Components.QuickGrid;
-
 namespace Blazr.App.UI;
 
 public abstract partial class GridFormBase<TRecord, TKey> : BlazrControlBase
