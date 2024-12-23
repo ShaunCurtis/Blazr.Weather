@@ -32,6 +32,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		readme.md = readme.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.UI", "source\Libraries\Blazr.UI\Blazr.UI.csproj", "{68B22AC0-2683-4393-A2D9-7698438DB89F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +76,10 @@ Global
 		{157AAEA7-93CE-4BE9-8F7D-B7E9BA144844}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{157AAEA7-93CE-4BE9-8F7D-B7E9BA144844}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{157AAEA7-93CE-4BE9-8F7D-B7E9BA144844}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68B22AC0-2683-4393-A2D9-7698438DB89F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68B22AC0-2683-4393-A2D9-7698438DB89F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68B22AC0-2683-4393-A2D9-7698438DB89F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68B22AC0-2683-4393-A2D9-7698438DB89F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -88,6 +94,7 @@ Global
 		{75E66B28-7214-4252-8CFD-AE9BDC1313DC} = {6CEEE38C-22A1-46F0-BFE8-2E623D6BB02E}
 		{47069791-86F1-4AA3-8666-D8CEA755BD5B} = {6CEEE38C-22A1-46F0-BFE8-2E623D6BB02E}
 		{157AAEA7-93CE-4BE9-8F7D-B7E9BA144844} = {6CEEE38C-22A1-46F0-BFE8-2E623D6BB02E}
+		{68B22AC0-2683-4393-A2D9-7698438DB89F} = {6CEEE38C-22A1-46F0-BFE8-2E623D6BB02E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6391AA79-7960-44BD-8C2A-7CFB5B84DB4B}

@@ -1,9 +1,10 @@
 ﻿global using Blazr.App.Core;
-global using Blazr.Core.OWS;
-global using Blazr.OneWayStreet.Core;
-global using Blazr.OneWayStreet.Infrastructure;
+global using Blazr.Antimony.Core;
+global using Blazr.Antimony.Infrastructure;
+global using Blazr.Gallium;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;
 global using System.ComponentModel.DataAnnotations;
 global using System.Linq.Expressions;
+global using MediatR;

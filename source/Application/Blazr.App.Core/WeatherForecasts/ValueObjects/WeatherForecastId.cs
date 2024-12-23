@@ -12,4 +12,5 @@ public readonly record struct WeatherForecastId(Guid Value) : IEntityId
     public bool IsDefaultOrNew => this.IsNew || this.IsDefault;
 
     public static WeatherForecastId Default => new(new Guid("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"));
+    public static WeatherForecastId Create => new(Guid.CreateVersion7());
 }

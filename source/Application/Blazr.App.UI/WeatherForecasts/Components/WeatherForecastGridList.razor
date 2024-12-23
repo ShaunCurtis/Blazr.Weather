@@ -1,0 +1,23 @@
+﻿@inherits GridFormBase<DcoGroup,GroupId>
+@namespace Blazr.App.UI
+
+<BlazrPaginator State="Pagination" />
+<div class="@this.GridCss" tabindex="-1">
+    <QuickGrid Theme="None" TGridItem="DcoGroup" ItemsProvider="this.GetItemsAsync" Pagination="Pagination" @ref="this.quickGrid" Class="@this.TableCss">
+        <DataSetPropertyColumn DataSetName="@AppConstants.Group.GroupID" Class="nowrap-column" Sortable="true" Title="ID">
+            @context.GroupId.Value
+        </DataSetPropertyColumn>
+        <PropertyColumn Class="max-column" Sortable="true" Title="Group Name" Property="@(context => context.GroupName)" />
+        <TemplateColumn>
+            <UIButtonGroup>
+                <button class="btn btn-sm btn-secondary" @onclick="() => OnViewAsync(context.GroupId)">View</button>
+                <button class="btn btn-sm btn-primary" @onclick="() => OnEditAsync(context.GroupId)">Edit</button>
+            </UIButtonGroup>
+        </TemplateColumn>
+    </QuickGrid>
+</div>
+
+@code {
+    protected override RenderFragment? HeaderButtonContent =>
+    @<button class="btn btn-sm btn-primary" @onclick="() => OnAddAsync()">Add New Group</button>;
+}

@@ -1,4 +1,6 @@
-﻿/// ============================================================
+﻿using System;
+
+/// ============================================================
 /// Author: Shaun Curtis, Cold Elm Coders
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
@@ -12,7 +14,11 @@ public static class ApplicationInfrastructureServices
         services.AddDbContextFactory<InMemoryTestDbContext>(options
             => options.UseInMemoryDatabase($"TestDatabase-{Guid.NewGuid().ToString()}"));
 
-        services.AddScoped<IDataBroker, ServerDataBroker>();
+        services.AddMediatR(cfg =>
+            cfg.RegisterServicesFromAssemblies(typeof(DmoWeatherForecast).Assembly, typeof(DboWeatherForecast).Assembly)
+        );
+
+        services.AddScoped<IMessageBus, MessageBus>();
 
         // Add the standard handlers
         services.AddScoped<IListRequestHandler, ListRequestServerHandler<InMemoryTestDbContext>>();
@@ -20,23 +26,7 @@ public static class ApplicationInfrastructureServices
         services.AddScoped<ICommandHandler, CommandServerHandler<InMemoryTestDbContext>>();
 
         // Add any individual entity services
-        services.AddMappedWeatherForecastServerInfrastructureServices   ();
-    }
-
-    public static void AddAppServerMappedInfrastructureServices(this IServiceCollection services)
-    {
-        services.AddDbContextFactory<InMemoryTestDbContext>(options
-            => options.UseInMemoryDatabase($"TestDatabase-{Guid.NewGuid().ToString()}"));
-
-        services.AddScoped<IDataBroker, ServerDataBroker>();
-
-        // Add the standard handlers
-        services.AddScoped<IListRequestHandler, ListRequestServerHandler<InMemoryTestDbContext>>();
-        services.AddScoped<IItemRequestHandler, ItemRequestServerHandler<InMemoryTestDbContext>>();
-        services.AddScoped<ICommandHandler, CommandServerHandler<InMemoryTestDbContext>>();
-
-        // Add any individual entity services
-        services.AddMappedWeatherForecastServerInfrastructureServices();
+        services.AddWeatherForecastServerInfrastructureServices();
     }
 
     public static void AddTestData(IServiceProvider provider)

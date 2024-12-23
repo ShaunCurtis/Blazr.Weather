@@ -1,0 +1,9 @@
+﻿@page "/Group"
+@page "/Groups"
+@inherits BlazrControlBase
+
+<GroupGridList GridContextId="RouteId" />
+
+@code {
+    private static Guid RouteId = Guid.NewGuid();
+}

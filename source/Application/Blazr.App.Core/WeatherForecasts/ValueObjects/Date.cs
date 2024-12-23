@@ -11,6 +11,8 @@ public readonly record struct Date
     public DateOnly Value { get; init; }
     public bool IsValid { get; init; }
 
+    public DateTime ToDateTime => this.Value.ToDateTime(TimeOnly.MinValue);
+
     public Date() { }
 
     public Date(DateOnly date)

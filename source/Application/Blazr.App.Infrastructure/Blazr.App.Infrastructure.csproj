@@ -7,8 +7,8 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Blazr.OneWayStreet" Version="2.0.3" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
+			  <PackageReference Include="MediatR" Version="12.4.1" />
+				<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -18,11 +18,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\..\Libraries\Blazor.Antimony\Blazor.Antimony.csproj" />
+	  <ProjectReference Include="..\..\Libraries\Blazr.Gallium\Blazr.Gallium.csproj" />
 	  <ProjectReference Include="..\Blazr.App.Core\Blazr.App.Core.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="WeatherForecasts\" />
 	</ItemGroup>
 
 </Project>

@@ -8,8 +8,6 @@ namespace Blazr.App.Infrastructure;
 public sealed class InMemoryTestDbContext
     : DbContext
 {
-    public DbSet<WeatherForecast> weatherForecasts { get; set; } = default!;
-
     public DbSet<DboWeatherForecast> dboWeatherForecasts { get; set; } = default!;
 
     public InMemoryTestDbContext(DbContextOptions<InMemoryTestDbContext> options) : base(options) { }
@@ -17,7 +15,5 @@ public sealed class InMemoryTestDbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<DboWeatherForecast>().ToTable("DboWeatherForecasts");
-
-        modelBuilder.Entity<WeatherForecast>().ToTable("WeatherForecasts");
     }
 }
