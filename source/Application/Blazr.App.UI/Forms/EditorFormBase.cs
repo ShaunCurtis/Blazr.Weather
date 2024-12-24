@@ -5,13 +5,12 @@
 /// ============================================================
 namespace Blazr.App.UI;
 
-public abstract partial class EditorFormBase<TRecord, TKey, TEditContext, TEntityService, TRecordValidator>
-    : BlazrControlBase, IDisposable
+public abstract class EditorFormBase<TRecord, TKey, TEditContext, TEntityService>
+    : ComponentBase, IDisposable
     where TRecord : class, new()
     where TKey : notnull, IEntityId
     where TEditContext : class, IRecordEditContext<TRecord>, new()
     where TEntityService : class, IUIEntityService<TRecord>
-    where TRecordValidator : class, IValidator<TEditContext>, new()
 {
     [Inject] protected IEditPresenter<TEditContext, TKey> Presenter { get; set; } = default!;
     [Inject] protected NavigationManager NavManager { get; set; } = default!;
@@ -29,13 +28,10 @@ public abstract partial class EditorFormBase<TRecord, TKey, TEditContext, TEntit
 
     protected bool IsNewRecord => this.Presenter.CommandState == CommandState.Add;
 
-    protected async override Task OnParametersSetAsync()
+    protected async override Task OnInitializedAsync()
     {
-        if (this.NotInitialized)
-        {
-            await this.Presenter.LoadAsync(Uid);
-            this.Presenter.EditContext.OnFieldChanged += OnEditStateMayHaveChanged;
-        }
+        await this.Presenter.LoadAsync(Uid);
+        this.Presenter.EditContext.OnFieldChanged += OnEditStateMayHaveChanged;
     }
 
     protected async Task OnSave()
@@ -44,6 +40,7 @@ public abstract partial class EditorFormBase<TRecord, TKey, TEditContext, TEntit
         if (this.ExitOnSave)
             await OnExit();
     }
+
     protected async Task OnDelete()
     {
         bool confirmed = await Js.InvokeAsync<bool>("confirm", "Are you sure you want to delete this item?");

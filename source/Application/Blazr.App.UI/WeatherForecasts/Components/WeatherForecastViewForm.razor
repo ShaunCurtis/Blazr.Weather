@@ -1,6 +1,20 @@
 ﻿@namespace Blazr.App.UI
 @inherits ViewerFormBase<DmoWeatherForecast, WeatherForecastId>
 
+<PageTitle>@this.FormTitle</PageTitle>
+
+@if (!this.HideHeader)
+{
+    <div class="d-flex flex-row mb-4 pt-1 pb-2 border-bottom">
+        <div class="flex-fill justify-content-start h4">
+            @this.FormTitle
+        </div>
+        <div class="justify-content-end">
+            @* Action Buttons *@
+        </div>
+    </div>
+}
+
 <div class="row">
 
     <div class="col-12 col-lg-6 mb-2">
@@ -16,11 +30,11 @@
 <div class="row">
 
     <div class="col-12 col-lg-6 mb-2">
-        <BlazrTextViewControl Label="Temperature &deg;c" Value="@this.Presenter.Item.Temperature.TemperatureC" />
+        <BlazrTextViewControl Label="Temperature &deg;c" Value="@this.Presenter.Item.Temperature.TemperatureC.AsTemperature()" />
     </div>
 
     <div class="col-12 col-lg-6 mb-2">
-        <BlazrTextViewControl Label="Temperature &deg;f" Value="@this.Presenter.Item.Temperature.TemperatureF" />
+        <BlazrTextViewControl Label="Temperature &deg;f" Value="@this.Presenter.Item.Temperature.TemperatureF.AsTemperature()" />
     </div>
 
 </div>
@@ -32,3 +46,16 @@
     </div>
 
 </div>
+
+@if (!this.HideFooter)
+{
+    <div class="row">
+        <div class="col-12 text-end">
+            <UIButton ButtonColourType=UIButtonColourType.Exit ClickEvent=this.OnExit>Exit</UIButton>
+        </div>
+    </div>
+}
+
+@code {
+    protected virtual string FormTitle => $"{this.UIEntityService.SingleDisplayName} Viewer";
+}

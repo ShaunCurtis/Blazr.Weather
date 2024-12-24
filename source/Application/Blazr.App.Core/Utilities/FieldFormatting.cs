@@ -26,6 +26,11 @@ public static class FieldFormatting
         return Date.ToString("dd-MMM-yyyy");
     }
 
+    public static string AsTemperature(this decimal value)
+    {
+        return string.Format("{0}", value.ToString("#0"));
+    }
+
     public static string AsPercentage(this decimal value)
     {
         return string.Format("{0}%", value.ToString("#0.##"));

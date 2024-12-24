@@ -1,38 +1,56 @@
 ﻿@namespace Blazr.App.UI
-@inherits EditorFormBase<DmoWeatherForecast, WeatherForecastId, WeatherForecastEditContext, WeatherForecastUIEntityService, WeatherForecastEditContextValidator>
+@inherits EditorFormBase<DmoWeatherForecast, WeatherForecastId, WeatherForecastEditContext, WeatherForecastUIEntityService>
 
-<div class="row">
+<PageTitle>@this.FormTitle</PageTitle>
 
-    <BlazrDateControl class="form-control mb-2"
-                      ColumnCss="col-12 col-md-6 mb-2"
-                      Label="Date"
-                      @bind-Value="this.Presenter.EditMutator.Date" />
-
-    <BlazrNumberControl UpdateOnInput
-                        class="form-control mb-2"
-                        ColumnCss="col-12 col-md-6 mb-2"
-                        Label="Temperature &deg;C"
-                        @bind-Value="this.Presenter.EditMutator.Temperature" />
-
+<div class="d-flex flex-row mb-4 pt-1 pb-2 border-bottom">
+    <div class="flex-fill justify-content-start h4">
+        @this.FormTitle
+    </div>
+    <div class="justify-content-end">
+       @* Header Buttons *@
+    </div>
 </div>
 
-<div class="row">
+<EditForm EditContext=this.Presenter.EditContext OnValidSubmit=this.OnSave>
 
-    <BlazrTextControl UpdateOnInput
-                      class="form-control mb-2"
-                      ColumnCss="col-12 col-md-8 mb-2"
-                      Label="Summary"
-                      @bind-Value="this.Presenter.EditMutator.Summary" />
-</div>
+    <Blazr.FluentValidation.BlazrFluentValidator TRecord="WeatherForecastEditContext" TValidator="WeatherForecastEditContextValidator" />
+    <BlazrEditStateTracker LockNavigation=this.LockNavigation />
+
+    <div class="row">
+
+        <BlazrDateControl class="form-control mb-2"
+                          ColumnCss="col-12 col-md-6 mb-2"
+                          Label="Date"
+                          @bind-Value="this.Presenter.EditMutator.Date" />
+
+        <BlazrNumberControl UpdateOnInput
+                            class="form-control mb-2"
+                            ColumnCss="col-12 col-md-6 mb-2"
+                            Label="Temperature &deg;C"
+                            @bind-Value="this.Presenter.EditMutator.Temperature" />
+
+    </div>
+
+    <div class="row">
+
+        <BlazrTextControl UpdateOnInput
+                          class="form-control mb-2"
+                          ColumnCss="col-12 col-md-8 mb-2"
+                          Label="Summary"
+                          @bind-Value="this.Presenter.EditMutator.Summary" />
+    </div>
+
+    <EditFormButtons SaveOnSubmit
+                     ColumnCss="col-12 mb-3 text-end"
+                     Options=this.editFormButtonsOptions
+                     DirtyExit=this.OnExit
+                     Exit=this.OnExit
+                     IsNewRecord=this.IsNewRecord
+                     Reset=this.OnReset />
+
+</EditForm>
 
 @code {
-
-    protected override Task OnParametersSetAsync()
-    {
-        if (!this.Initialized)
-        {
-        }
-
-        return base.OnParametersSetAsync();
-    }
+    protected string FormTitle => $"{this.UIEntityService.SingleDisplayName} Editor";
 }

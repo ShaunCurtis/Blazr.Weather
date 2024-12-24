@@ -5,7 +5,7 @@
 /// ============================================================
 namespace Blazr.App.UI;
 
-public abstract partial class ViewerFormBase<TRecord, TKey> : BlazrControlBase, IDisposable
+public abstract partial class ViewerFormBase<TRecord, TKey> : ComponentBase, IDisposable
     where TRecord : class, new()
     where TKey : notnull, IEntityId
 {
@@ -22,16 +22,13 @@ public abstract partial class ViewerFormBase<TRecord, TKey> : BlazrControlBase, 
 
     protected string ExitUrl { get; set; } = "/";
 
-    protected async override Task OnParametersSetAsync()
+    protected async override Task OnInitializedAsync()
     {
-        if (this.NotInitialized)
-        {
-            ArgumentNullException.ThrowIfNull(Uid);
+        ArgumentNullException.ThrowIfNull(Uid);
 
-            this.MessageBus.Subscribe<TRecord>(this.OnRecordChanged);
+        this.MessageBus.Subscribe<TRecord>(this.OnRecordChanged);
 
-            await this.Presenter.LoadAsync(this.Uid);
-        }
+        await this.Presenter.LoadAsync(this.Uid);
     }
 
     private async void OnRecordChanged(object? message)

@@ -5,7 +5,7 @@
 /// ============================================================
 namespace Blazr.App.UI;
 
-public abstract partial class GridFormBase<TRecord, TKey> : BlazrControlBase
+public abstract partial class GridFormBase<TRecord, TKey> : ComponentBase
     where TRecord : class, new()
     where TKey : notnull
 {
@@ -30,20 +30,17 @@ public abstract partial class GridFormBase<TRecord, TKey> : BlazrControlBase
     protected PaginationState Pagination = new PaginationState { ItemsPerPage = 10 };
     protected FilterDefinition? DefaultFilter { get; set; } = null;
 
-    protected async override Task OnParametersSetAsync()
+    protected async override Task OnInitializedAsync()
     {
-        if (NotInitialized)
-        {
-            // Loads the UI Entity service - we don't inject as we don't need it for basic display only forms.
-            this.UIEntityService = this.ServiceProvider.GetService<IUIEntityService<TRecord>>();
+        // Loads the UI Entity service - we don't inject as we don't need it for basic display only forms.
+        this.UIEntityService = this.ServiceProvider.GetService<IUIEntityService<TRecord>>();
 
-            this.Presenter.SetContext(this.GridContextId);
-            this.Pagination.ItemsPerPage = this.PageSize;
-            if (ResetGridContext)
-                this.Presenter.DispatchGridStateChange(new ResetGridAction(this, 0, this.PageSize, null, DefaultFilter));
+        this.Presenter.SetContext(this.GridContextId);
+        this.Pagination.ItemsPerPage = this.PageSize;
+        if (ResetGridContext)
+            this.Presenter.DispatchGridStateChange(new ResetGridAction(this, 0, this.PageSize, null, DefaultFilter));
 
-            await Pagination.SetCurrentPageIndexAsync(this.Presenter.GridState.Page());
-        }
+        await Pagination.SetCurrentPageIndexAsync(this.Presenter.GridState.Page());
     }
 
     public async ValueTask<GridItemsProviderResult<TRecord>> GetItemsAsync(GridItemsProviderRequest<TRecord> gridRequest)
