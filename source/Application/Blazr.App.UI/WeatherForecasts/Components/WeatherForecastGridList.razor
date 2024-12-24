@@ -8,7 +8,7 @@
             @context.Id.Value.ToDisplayId()
         </DataSetPropertyColumn>
         <DataSetPropertyColumn DataSetName="@AppDictionary.WeatherForecast.Date" Class="nowrap-column" Sortable="true" Title="Date">
-            @context.Date.Value.AsGlobalDateFormat()
+            @context.Date.AsGlobalDateFormat()
         </DataSetPropertyColumn>
         <DataSetPropertyColumn DataSetName="@AppDictionary.WeatherForecast.TemperatureC" Class="nowrap-column" Sortable="true" Title="Temp. (C)">
             @context.Temperature.TemperatureC

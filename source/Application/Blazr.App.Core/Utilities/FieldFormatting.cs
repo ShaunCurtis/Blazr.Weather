@@ -11,10 +11,16 @@ namespace Blazr.App.Core;
 
 public static class FieldFormatting
 {
+    public static string AsGlobalDateFormat(this Date Date)
+    {
+        return Date.Value.ToString("dd-MMM-yyyy");
+    }
+
     public static string AsGlobalDateFormat(this DateTime Date)
     {
         return Date.ToString("dd-MMM-yyyy");
     }
+
     public static string AsGlobalDateFormat(this DateOnly Date)
     {
         return Date.ToString("dd-MMM-yyyy");
@@ -62,4 +68,6 @@ public static class FieldFormatting
         var t = text.Replace(System.Environment.NewLine, "<br />");
         return t;
     }
+    public static string ToDisplayId(this Guid value)
+        => value.ToString().Substring(24, 8);
 }
