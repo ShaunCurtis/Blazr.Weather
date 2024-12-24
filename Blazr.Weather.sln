@@ -36,6 +36,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.UI", "source\Librarie
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{4D1EC4C1-3F4A-47E5-84A4-34C75103D9DC}"
 	ProjectSection(SolutionItems) = preProject
+		Documents\Commands.md = Documents\Commands.md
+		Documents\CQS.md = Documents\CQS.md
 		Documents\Entities-and-Value-Objects.md = Documents\Entities-and-Value-Objects.md
 		Documents\Intro.md = Documents\Intro.md
 		Documents\Mutating-Entities-and-Validation.md = Documents\Mutating-Entities-and-Validation.md

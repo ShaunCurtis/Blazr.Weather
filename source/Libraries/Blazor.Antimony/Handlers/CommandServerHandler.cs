@@ -14,12 +14,10 @@ public sealed class CommandServerHandler<TDbContext>
     : ICommandHandler
     where TDbContext : DbContext
 {
-    private readonly IServiceProvider _serviceProvider;
     private readonly IDbContextFactory<TDbContext> _factory;
 
-    public CommandServerHandler(IServiceProvider serviceProvider, IDbContextFactory<TDbContext> factory)
+    public CommandServerHandler(IDbContextFactory<TDbContext> factory)
     {
-        _serviceProvider = serviceProvider;
         _factory = factory;
     }
 
