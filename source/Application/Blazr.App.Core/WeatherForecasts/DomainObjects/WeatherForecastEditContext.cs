@@ -7,7 +7,6 @@ namespace Blazr.App.Core;
 
 public sealed class WeatherForecastEditContext : BaseRecordEditContext<DmoWeatherForecast, WeatherForecastId>, IRecordEditContext<DmoWeatherForecast>
 {
-
     [TrackState] public string? Summary { get; set; }
     [TrackState] public decimal Temperature { get; set; }
     [TrackState] public DateTime? Date { get; set; }
@@ -19,8 +18,8 @@ public sealed class WeatherForecastEditContext : BaseRecordEditContext<DmoWeathe
     public override DmoWeatherForecast AsRecord =>
     this.BaseRecord with
     {
-        Date = new(this.Date ?? DateTime.Now),
-        Summary = this.Summary ?? "Not Set",
+        Date = new(this.Date ?? DateTime.MinValue),
+        Summary = this.Summary ?? string.Empty,
         Temperature = new(this.Temperature)
     };
 
@@ -31,7 +30,6 @@ public sealed class WeatherForecastEditContext : BaseRecordEditContext<DmoWeathe
 
         this.BaseRecord = record;
 
-        this.BaseRecord = record;
         this.Summary = record.Summary;
         this.Temperature = record.Temperature.TemperatureC;
         this.Date = record.Date.Value.ToDateTime(TimeOnly.MinValue);

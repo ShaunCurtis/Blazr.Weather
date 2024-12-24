@@ -10,4 +10,9 @@ public readonly record struct WeatherForecastId(Guid Value) : IEntityId
     public bool IsDefault => this == Default;
     public static WeatherForecastId Create => new(Guid.CreateVersion7());
     public static WeatherForecastId Default => new(Guid.Empty);
+
+    public override string ToString()
+    {
+        return this.IsDefault ? Value.ToString() : "Not Valid";
+    }
 }

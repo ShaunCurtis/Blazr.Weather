@@ -7,12 +7,10 @@
 namespace Blazr.Antimony.Core;
 
 /// <summary>
-/// The purpose of the `IKeyProvider` interface is to provide services to handle strongly typed ID keys within the data pipeline
+/// The purpose of the `IKeyProvider` interface is to provide conversion services to handle strongly typed ID keys within the data pipeline
 /// </summary>
 public interface IRecordIdProvider<TKey>
 {
-    public bool IsDefault(TKey key);
     public TKey GetKey(object key);
     public object GetValueObject(TKey key);
-    public TKey GetNew();
 }

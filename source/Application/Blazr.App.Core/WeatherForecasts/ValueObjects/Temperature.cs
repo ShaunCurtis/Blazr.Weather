@@ -9,11 +9,15 @@ namespace Blazr.App.Core;
 
 public readonly record struct Temperature
 {
-    public decimal TemperatureC { get; init; } = -273;
+    public decimal TemperatureC { get; init; }
     public bool IsValid { get; init; }
     [JsonIgnore] public decimal TemperatureF => 32 + (this.TemperatureC / 0.5556m);
 
-    public Temperature() { }
+    public Temperature()
+    {
+        this.TemperatureC = -273;
+        this.IsValid = false;
+    }
 
     /// <summary>
     /// temperature should be provided in degrees Celcius

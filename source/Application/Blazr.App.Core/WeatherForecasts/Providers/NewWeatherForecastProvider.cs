@@ -13,7 +13,7 @@ public class NewWeatherForecastProvider : INewRecordProvider<DmoWeatherForecast>
         return new DmoWeatherForecast()
         {
             Id = WeatherForecastId.Create,
-            Date = new(DateTime.Now)
+            Date = new(DateTime.Now.AddDays(1))
         };
     }
 

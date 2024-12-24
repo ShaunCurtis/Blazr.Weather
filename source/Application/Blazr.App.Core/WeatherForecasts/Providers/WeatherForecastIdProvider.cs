@@ -14,19 +14,8 @@ public class WeatherForecastIdProvider : IRecordIdProvider<WeatherForecastId>
 
         throw new InvalidKeyProviderException("Object provided is not a WeatherForecastId Value");
     }
-
-    public WeatherForecastId GetNew()
-    {
-        return new WeatherForecastId(Guid.Empty);
-    }
-
     public object GetValueObject(WeatherForecastId key)
     {
         return key.Value;
-    }
-
-    public bool IsDefault(WeatherForecastId key)
-    {
-        return key.Value == Guid.Empty;
     }
 }

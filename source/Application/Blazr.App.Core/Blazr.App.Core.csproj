@@ -7,7 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="WeatherForecasts\Providers\WeatherForecastIdProvider.cs~RF1ad1cef9.TMP" />
+    <None Remove="WeatherForecasts\Providers\WeatherForecastIdProvider.cs~RF1ad89103.TMP" />
     <None Remove="WeatherForecasts\Requests\WeatherForecastListRequest.cs~RF14e23545.TMP" />
+    <None Remove="WeatherForecasts\ValueObjects\Date.cs~RF1a465095.TMP" />
   </ItemGroup>
 
 	<ItemGroup>
