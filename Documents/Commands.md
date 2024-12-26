@@ -128,7 +128,7 @@ Points:
 
 1. The `CommandState` dictates the actual action. 
  
-The Handler returns a `CommandResult`.  Ther are two incarnations:
+The Handler returns a `CommandResult`.  There are two incarnations:
 
 ```csharp
 public readonly record struct CommandResult : IDataResult

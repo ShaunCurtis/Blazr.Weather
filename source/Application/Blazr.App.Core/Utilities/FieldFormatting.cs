@@ -9,6 +9,9 @@ using System.Text.RegularExpressions;
 
 namespace Blazr.App.Core;
 
+/// <summary>
+/// FieldFormatting provides a set of extension methods to format fields for display
+/// </summary>
 public static class FieldFormatting
 {
     public static string AsGlobalDateFormat(this Date Date)
@@ -69,10 +72,11 @@ public static class FieldFormatting
 
     public static string TextToHtmlNewLines(this string text)
     {
-
-        var t = text.Replace(System.Environment.NewLine, "<br />");
-        return t;
+        return text.Replace(System.Environment.NewLine, "<br />");
     }
+
     public static string ToDisplayId(this Guid value)
-        => value.ToString().Substring(24, 8);
+    {
+        return value.ToString().Substring(24, 8);
+    }
 }
