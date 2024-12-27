@@ -1,10 +1,18 @@
-﻿/// ============================================================
-/// Author: Shaun Curtis, Cold Elm Coders
-/// License: Use And Donate
-/// If you use it, donate something to a charity somewhere
-/// ============================================================
-namespace Blazr.App.Infrastructure;
+# Notifications
 
+The application uses a simple *Message Bus* implementation to notify interested parties of data changes.
+
+The *Blazr.Gallium* package/library provides the base functionality.
+
+The service is registered:
+
+```csharp
+services.AddScoped<IMessageBus, MessageBus>();
+```
+
+Data entities changes are notified in the *Mediatr* command handlers.  The `WeatherForecastCommandHandler` is an example of a command handler that publishes a message to the message bus.
+
+```csharp
 public record WeatherForecastCommandHandler : IRequestHandler<WeatherForecastCommandRequest, CommandResult<WeatherForecastId>>
 {
     private ICommandHandler _handler;
@@ -33,3 +41,23 @@ public record WeatherForecastCommandHandler : IRequestHandler<WeatherForecastCom
         return CommandResult<WeatherForecastId>.Failure(new CommandException($"Returned object was not a DmoWeatherForecast"));
     }
 }
+```
+
+And `GridFormBase` consumes it:
+
+```csharp
+    protected async override Task OnInitializedAsync()
+    {
+        this.MessageBus.Subscribe<TRecord>(this.OnStateChanged);
+        //....
+    }
+    private void OnStateChanged(object? message)
+    {
+        this.InvokeAsync(quickGrid.RefreshDataAsync);
+    }
+
+    public void Dispose()
+    {
+        this.MessageBus.UnSubscribe<TRecord>(this.OnStateChanged);
+    }
+```

@@ -5,26 +5,25 @@
 /// ============================================================
 namespace Blazr.App.UI;
 
-public abstract partial class GridFormBase<TRecord, TKey> : ComponentBase
+public abstract partial class GridFormBase<TRecord, TKey> : ComponentBase, IDisposable
     where TRecord : class, new()
     where TKey : notnull
 {
-    [Inject] protected IServiceProvider ServiceProvider { get; set; } = default!;
     [Inject] protected NavigationManager NavManager { get; set; } = default!;
     [Inject] protected ILogger<GridFormBase<TRecord, TKey>> Logger { get; set; } = default!;
     [Inject] protected IRecordIdProvider<TKey> RecordIdProvider { get; set; } = default!;
     [Inject] protected IGridPresenter<TRecord> Presenter { get; set; } = default!;
+    [Inject] protected IMessageBus MessageBus { get; set; } = default!;
+    [Inject] protected IUIEntityService<TRecord> UIEntityService { get; set; } = default!;
 
     [Parameter] public string? FormTitle { get; set; }
     [Parameter] public Guid GridContextId { get; set; } = Guid.NewGuid();
     [Parameter] public int PageSize { get; set; } = 15;
     [Parameter] public bool ResetGridContext { get; set; }
 
-    protected IUIEntityService<TRecord>? UIEntityService { get; set; }
 
-
-    protected IModalDialog? modalDialog;
-    protected QuickGrid<TRecord>? quickGrid;
+    protected IModalDialog modalDialog = default!;
+    protected QuickGrid<TRecord> quickGrid = default!;
     protected virtual string formTitle => this.FormTitle ?? $"List of {this.UIEntityService?.PluralDisplayName ?? "Items"}";
 
     protected PaginationState Pagination = new PaginationState { ItemsPerPage = 10 };
@@ -32,8 +31,7 @@ public abstract partial class GridFormBase<TRecord, TKey> : ComponentBase
 
     protected async override Task OnInitializedAsync()
     {
-        // Loads the UI Entity service - we don't inject as we don't need it for basic display only forms.
-        this.UIEntityService = this.ServiceProvider.GetService<IUIEntityService<TRecord>>();
+        this.MessageBus.Subscribe<TRecord>(this.OnStateChanged);
 
         this.Presenter.SetContext(this.GridContextId);
         this.Pagination.ItemsPerPage = this.PageSize;
@@ -41,6 +39,11 @@ public abstract partial class GridFormBase<TRecord, TKey> : ComponentBase
             this.Presenter.DispatchGridStateChange(new ResetGridAction(this, 0, this.PageSize, null, DefaultFilter));
 
         await Pagination.SetCurrentPageIndexAsync(this.Presenter.GridState.Page());
+
+        // Make sure we yield so we have the first UI render 
+        await Task.Yield();
+        ArgumentNullException.ThrowIfNull(this.modalDialog);
+        ArgumentNullException.ThrowIfNull(this.quickGrid);
     }
 
     public async ValueTask<GridItemsProviderResult<TRecord>> GetItemsAsync(GridItemsProviderRequest<TRecord> gridRequest)
@@ -59,14 +62,9 @@ public abstract partial class GridFormBase<TRecord, TKey> : ComponentBase
         var options = new ModalOptions();
         options.ControlParameters.Add("Uid", id);
 
-        if (modalDialog is not null && this.UIEntityService is not null && this.UIEntityService.EditForm is not null)
-        {
-            await modalDialog.ShowAsync(this.UIEntityService.EditForm, options);
-            this.StateHasChanged();
-        }
+        ArgumentNullException.ThrowIfNull(this.UIEntityService.EditForm);
 
-        else if (this.UIEntityService is not null)
-            this.NavManager.NavigateTo($"{this.UIEntityService.Url}/edit/{RecordIdProvider.GetValueObject(id)}");
+        await modalDialog.ShowAsync(this.UIEntityService.EditForm, options);
     }
 
     protected virtual async Task OnViewAsync(TKey id)
@@ -74,13 +72,9 @@ public abstract partial class GridFormBase<TRecord, TKey> : ComponentBase
         var options = new ModalOptions();
         options.ControlParameters.Add("Uid", id);
 
-        if (modalDialog is not null && this.UIEntityService is not null && this.UIEntityService.ViewForm is not null)
-        {
-            await modalDialog.ShowAsync(this.UIEntityService.ViewForm, options);
-            this.StateHasChanged();
-        }
-        else if (this.UIEntityService is not null)
-            this.NavManager.NavigateTo($"{this.UIEntityService.Url}/view/{RecordIdProvider.GetValueObject(id)}");
+        ArgumentNullException.ThrowIfNull(this.UIEntityService.ViewForm);
+
+        await modalDialog.ShowAsync(this.UIEntityService.ViewForm, options);
     }
 
     protected virtual async Task OnAddAsync()
@@ -88,26 +82,21 @@ public abstract partial class GridFormBase<TRecord, TKey> : ComponentBase
         var options = new ModalOptions();
         // we don't set UId
 
-        if (modalDialog is not null && this.UIEntityService is not null && this.UIEntityService.EditForm is not null)
-        {
-            await modalDialog.ShowAsync(this.UIEntityService.EditForm, options);
-            this.StateHasChanged();
-        }
-        else if (this.UIEntityService is not null)
-            this.NavManager.NavigateTo($"{this.UIEntityService.Url}/edit/");
+        ArgumentNullException.ThrowIfNull(this.UIEntityService.EditForm);
+
+        await modalDialog.ShowAsync(this.UIEntityService.EditForm, options);
     }
 
     protected virtual Task OnDashboardAsync(TKey id)
     {
-        if (this.UIEntityService is not null)
-            this.NavManager.NavigateTo($"{this.UIEntityService.Url}/dash/{RecordIdProvider.GetValueObject(id)}");
+        this.NavManager.NavigateTo($"{this.UIEntityService.Url}/dash/{RecordIdProvider.GetValueObject(id)}");
 
         return Task.CompletedTask;
     }
 
-    private void OnStateChanged(object? sender, EventArgs e)
+    private void OnStateChanged(object? message)
     {
-        quickGrid?.RefreshDataAsync();
+        this.InvokeAsync(quickGrid.RefreshDataAsync);
     }
 
     protected Task LogErrorMessageAsync(string message)
@@ -119,5 +108,10 @@ public abstract partial class GridFormBase<TRecord, TKey> : ComponentBase
     protected void LogErrorMessage(string message)
     {
         Logger.LogError(message);
+    }
+
+    public void Dispose()
+    {
+        this.MessageBus.UnSubscribe<TRecord>(this.OnStateChanged);
     }
 }

@@ -41,6 +41,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{
 		Documents\Entities-and-Value-Objects.md = Documents\Entities-and-Value-Objects.md
 		Documents\Intro.md = Documents\Intro.md
 		Documents\Mutating-Entities-and-Validation.md = Documents\Mutating-Entities-and-Validation.md
+		Documents\Notifications.md = Documents\Notifications.md
 	EndProjectSection
 EndProject
 Global

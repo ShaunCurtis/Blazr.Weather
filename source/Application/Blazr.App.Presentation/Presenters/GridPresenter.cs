@@ -6,7 +6,7 @@
 namespace Blazr.App.Presentation;
 
 public abstract class GridPresenter<TRecord>
-    : IGridPresenter<TRecord>
+    : IGridPresenter<TRecord>, IDisposable
     where TRecord : class, new()
 {
     // Services
