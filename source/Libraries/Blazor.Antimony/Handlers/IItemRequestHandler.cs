@@ -10,15 +10,3 @@ public interface IItemRequestHandler
     public ValueTask<ItemQueryResult<TRecord>> ExecuteAsync<TRecord>(ItemQueryRequest<TRecord> request)
         where TRecord : class;
 }
-
-//public interface IItemRequestHandler<TRecord>
-//    where TRecord : class
-//{
-//    public ValueTask<ItemQueryResult<TRecord>> ExecuteAsync(ItemQueryRequest request);
-//}
-
-//public interface IItemRequestHandler<TRecord, IKey>
-//    where TRecord : class
-//{
-//    public ValueTask<ItemQueryResult<TRecord>> ExecuteAsync(ItemQueryRequest<IKey> request);
-//}

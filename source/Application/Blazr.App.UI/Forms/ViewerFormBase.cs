@@ -12,7 +12,6 @@ public abstract partial class ViewerFormBase<TRecord, TKey> : ComponentBase, IDi
     [Inject] protected IReadPresenter<TRecord, TKey> Presenter { get; set; } = default!;
     [Inject] protected NavigationManager NavManager { get; set; } = default!;
     [Inject] protected IUIEntityService<TRecord> UIEntityService { get; set; } = default!;
-    [Inject] protected IServiceProvider ServiceProvider { get; set; } = default!;
     [Inject] protected IMessageBus MessageBus { get; set; } = default!;
 
     [Parameter] public TKey Uid { get; set; } = default!;
