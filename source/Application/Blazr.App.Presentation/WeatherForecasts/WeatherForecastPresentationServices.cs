@@ -10,7 +10,7 @@ public static class WeatherForecastPresentationServices
     public static void AddGroupPresentationServices(this IServiceCollection services)
     {
         services.AddTransient<IGridPresenter<DmoWeatherForecast>, WeatherForecastGridPresenter>();
-        services.AddTransient<IEditPresenter<WeatherForecastEditContext, WeatherForecastId>, WeatherForecastEditPresenter>();
-        services.AddTransient<IReadPresenter<DmoWeatherForecast, WeatherForecastId>, WeatherForecastReadPresenter>();
+        services.AddTransient<IEditPresenterFactory<WeatherForecastEditContext, WeatherForecastId>, WeatherForecastEditPresenterFactory>();
+        services.AddTransient<IReadPresenterFactory<DmoWeatherForecast, WeatherForecastId>, WeatherForecastReadPresenterFactory>();
     }
 }

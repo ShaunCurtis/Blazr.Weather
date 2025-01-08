@@ -12,7 +12,7 @@ public abstract class EditorFormBase<TRecord, TKey, TEditContext, TEntityService
     where TEditContext : class, IRecordEditContext<TRecord>, new()
     where TEntityService : class, IUIEntityService<TRecord>
 {
-    [Inject] protected IEditPresenter<TEditContext, TKey> Presenter { get; set; } = default!;
+    [Inject] protected IEditPresenterFactory<TEditContext, TKey> PresenterFactory { get; set; } = default!;
     [Inject] protected NavigationManager NavManager { get; set; } = default!;
     [Inject] protected IJSRuntime Js { get; set; } = default!;
     [Inject] protected IUIEntityService<TRecord> UIEntityService { get; set; } = default!;
@@ -21,6 +21,7 @@ public abstract class EditorFormBase<TRecord, TKey, TEditContext, TEntityService
     [Parameter] public TKey? Uid { get; set; }
     [Parameter] public bool LockNavigation { get; set; } = true;
 
+    protected IEditPresenter<TEditContext, TKey> Presenter = default!;
     protected string exitUrl = "/";
 
     protected EditFormButtonsOptions editFormButtonsOptions = new();
@@ -30,7 +31,7 @@ public abstract class EditorFormBase<TRecord, TKey, TEditContext, TEntityService
 
     protected async override Task OnInitializedAsync()
     {
-        await this.Presenter.LoadAsync(Uid);
+        await this.PresenterFactory.GetPresenterAsync(Uid);
         this.Presenter.EditContext.OnFieldChanged += OnEditStateMayHaveChanged;
     }
 

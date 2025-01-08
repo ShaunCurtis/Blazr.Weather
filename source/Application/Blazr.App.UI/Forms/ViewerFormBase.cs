@@ -9,7 +9,7 @@ public abstract partial class ViewerFormBase<TRecord, TKey> : ComponentBase, IDi
     where TRecord : class, new()
     where TKey : notnull, IEntityId
 {
-    [Inject] protected IReadPresenter<TRecord, TKey> Presenter { get; set; } = default!;
+    [Inject] protected IReadPresenterFactory<TRecord, TKey> PresenterFactory { get; set; } = default!;
     [Inject] protected NavigationManager NavManager { get; set; } = default!;
     [Inject] protected IUIEntityService<TRecord> UIEntityService { get; set; } = default!;
     [Inject] protected IMessageBus MessageBus { get; set; } = default!;
@@ -19,6 +19,7 @@ public abstract partial class ViewerFormBase<TRecord, TKey> : ComponentBase, IDi
     [Parameter] public bool HideFooter { get; set; }
     [CascadingParameter] private IModalDialog? ModalDialog { get; set; }
 
+    protected IReadPresenter<TRecord, TKey> Presenter { get; set; } = default!;
     protected string ExitUrl { get; set; } = "/";
 
     protected async override Task OnInitializedAsync()
@@ -27,7 +28,7 @@ public abstract partial class ViewerFormBase<TRecord, TKey> : ComponentBase, IDi
 
         this.MessageBus.Subscribe<TRecord>(this.OnRecordChanged);
 
-        await this.Presenter.LoadAsync(this.Uid);
+        await this.PresenterFactory.GetPresenterAsync(this.Uid);
     }
 
     private async void OnRecordChanged(object? message)

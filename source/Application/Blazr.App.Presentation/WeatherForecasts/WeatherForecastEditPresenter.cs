@@ -5,6 +5,10 @@
 /// ============================================================
 namespace Blazr.App.Presentation;
 
+/// <summary>
+/// This object should not be used in DI.
+/// Create an instance through the Factory
+/// </summary>
 public class WeatherForecastEditPresenter : EditPresenter<DmoWeatherForecast, WeatherForecastEditContext, WeatherForecastId>
 {
     public WeatherForecastEditPresenter(IMediator mediator, IRecordIdProvider<WeatherForecastId> keyProvider, INewRecordProvider<DmoWeatherForecast> newRecordProvider)
