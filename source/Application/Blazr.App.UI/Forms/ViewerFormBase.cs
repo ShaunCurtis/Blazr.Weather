@@ -28,7 +28,7 @@ public abstract partial class ViewerFormBase<TRecord, TKey> : ComponentBase, IDi
 
         this.MessageBus.Subscribe<TRecord>(this.OnRecordChanged);
 
-        await this.PresenterFactory.GetPresenterAsync(this.Uid);
+        this.Presenter = await this.PresenterFactory.GetPresenterAsync(this.Uid);
     }
 
     private async void OnRecordChanged(object? message)

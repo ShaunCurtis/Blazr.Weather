@@ -31,7 +31,7 @@ public abstract class EditorFormBase<TRecord, TKey, TEditContext, TEntityService
 
     protected async override Task OnInitializedAsync()
     {
-        await this.PresenterFactory.GetPresenterAsync(Uid);
+        this.Presenter = await this.PresenterFactory.GetPresenterAsync(Uid);
         this.Presenter.EditContext.OnFieldChanged += OnEditStateMayHaveChanged;
     }
 
