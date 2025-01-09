@@ -5,7 +5,7 @@
 /// ============================================================
 namespace Blazr.App.Infrastructure;
 
-public record WeatherForecastListHandler : IRequestHandler<WeatherForecastListRequest, ListQueryResult<DmoWeatherForecast>>
+public record WeatherForecastListHandler : IRequestHandler<WeatherForecastListRequest, Result<ListResult<DmoWeatherForecast>>>
 {
     private IListRequestHandler listRequestHandler;
 
@@ -14,7 +14,7 @@ public record WeatherForecastListHandler : IRequestHandler<WeatherForecastListRe
         this.listRequestHandler = listRequestHandler;
     }
 
-    public async Task<ListQueryResult<DmoWeatherForecast>> Handle(WeatherForecastListRequest request, CancellationToken cancellationToken)
+    public async Task<Result<ListResult<DmoWeatherForecast>>> Handle(WeatherForecastListRequest request, CancellationToken cancellationToken)
     {
         IEnumerable<DmoWeatherForecast> forecasts = Enumerable.Empty<DmoWeatherForecast>();
 
@@ -30,12 +30,12 @@ public record WeatherForecastListHandler : IRequestHandler<WeatherForecastListRe
 
         var result = await listRequestHandler.ExecuteAsync<DboWeatherForecast>(query);
 
-        if (!result.Successful)
-            return ListQueryResult<DmoWeatherForecast>.Failure(result.Exception!);
+        if (!result.HasFailed(out ListResult<DboWeatherForecast> listResult))
+            return result.Convert<ListResult<DmoWeatherForecast>>();
 
-        var list = result.Items.Select(item => DboWeatherForecastMap.Map(item));
+        var list = listResult.Items.Select(item => DboWeatherForecastMap.Map(item));
 
-        return ListQueryResult<DmoWeatherForecast>.Success(list, result.TotalCount);
+        return Result<ListResult<DmoWeatherForecast>>.Success( new(list, listResult.TotalCount));
     }
 
     private Expression<Func<DboWeatherForecast, object>> GetSorter(string? field)

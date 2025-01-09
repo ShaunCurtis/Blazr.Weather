@@ -11,8 +11,8 @@ namespace Blazr.Antimony.Core;
 public readonly record struct Result<T>
 {
     // Hidden
-    private readonly T? _value;
-    private readonly Exception? _error;
+    private T? _value { get; init; }
+    private Exception? _error { get; init; }
 
     private Result(T value)
     {
@@ -57,12 +57,12 @@ public readonly record struct Result<T>
         onFail(_error);
     }
 
-    public bool HasSucceeded([NotNullWhen(true)]out T? item)
+    public bool HasSucceeded([NotNullWhen(true)] out T? item)
     {
         if (this.IsSuccess)
             item = _value;
         else
-            item =default;
+            item = default;
 
         return this.IsSuccess;
     }
@@ -77,8 +77,24 @@ public readonly record struct Result<T>
         return this.IsFailure;
     }
 
-    public static Result<T> Success(T value) => new(value);
-    public static Result<T> Fail(Exception error) => new(error);
+    public Result<TOut> Convert<TOut>(TOut value)
+    {
+        if (this.IsFailure)
+            throw new InvalidOperationException("You can't provide a value if the opertation has failed.");
 
-    public static implicit operator Result<T>(T value) => Success(value);
+        return new Result<TOut>() { _error = this._error, _value = value  };
+    }
+    
+    public Result<TOut> Convert<TOut>()
+    {
+        if (this.IsSuccess)
+            throw new InvalidOperationException("You must provide a value if the opertation has succeeded.");
+
+        return Result<TOut>.Fail(this._error);
+    }
+
+    public static Result<T> Success(T value) => new(value);
+public static Result<T> Fail(Exception error) => new(error);
+
+public static implicit operator Result<T>(T value) => Success(value);
 }

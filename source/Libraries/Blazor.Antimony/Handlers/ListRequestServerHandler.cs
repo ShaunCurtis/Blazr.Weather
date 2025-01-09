@@ -19,13 +19,13 @@ public sealed class ListRequestServerHandler<TDbContext>
         _serviceProvider = serviceProvider;
     }
 
-    public async ValueTask<ListQueryResult<TRecord>> ExecuteAsync<TRecord>(ListQueryRequest<TRecord> request)
+    public async ValueTask<Result<ListResult<TRecord>>> ExecuteAsync<TRecord>(ListQueryRequest<TRecord> request)
         where TRecord : class
     {
         return await this.GetItemsAsync<TRecord>(request);
     }
 
-    private async ValueTask<ListQueryResult<TRecord>> GetItemsAsync<TRecord>(ListQueryRequest<TRecord> request)
+    private async ValueTask<Result<ListResult<TRecord>>> GetItemsAsync<TRecord>(ListQueryRequest<TRecord> request)
         where TRecord : class
     {
         int totalRecordCount = 0;
@@ -66,6 +66,6 @@ public sealed class ListRequestServerHandler<TDbContext>
             ? await query.ToListAsync().ConfigureAwait(ConfigureAwaitOptions.None)
             : query.ToList();
 
-        return ListQueryResult<TRecord>.Success(list, totalRecordCount);
+        return Result<ListResult<TRecord>>.Success(new(list, totalRecordCount));
     }
 }

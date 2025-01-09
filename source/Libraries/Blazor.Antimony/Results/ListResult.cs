@@ -3,11 +3,6 @@
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
+namespace Blazr.Antimony.Core;
 
-namespace Blazr.App.Core;
-
-public record WeatherForecastListRequest
-    : BaseListRequest, IRequest<Result<ListResult<DmoWeatherForecast>>>
-{
-    public string? Summary { get; init; }
-}
+public readonly record struct  ListResult<TRecord>(IEnumerable<TRecord> Items, int TotalCount);

@@ -8,12 +8,12 @@ namespace Blazr.Antimony.Core;
 
 public interface IListRequestHandler
 {
-    public ValueTask<ListQueryResult<TRecord>> ExecuteAsync<TRecord>(ListQueryRequest<TRecord> request)
+    public ValueTask<Result<ListResult<TRecord>>> ExecuteAsync<TRecord>(ListQueryRequest<TRecord> request)
         where TRecord : class;
 }
 
 public interface IListRequestHandler<TRecord>
     where TRecord : class
 {
-    public ValueTask<ListQueryResult<TRecord>> ExecuteAsync(ListQueryRequest<TRecord> request);
+    public ValueTask<Result<ListResult<TRecord>>> ExecuteAsync(ListQueryRequest<TRecord> request);
 }
