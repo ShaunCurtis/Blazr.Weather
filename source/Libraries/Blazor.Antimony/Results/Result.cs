@@ -1,11 +1,11 @@
-﻿
-using System.Diagnostics.CodeAnalysis;
-
-/// ============================================================
+﻿/// ============================================================
 /// Author: Shaun Curtis, Cold Elm Coders
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
+
+using System.Diagnostics.CodeAnalysis;
+
 namespace Blazr.Antimony.Core;
 
 public readonly record struct Result<T>
@@ -30,15 +30,51 @@ public readonly record struct Result<T>
 
     [MemberNotNullWhen(true, nameof(_value))]
     [MemberNotNullWhen(false, nameof(_error))]
-    private bool IsSuccess { get; }
+    public bool IsSuccess { get; }
+    public bool IsFailure => !IsSuccess;
 
-    public Result<TReturn> Map<TReturn>(
-        Func<T, TReturn> onSuccess,
-        Func<Exception, Exception> onFailure)
+    public void Map(Action<T> onSuccess, Action<Exception> onFail)
     {
-        return this.IsSuccess
-            ? onSuccess(_value)
-            : Result<TReturn>.Fail(onFailure(_error));
+        if (this.IsSuccess)
+            onSuccess(_value);
+        else
+            onFail(_error);
+    }
+
+    public void MapSuccess(Action<T> onSuccess)
+    {
+        if (this.IsFailure)
+            throw new InvalidOperationException("You can't call MapSuccess on an error result.");
+
+        onSuccess(_value!);
+    }
+
+    public void MapFailure(Action<Exception> onFail)
+    {
+        if (this.IsSuccess)
+            throw new InvalidOperationException("You can't call MapFailure on a success.");
+
+        onFail(_error);
+    }
+
+    public bool HasSucceeded([NotNullWhen(true)]out T? item)
+    {
+        if (this.IsSuccess)
+            item = _value;
+        else
+            item =default;
+
+        return this.IsSuccess;
+    }
+
+    public bool HasFailed([NotNullWhen(false)] out T? item)
+    {
+        if (this.IsSuccess)
+            item = _value;
+        else
+            item = default;
+
+        return this.IsFailure;
     }
 
     public static Result<T> Success(T value) => new(value);
