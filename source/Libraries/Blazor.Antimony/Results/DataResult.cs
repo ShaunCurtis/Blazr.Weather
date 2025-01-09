@@ -5,6 +5,10 @@
 /// ============================================================
 namespace Blazr.Antimony.Core;
 
+/// <summary>
+/// Base imnplementation of IDataResult
+/// Used in the UI to display the message (if failure)
+/// </summary>
 public readonly record struct DataResult : IDataResult
 {
     public bool Successful { get; init; } = true;
@@ -22,28 +26,3 @@ public readonly record struct DataResult : IDataResult
         return new DataResult { Message = message };
     }
 }
-
-public readonly record struct DataResult<TData> : IDataResult
-{
-    public TData? Item { get; init; }
-    public bool Successful { get; init; }
-    public string? Message { get; init; }
-
-    public DataResult() { }
-
-    public TResult Map<TResult>(Func<TData, TResult> onSuccess, Func<string, TResult> onFailure)
-    {
-        return Successful ? onSuccess(this.Item!) : onFailure(this.Message!);
-    }
-
-    public static DataResult<TData> Success(TData Item, string? message = null)
-    {
-        return new DataResult<TData> { Successful = true, Item = Item, Message = message };
-    }
-
-    public static DataResult<TData> Failure(string message)
-    {
-        return new DataResult<TData> { Message = message };
-    }
-}
-

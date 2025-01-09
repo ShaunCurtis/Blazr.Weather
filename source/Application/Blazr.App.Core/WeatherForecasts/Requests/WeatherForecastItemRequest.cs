@@ -8,4 +8,4 @@ namespace Blazr.App.Core;
 
 public readonly record struct WeatherForecastItemRequest(
         WeatherForecastId Id) 
-    : IRequest<ItemQueryResult<DmoWeatherForecast>>;
+    : IRequest<Result<DmoWeatherForecast>>;

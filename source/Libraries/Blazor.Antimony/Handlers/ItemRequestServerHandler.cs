@@ -18,13 +18,13 @@ public sealed class ItemRequestServerHandler<TDbContext>
         _factory = factory;
     }
 
-    public async ValueTask<ItemQueryResult<TRecord>> ExecuteAsync<TRecord>(ItemQueryRequest<TRecord> request)
+    public async ValueTask<Result<TRecord>> ExecuteAsync<TRecord>(ItemQueryRequest<TRecord> request)
         where TRecord : class
     {
         return await this.GetItemAsync<TRecord>(request);
     }
 
-    private async ValueTask<ItemQueryResult<TRecord>> GetItemAsync<TRecord>(ItemQueryRequest<TRecord> request)
+    private async ValueTask<Result<TRecord>> GetItemAsync<TRecord>(ItemQueryRequest<TRecord> request)
         where TRecord : class
     {
         using var dbContext = _factory.CreateDbContext();
@@ -35,8 +35,8 @@ public sealed class ItemRequestServerHandler<TDbContext>
             .ConfigureAwait(false);
 
         if (record is null)
-            return ItemQueryResult<TRecord>.Failure(new ItemQueryException($"No record retrieved with the Key provided"));
+            return Result<TRecord>.Fail(new ItemQueryException($"No record retrieved with the Key provided"));
 
-        return ItemQueryResult<TRecord>.Success(record);
+        return Result<TRecord>.Success(record);
     }
 }

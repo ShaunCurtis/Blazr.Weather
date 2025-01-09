@@ -21,19 +21,19 @@ public sealed class CommandServerHandler<TDbContext>
         _factory = factory;
     }
 
-    public async ValueTask<CommandResult> ExecuteAsync<TRecord>(CommandRequest<TRecord> request)
+    public async ValueTask<Result<TRecord>> ExecuteAsync<TRecord>(CommandRequest<TRecord> request)
         where TRecord : class
     {
         return await this.ExecuteCommandAsync<TRecord>(request);
     }
 
-    private async ValueTask<CommandResult> ExecuteCommandAsync<TRecord>(CommandRequest<TRecord> request)
+    private async ValueTask<Result<TRecord>> ExecuteCommandAsync<TRecord>(CommandRequest<TRecord> request)
     where TRecord : class
     {
         using var dbContext = _factory.CreateDbContext();
 
         if ((request.Item is not ICommandEntity))
-            return CommandResult.Failure($"{request.Item.GetType().Name} Does not implement ICommandEntity and therefore you can't Update/Add/Delete it directly.");
+            return Result<TRecord>.Fail(new CommandException($"{request.Item.GetType().Name} Does not implement ICommandEntity and therefore you can't Update/Add/Delete it directly."));
 
         var stateRecord = request.Item;
 
@@ -44,8 +44,8 @@ public sealed class CommandServerHandler<TDbContext>
             var result = await dbContext.SaveChangesAsync(request.Cancellation).ConfigureAwait(ConfigureAwaitOptions.None);
 
             return result == 1
-                ? CommandResult.SuccessWithKey(request.Item)
-                : CommandResult.Failure("Error adding Record");
+                ? Result<TRecord>.Success(request.Item)
+                : Result<TRecord>.Fail( new CommandException("Error adding Record"));
         }
 
         // Check if we should delete it
@@ -55,8 +55,8 @@ public sealed class CommandServerHandler<TDbContext>
             var result = await dbContext.SaveChangesAsync(request.Cancellation).ConfigureAwait(ConfigureAwaitOptions.None);
             
             return result == 1
-                ? CommandResult.Success()
-                : CommandResult.Failure("Error deleting Record");
+                ? Result<TRecord>.Success(request.Item)
+                : Result<TRecord>.Fail(new CommandException( "Error deleting Record"));
         }
 
         // Finally it changed
@@ -66,10 +66,10 @@ public sealed class CommandServerHandler<TDbContext>
             var result = await dbContext.SaveChangesAsync(request.Cancellation).ConfigureAwait(ConfigureAwaitOptions.None);
 
             return result == 1
-                ? CommandResult.Success()
-                : CommandResult.Failure("Error saving Record");
+                ? Result<TRecord>.Success(request.Item)
+                : Result<TRecord>.Fail(new CommandException("Error saving Record"));
         }
 
-        return CommandResult.Failure("Nothing executed.  Unrecognised State.");
+        return Result<TRecord>.Fail(new CommandException("Nothing executed.  Unrecognised State."));
     }
 }

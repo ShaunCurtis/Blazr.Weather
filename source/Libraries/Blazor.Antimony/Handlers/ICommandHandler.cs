@@ -8,6 +8,6 @@ namespace Blazr.Antimony.Core;
 
 public interface ICommandHandler
 {
-    public ValueTask<CommandResult> ExecuteAsync<TRecord>(CommandRequest<TRecord> request)
+    public ValueTask<Result<TRecord>> ExecuteAsync<TRecord>(CommandRequest<TRecord> request)
         where TRecord : class;
 }

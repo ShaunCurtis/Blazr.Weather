@@ -10,7 +10,7 @@ public interface IGridPresenter<TRecord>
 {
     public Guid ContextUid { get; }
     public GridState GridState { get; }
-    public ListQueryResult<TRecord> LastResult { get; }
+    public IDataResult LastResult { get; }
 
     public void SetContext(Guid context);
     public ValueTask<GridItemsProviderResult<TRecord>> GetItemsAsync();

@@ -14,7 +14,7 @@ public class WeatherForecastGridPresenter : GridPresenter<DmoWeatherForecast>
         : base(mediator, messageBus, keyedFluxGateStore)
     { }
 
-    protected override async Task<ListQueryResult<DmoWeatherForecast>> GetItemsAsync(GridState state)
+    protected override async Task<Result<ListResult<DmoWeatherForecast>>> GetItemsAsync(GridState state)
     {
         // Get the list request from the Flux Context and get the result
         var listRequest = new WeatherForecastListRequest()

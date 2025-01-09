@@ -21,7 +21,7 @@ public abstract class GridPresenter<TRecord>
 
     public readonly Guid ComponentInstanceId = Guid.NewGuid();
 
-    public ListQueryResult<TRecord> LastResult { get; protected set; } = ListQueryResult<TRecord>.Failure("New");
+    public IDataResult LastResult { get; protected set; } = DataResult.Failure("New");
 
     public event EventHandler<EventArgs>? StateChanged;
 
@@ -50,16 +50,18 @@ public abstract class GridPresenter<TRecord>
         return _gridStateStore.Dispatch(action).ToDataResult();
     }
 
-    protected abstract Task<ListQueryResult<TRecord>> GetItemsAsync(GridState state);
+    protected abstract Task<Result<ListResult<TRecord>>> GetItemsAsync(GridState state);
 
     public async ValueTask<GridItemsProviderResult<TRecord>> GetItemsAsync()
     {
         var result = await this.GetItemsAsync(_gridStateStore.Item);
-        this.LastResult = result;
+        this.LastResult = result.ToDataResult;
 
-        // Create the GridItemsProviderResult from the ListQueryResult
-        var returnResult = GridItemsProviderResult.From<TRecord>(result.Items.ToList(), (int)result.TotalCount);
-        return returnResult;
+        if (!result.HasSucceeded(out ListResult<TRecord> listResult))
+            return GridItemsProviderResult.From<TRecord>(new List<TRecord>(), 0);
+
+        // return a new GridItemsProviderResult created from the ListQueryResult
+        return GridItemsProviderResult.From<TRecord>(listResult.Items.ToList(), listResult.TotalCount); ;
     }
 
     public void OnStateChanged(object? message)

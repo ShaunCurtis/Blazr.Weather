@@ -13,7 +13,7 @@ public class WeatherForecastReadPresenter : ReadPresenter<DmoWeatherForecast, We
 {
     public WeatherForecastReadPresenter(IMediator dataBroker, INewRecordProvider<DmoWeatherForecast> newRecordProvider) : base(dataBroker, newRecordProvider)  { }
 
-    protected override Task<ItemQueryResult<DmoWeatherForecast>> GetItemAsync(WeatherForecastId id)
+    protected override Task<Result<DmoWeatherForecast>> GetItemAsync(WeatherForecastId id)
     {
         return _dataBroker.Send(new WeatherForecastItemRequest(id));
     }

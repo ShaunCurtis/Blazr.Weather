@@ -5,7 +5,7 @@
 /// ============================================================
 namespace Blazr.App.Infrastructure;
 
-public record WeatherForecastItemHandler : IRequestHandler<WeatherForecastItemRequest, ItemQueryResult<DmoWeatherForecast>>
+public record WeatherForecastItemHandler : IRequestHandler<WeatherForecastItemRequest, Result<DmoWeatherForecast>>
 {
     private IItemRequestHandler _handler;
 
@@ -14,7 +14,7 @@ public record WeatherForecastItemHandler : IRequestHandler<WeatherForecastItemRe
         _handler = handler;
     }
 
-    public async Task<ItemQueryResult<DmoWeatherForecast>> Handle(WeatherForecastItemRequest request, CancellationToken cancellationToken)
+    public async Task<Result<DmoWeatherForecast>> Handle(WeatherForecastItemRequest request, CancellationToken cancellationToken)
     {
         Expression<Func<DboWeatherForecast, bool>> findExpression = (item) =>
             item.ID == request.Id.Value;
@@ -23,11 +23,11 @@ public record WeatherForecastItemHandler : IRequestHandler<WeatherForecastItemRe
 
         var result = await _handler.ExecuteAsync<DboWeatherForecast>(query);
 
-        if (!result.Successful)
-            return ItemQueryResult<DmoWeatherForecast>.Failure(result.Exception!);
+        if (!result.HasSucceeded(out DboWeatherForecast? record))
+            return result.Convert<DmoWeatherForecast>();
 
-        var returnItem = DboWeatherForecastMap.Map(result.Item!);
+        var returnItem = DboWeatherForecastMap.Map(record);
 
-        return ItemQueryResult<DmoWeatherForecast>.Success(returnItem);
+        return Result<DmoWeatherForecast>.Success(returnItem);
     }
 }

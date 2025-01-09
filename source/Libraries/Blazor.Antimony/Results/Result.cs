@@ -30,8 +30,29 @@ public readonly record struct Result<T>
 
     [MemberNotNullWhen(true, nameof(_value))]
     [MemberNotNullWhen(false, nameof(_error))]
-    public bool IsSuccess { get; }
-    public bool IsFailure => !IsSuccess;
+    private bool IsSuccess { get; }
+    private bool IsFailure => !IsSuccess;
+
+
+    public bool HasSucceeded([NotNullWhen(true)] out T? item)
+    {
+        if (this.IsSuccess)
+            item = _value;
+        else
+            item = default;
+
+        return this.IsSuccess;
+    }
+
+    public bool HasFailed([NotNullWhen(true)] out Exception? exception)
+    {
+        if (this.IsFailure)
+            exception = _error;
+        else
+            exception = default;
+
+        return this.IsFailure;
+    }
 
     public void Map(Action<T> onSuccess, Action<Exception> onFail)
     {
@@ -57,44 +78,29 @@ public readonly record struct Result<T>
         onFail(_error);
     }
 
-    public bool HasSucceeded([NotNullWhen(true)] out T? item)
-    {
-        if (this.IsSuccess)
-            item = _value;
-        else
-            item = default;
-
-        return this.IsSuccess;
-    }
-
-    public bool HasFailed([NotNullWhen(false)] out T? item)
-    {
-        if (this.IsSuccess)
-            item = _value;
-        else
-            item = default;
-
-        return this.IsFailure;
-    }
+    /// <summary>
+    /// Converts the Result to a UI DataResult
+    /// </summary>
+    public IDataResult ToDataResult => new DataResult() { Message = _error?.Message, Successful = this.IsSuccess };
 
     public Result<TOut> Convert<TOut>(TOut value)
     {
         if (this.IsFailure)
-            throw new InvalidOperationException("You can't provide a value if the opertation has failed.");
+            throw new InvalidOperationException("You can't provide a value if the operation has failed.");
 
-        return new Result<TOut>() { _error = this._error, _value = value  };
+        return new Result<TOut>() { _error = this._error, _value = value };
     }
-    
+
     public Result<TOut> Convert<TOut>()
     {
         if (this.IsSuccess)
-            throw new InvalidOperationException("You must provide a value if the opertation has succeeded.");
+            throw new InvalidOperationException("You must provide a value if the operation has succeeded.");
 
         return Result<TOut>.Fail(this._error);
     }
 
     public static Result<T> Success(T value) => new(value);
-public static Result<T> Fail(Exception error) => new(error);
+    public static Result<T> Fail(Exception error) => new(error);
 
-public static implicit operator Result<T>(T value) => Success(value);
+    public static implicit operator Result<T>(T value) => Success(value);
 }

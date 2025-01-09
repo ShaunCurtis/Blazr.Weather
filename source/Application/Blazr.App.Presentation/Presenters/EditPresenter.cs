@@ -21,7 +21,7 @@ public abstract class EditPresenter<TRecord, TRecordEditContext, TKey> : IEditPr
     private bool _isLoaded;
     public CommandState CommandState { get; private set; } = CommandState.None;
 
-    public IDataResult LastResult { get; protected set; } = CommandResult.Success();
+    public IDataResult LastResult { get; protected set; } = DataResult.Success();
 
     public TRecordEditContext EditMutator { get; protected set; } = new();
 
@@ -40,7 +40,7 @@ public abstract class EditPresenter<TRecord, TRecordEditContext, TKey> : IEditPr
     {
         if (_isLoaded)
         {
-            LastResult = CommandResult.Failure("The Presenter has already been loaded. You cannot reload the Presenter.");
+            LastResult = DataResult.Failure("The Presenter has already been loaded. You cannot reload the Presenter.");
             return;
         }
 
@@ -86,7 +86,7 @@ public abstract class EditPresenter<TRecord, TRecordEditContext, TKey> : IEditPr
 
     private ValueTask GetNewItemAsync()
     {
-        this.LastResult = CommandResult.Success();
+        this.LastResult = DataResult.Success();
 
         var record = _newRecordProvider.NewRecord();
 
@@ -101,38 +101,34 @@ public abstract class EditPresenter<TRecord, TRecordEditContext, TKey> : IEditPr
         return ValueTask.CompletedTask;
     }
 
-    protected abstract Task<ItemQueryResult<TRecord>> GetItemAsync();
+    protected abstract Task<Result<TRecord>> GetItemAsync();
 
     private async ValueTask GetRecordItemAsync()
     {
-        this.LastResult = CommandResult.Success();
-
-        TRecord record;
+        this.LastResult = DataResult.Success();
 
         var result = await GetItemAsync();
-        this.LastResult = result;
 
-        if (!result.Successful)
+        if (!result.HasSucceeded(out TRecord? record))
         {
-            this.LastResult = result;
+            this.LastResult = result.ToDataResult;
             _isLoaded = true;
             return;
         }
 
-        record = result.Item!;
-
         this.EditMutator = new();
-        this.EditMutator.Load(record);
+        this.EditMutator.Load(record!);
 
         this.EditContext = new EditContext(EditMutator);
 
         _isLoaded = true;
     }
-    protected abstract Task<CommandResult<TKey>> UpdateAsync(TRecord record, CommandState state);
+
+    protected abstract Task<Result<TKey>> UpdateAsync(TRecord record, CommandState state);
 
     private async ValueTask UpdateRecordAsync(bool refreshOnNew = true)
     {
-        LastResult = CommandResult.Failure("Nothing to Do");
+        LastResult = DataResult.Failure("Nothing to Do");
 
         // Update the command state for an update operation
         if (this.CommandState == CommandState.None)
@@ -142,14 +138,14 @@ public abstract class EditPresenter<TRecord, TRecordEditContext, TKey> : IEditPr
 
 
         var commandResult = await UpdateAsync(mutatedResult, this.CommandState);
-        this.LastResult = commandResult;
+        this.LastResult = commandResult.ToDataResult;
 
-        if (!commandResult.Successful)
+        if (!commandResult.HasSucceeded(out TKey? key ))
             return;
 
-        if (this.CommandState == CommandState.Add && commandResult.KeyValue is not null && refreshOnNew)
+        if (this.CommandState == CommandState.Add && refreshOnNew)
         {
-            this.EntityId = _recordIdProvider.GetKey(commandResult.KeyValue);
+            this.EntityId = _recordIdProvider.GetKey(key);
             await GetRecordItemAsync();
         }
     }

@@ -14,7 +14,7 @@ public abstract class ReadPresenter<TRecord, TKey> : IReadPresenter<TRecord, TKe
 
     public TRecord Item { get; protected set; } = new TRecord();
 
-    public ItemQueryResult<TRecord> LastResult { get; protected set; } = ItemQueryResult<TRecord>.Success(new());
+    public IDataResult LastResult { get; protected set; } = DataResult.Success();
 
     public ReadPresenter(IMediator dataBroker, INewRecordProvider<TRecord> newRecordProvider)
     {
@@ -25,14 +25,16 @@ public abstract class ReadPresenter<TRecord, TKey> : IReadPresenter<TRecord, TKe
     public async ValueTask LoadAsync(TKey id)
         => await GetRecordItemAsync(id);
 
-    protected abstract Task<ItemQueryResult<TRecord>> GetItemAsync(TKey id);
+    protected abstract Task<Result<TRecord>> GetItemAsync(TKey id);
 
     private async ValueTask GetRecordItemAsync(TKey id)
     {
-        LastResult = await this.GetItemAsync(id);
+        var result = await this.GetItemAsync(id);
+        
+        LastResult = result.ToDataResult;
 
-        if (LastResult.Successful)
-            this.Item = this.LastResult.Item ?? _newRecordProvider.NewRecord(); 
+        if (result.HasSucceeded(out TRecord? record))
+            this.Item = record ?? _newRecordProvider.NewRecord(); 
     }
 
 }

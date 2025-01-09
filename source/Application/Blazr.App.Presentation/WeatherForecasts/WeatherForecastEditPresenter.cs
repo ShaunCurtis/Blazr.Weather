@@ -14,12 +14,12 @@ public class WeatherForecastEditPresenter : EditPresenter<DmoWeatherForecast, We
     public WeatherForecastEditPresenter(IMediator mediator, IRecordIdProvider<WeatherForecastId> keyProvider, INewRecordProvider<DmoWeatherForecast> newRecordProvider)
         : base(mediator, keyProvider, newRecordProvider) { }
 
-    protected override Task<ItemQueryResult<DmoWeatherForecast>> GetItemAsync()
+    protected override Task<Result<DmoWeatherForecast>> GetItemAsync()
     {
         return this.Databroker.Send(new WeatherForecastItemRequest(this.EntityId));
     }
 
-    protected override Task<CommandResult<WeatherForecastId>> UpdateAsync(DmoWeatherForecast record, CommandState state)
+    protected override Task<Result<WeatherForecastId>> UpdateAsync(DmoWeatherForecast record, CommandState state)
     {
         return Databroker.Send(new WeatherForecastCommandRequest(record, state));
     }

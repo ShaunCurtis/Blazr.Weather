@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Handlers\IItemRequestHandler.cs~RF1461f712.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Handlers\" />
   </ItemGroup>
 
