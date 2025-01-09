@@ -9,7 +9,7 @@ public static class WeatherForecastServerInfrastructureServices
 {
     public static void AddWeatherForecastServerInfrastructureServices(this IServiceCollection services)
     {
-        services.AddScoped<IRecordIdProvider<WeatherForecastId>, WeatherForecastIdProvider>();
+        services.AddScoped<IRecordIdProvider<WeatherForecastId, DmoWeatherForecast>, WeatherForecastIdProvider>();
         services.AddScoped<INewRecordProvider<DmoWeatherForecast>, NewWeatherForecastProvider>();
     }
 }

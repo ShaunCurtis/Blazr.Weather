@@ -36,6 +36,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.UI", "source\Librarie
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{4D1EC4C1-3F4A-47E5-84A4-34C75103D9DC}"
 	ProjectSection(SolutionItems) = preProject
+		Documents\Antimony.md = Documents\Antimony.md
 		Documents\Commands.md = Documents\Commands.md
 		Documents\CQS.md = Documents\CQS.md
 		Documents\Entities-and-Value-Objects.md = Documents\Entities-and-Value-Objects.md
@@ -45,6 +46,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{
 		Documents\Mutating-Entities-and-Validation.md = Documents\Mutating-Entities-and-Validation.md
 		Documents\Notifications.md = Documents\Notifications.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Weather.Wasm.Client", "source\Deployments\Blazr.Weather.Wasm\Blazr.Weather.Wasm.Client\Blazr.Weather.Wasm.Client.csproj", "{3555EE22-A397-4E21-A4F3-5783D647A423}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Weather.Wasm.Server", "source\Deployments\Blazr.Weather.Wasm\Blazr.Weather.Wasm.Server\Blazr.Weather.Wasm.Server.csproj", "{DED6A516-89A4-40F8-BECF-6BCD62A22D5D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Weather.AppHost", "source\Aspire\Blazr.Weather.AppHost\Blazr.Weather.AppHost.csproj", "{658E08D7-EC2E-4354-8884-CE44859145B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Weather.ServiceDefaults", "source\Aspire\Blazr.Weather.ServiceDefaults\Blazr.Weather.ServiceDefaults.csproj", "{825AB854-2997-494E-84F3-E790E624C341}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Aspire", "Aspire", "{F6C406C2-7806-4398-A77C-BAC341AF362B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -92,6 +103,22 @@ Global
 		{68B22AC0-2683-4393-A2D9-7698438DB89F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68B22AC0-2683-4393-A2D9-7698438DB89F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68B22AC0-2683-4393-A2D9-7698438DB89F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3555EE22-A397-4E21-A4F3-5783D647A423}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3555EE22-A397-4E21-A4F3-5783D647A423}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3555EE22-A397-4E21-A4F3-5783D647A423}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3555EE22-A397-4E21-A4F3-5783D647A423}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DED6A516-89A4-40F8-BECF-6BCD62A22D5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DED6A516-89A4-40F8-BECF-6BCD62A22D5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DED6A516-89A4-40F8-BECF-6BCD62A22D5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DED6A516-89A4-40F8-BECF-6BCD62A22D5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{658E08D7-EC2E-4354-8884-CE44859145B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{658E08D7-EC2E-4354-8884-CE44859145B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{658E08D7-EC2E-4354-8884-CE44859145B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{658E08D7-EC2E-4354-8884-CE44859145B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{825AB854-2997-494E-84F3-E790E624C341}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{825AB854-2997-494E-84F3-E790E624C341}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{825AB854-2997-494E-84F3-E790E624C341}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{825AB854-2997-494E-84F3-E790E624C341}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -107,6 +134,10 @@ Global
 		{47069791-86F1-4AA3-8666-D8CEA755BD5B} = {6CEEE38C-22A1-46F0-BFE8-2E623D6BB02E}
 		{157AAEA7-93CE-4BE9-8F7D-B7E9BA144844} = {6CEEE38C-22A1-46F0-BFE8-2E623D6BB02E}
 		{68B22AC0-2683-4393-A2D9-7698438DB89F} = {6CEEE38C-22A1-46F0-BFE8-2E623D6BB02E}
+		{3555EE22-A397-4E21-A4F3-5783D647A423} = {E3100046-0EDB-4022-A0B4-988DAF4A2444}
+		{DED6A516-89A4-40F8-BECF-6BCD62A22D5D} = {E3100046-0EDB-4022-A0B4-988DAF4A2444}
+		{658E08D7-EC2E-4354-8884-CE44859145B1} = {F6C406C2-7806-4398-A77C-BAC341AF362B}
+		{825AB854-2997-494E-84F3-E790E624C341} = {F6C406C2-7806-4398-A77C-BAC341AF362B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6391AA79-7960-44BD-8C2A-7CFB5B84DB4B}

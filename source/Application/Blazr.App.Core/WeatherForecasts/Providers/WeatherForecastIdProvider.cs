@@ -5,7 +5,7 @@
 /// ============================================================
 namespace Blazr.App.Core;
 
-public class WeatherForecastIdProvider : IRecordIdProvider<WeatherForecastId>
+public class WeatherForecastIdProvider : IRecordIdProvider<WeatherForecastId, DmoWeatherForecast>
 {
     public WeatherForecastId GetKey(object key)
     {
@@ -14,6 +14,12 @@ public class WeatherForecastIdProvider : IRecordIdProvider<WeatherForecastId>
 
         throw new InvalidKeyProviderException("Object provided is not a WeatherForecastId Value");
     }
+
+    public WeatherForecastId GetKey(DmoWeatherForecast record)
+    {
+        return record.Id;
+    }
+
     public object GetValueObject(WeatherForecastId key)
     {
         return key.Value;

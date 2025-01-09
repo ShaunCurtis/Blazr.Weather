@@ -11,6 +11,7 @@
     <ProjectReference Include="..\..\Application\Blazr.App.Infrastructure\Blazr.App.Infrastructure.csproj" />
     <ProjectReference Include="..\..\application\Blazr.App.Presentation\Blazr.App.Presentation.csproj" />
     <ProjectReference Include="..\..\Application\Blazr.App.UI\Blazr.App.UI.csproj" />
+    <ProjectReference Include="..\..\Aspire\Blazr.Weather.ServiceDefaults\Blazr.Weather.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>
