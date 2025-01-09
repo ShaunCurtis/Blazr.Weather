@@ -25,7 +25,7 @@ public record WeatherForecastCommandHandler : IRequestHandler<WeatherForecastCom
         ));
 
         if (!result.HasSucceeded(out DboWeatherForecast? record))
-            return result.Convert<WeatherForecastId>();
+            return result.ConvertFail<WeatherForecastId>();
 
         _messageBus.Publish<DmoWeatherForecast>(DboWeatherForecastMap.Map(record));
 

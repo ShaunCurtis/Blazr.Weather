@@ -24,7 +24,7 @@ public record WeatherForecastItemHandler : IRequestHandler<WeatherForecastItemRe
         var result = await _handler.ExecuteAsync<DboWeatherForecast>(query);
 
         if (!result.HasSucceeded(out DboWeatherForecast? record))
-            return result.Convert<DmoWeatherForecast>();
+            return result.ConvertFail<DmoWeatherForecast>();
 
         var returnItem = DboWeatherForecastMap.Map(record);
 
