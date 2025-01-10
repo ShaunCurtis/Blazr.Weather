@@ -3,7 +3,7 @@
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
-namespace Blazr.Antimony.Infrastructure;
+namespace Blazr.Antimony.Infrastructure.Server;
 
 /// <summary>
 /// This class implements the "standard" Server Command Handler

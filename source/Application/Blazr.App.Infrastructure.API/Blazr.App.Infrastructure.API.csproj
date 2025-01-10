@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="MediatR" Version="12.4.1" />
+
+		<ProjectReference Include="..\..\Libraries\Blazor.Antimony\Blazor.Antimony.csproj" />
+		<ProjectReference Include="..\..\Libraries\Blazr.Gallium\Blazr.Gallium.csproj" />
+		<ProjectReference Include="..\Blazr.App.Core\Blazr.App.Core.csproj" />
+		<ProjectReference Include="..\Blazr.App.Infrastructure\Blazr.App.Infrastructure.csproj" />
+	</ItemGroup>
+
+</Project>

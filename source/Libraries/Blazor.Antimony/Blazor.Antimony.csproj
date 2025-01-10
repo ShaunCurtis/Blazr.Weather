@@ -6,16 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Handlers\IItemRequestHandler.cs~RF1461f712.TMP" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Handlers\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
-  </ItemGroup>
-
 </Project>

@@ -3,7 +3,7 @@
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
-namespace Blazr.App.Infrastructure;
+namespace Blazr.App.Infrastructure.Server;
 
 public record WeatherForecastListHandler : IRequestHandler<WeatherForecastListRequest, Result<ListResult<DmoWeatherForecast>>>
 {
