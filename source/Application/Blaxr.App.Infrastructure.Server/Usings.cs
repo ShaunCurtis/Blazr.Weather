@@ -1,6 +1,7 @@
 ﻿global using Blazr.App.Core;
 global using Blazr.App.Infrastructure;
 global using Blazr.Antimony.Core;
+global using Blazr.Antimony.Infrastructure.Server;
 global using Blazr.Antimony.Infrastructure;
 global using Blazr.Gallium;
 global using Microsoft.EntityFrameworkCore;

@@ -3,7 +3,7 @@
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
-namespace Blazr.App.Infrastructure;
+namespace Blazr.App.Infrastructure.Server;
 
 /// <summary>
 /// A class to build a fixed data set for testing

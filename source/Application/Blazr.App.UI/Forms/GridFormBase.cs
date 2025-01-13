@@ -11,7 +11,7 @@ public abstract partial class GridFormBase<TRecord, TKey> : ComponentBase, IDisp
 {
     [Inject] protected NavigationManager NavManager { get; set; } = default!;
     [Inject] protected ILogger<GridFormBase<TRecord, TKey>> Logger { get; set; } = default!;
-    [Inject] protected IRecordIdProvider<TKey> RecordIdProvider { get; set; } = default!;
+    [Inject] protected IRecordIdProvider<TRecord, TKey> RecordIdProvider { get; set; } = default!;
     [Inject] protected IGridPresenter<TRecord> Presenter { get; set; } = default!;
     [Inject] protected IMessageBus MessageBus { get; set; } = default!;
     [Inject] protected IUIEntityService<TRecord> UIEntityService { get; set; } = default!;

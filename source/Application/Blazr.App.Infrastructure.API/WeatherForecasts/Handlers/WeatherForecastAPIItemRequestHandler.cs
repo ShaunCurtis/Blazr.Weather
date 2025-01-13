@@ -4,11 +4,12 @@
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
 
+using Microsoft.AspNetCore.Http;
 using System.Net.Http.Json;
 
-namespace Blazr.App.Infrastructure;
+namespace Blazr.App.Infrastructure.API;
 
-public class WeatherForecastAPIItemRequestHandler : IItemRequestHandler<DmoWeatherForecast, WeatherForecastId>
+public class WeatherForecastAPIItemRequestHandler : IRequestHandler<WeatherForecastItemRequest, Result<DmoWeatherForecast>>
 {
     private readonly IHttpClientFactory _httpClientFactory;
 
@@ -17,20 +18,19 @@ public class WeatherForecastAPIItemRequestHandler : IItemRequestHandler<DmoWeath
         _httpClientFactory = httpClientFactory;
     }
 
-    public async ValueTask<ItemQueryResult<DmoWeatherForecast>> ExecuteAsync(ItemQueryRequest<WeatherForecastId> request)
+    public async Task<Result<DmoWeatherForecast>> Handle(WeatherForecastItemRequest request, CancellationToken cancellationToken)
     {
         using var http = _httpClientFactory.CreateClient(AppDictionary.Common.WeatherHttpClient);
 
-        var apiRequest = new ItemQueryAPIRequest<Guid>(request.Key.Value);
-        var httpResult = await http.PostAsJsonAsync<ItemQueryAPIRequest<Guid>>(AppDictionary.WeatherForecast.WeatherForecastItemAPIUrl, apiRequest, request.Cancellation)
+        var httpResult = await http.PostAsJsonAsync<WeatherForecastItemRequest>(AppDictionary.WeatherForecast.WeatherForecastItemAPIUrl, request, cancellationToken)
             .ConfigureAwait(ConfigureAwaitOptions.None);
 
         if (!httpResult.IsSuccessStatusCode)
-            return ItemQueryResult<DmoWeatherForecast>.Failure($"The server returned a status code of : {httpResult.StatusCode}");
+            return Result<DmoWeatherForecast>.Fail( new ItemQueryException($"The server returned a status code of : {httpResult.StatusCode}"));
 
-        var listResult = await httpResult.Content.ReadFromJsonAsync<ItemQueryResult<DmoWeatherForecast>>()
+        var listResult = await httpResult.Content.ReadFromJsonAsync<Result<DmoWeatherForecast>>()
             .ConfigureAwait(ConfigureAwaitOptions.None);
 
-        return listResult ?? ItemQueryResult<DmoWeatherForecast>.Failure($"No data was returned");
+        return listResult;
     }
 }

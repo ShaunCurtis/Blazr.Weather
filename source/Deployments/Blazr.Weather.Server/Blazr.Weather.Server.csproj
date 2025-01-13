@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Application\Blaxr.App.Infrastructure.Server\Blazr.App.Infrastructure.Server.csproj" />
     <ProjectReference Include="..\..\Application\Blazr.App.Core\Blazr.App.Core.csproj" />
     <ProjectReference Include="..\..\Application\Blazr.App.Infrastructure\Blazr.App.Infrastructure.csproj" />
     <ProjectReference Include="..\..\application\Blazr.App.Presentation\Blazr.App.Presentation.csproj" />

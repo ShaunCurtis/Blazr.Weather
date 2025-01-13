@@ -8,7 +8,7 @@ using System.Net.Http.Json;
 
 namespace Blazr.App.Infrastructure;
 
-public class WeatherForecastAPIListRequestHandler : IListRequestHandler<DmoWeatherForecast>
+public class WeatherForecastAPIListRequestHandler : IRequestHandler<WeatherForecastListRequest, Result<ListResult<DmoWeatherForecast>>>
 {
     private readonly IHttpClientFactory _httpClientFactory;
 
@@ -17,20 +17,19 @@ public class WeatherForecastAPIListRequestHandler : IListRequestHandler<DmoWeath
         _httpClientFactory = httpClientFactory;
     }
 
-    public async ValueTask<ListQueryResult<DmoWeatherForecast>> ExecuteAsync(ListQueryRequest request)
+    public async Task<Result<ListResult<DmoWeatherForecast>>> Handle(WeatherForecastListRequest request, CancellationToken cancellationToken)
     {
         using var http = _httpClientFactory.CreateClient(AppDictionary.Common.WeatherHttpClient);
 
-        var apiRequest = ListQueryAPIRequest.FromRequest(request);
-        var httpResult = await http.PostAsJsonAsync<ListQueryAPIRequest>(AppDictionary.WeatherForecast.WeatherForecastListAPIUrl, apiRequest, request.Cancellation)
+        var httpResult = await http.PostAsJsonAsync<WeatherForecastListRequest>(AppDictionary.WeatherForecast.WeatherForecastListAPIUrl, request, cancellationToken)
             .ConfigureAwait(ConfigureAwaitOptions.None);
 
         if (!httpResult.IsSuccessStatusCode)
-            return ListQueryResult<DmoWeatherForecast>.Failure($"The server returned a status code of : {httpResult.StatusCode}");
+            return Result<ListResult<DmoWeatherForecast>>.Fail(new ListQueryException( $"The server returned a status code of : {httpResult.StatusCode}"));
 
-        var listResult = await httpResult.Content.ReadFromJsonAsync<ListQueryResult<DmoWeatherForecast>>()
+        var listResult = await httpResult.Content.ReadFromJsonAsync<Result<ListResult<DmoWeatherForecast>>>()
             .ConfigureAwait(ConfigureAwaitOptions.None);
 
-        return listResult ?? ListQueryResult<DmoWeatherForecast>.Failure($"No data was returned");
+        return listResult;
     }
 }

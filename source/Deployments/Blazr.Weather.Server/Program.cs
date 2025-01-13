@@ -1,5 +1,5 @@
 using Blazr.Weather.Server.Components;
-using Blazr.App.Infrastructure;
+using Blazr.App.Infrastructure.Server;
 using Blazr.App.Presentation;
 using Blazr.App.UI;
 using Microsoft.EntityFrameworkCore;
