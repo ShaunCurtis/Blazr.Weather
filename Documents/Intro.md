@@ -1,6 +1,6 @@
 # Introduction
 
-This set of documentation is in-the-making.  Some are rough-and-ready complete, others are still being written when I get time.
+> **This set of documentation is in-the-making.  Some are rough-and-ready complete, others are still being written when I get time.**
 
 Blazr.Weather is a demonstration project that showcases how to build a data centric application.
 
