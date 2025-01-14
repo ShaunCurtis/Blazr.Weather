@@ -12,3 +12,6 @@ The principle technologies, concepts and patterns you will see applied here are:
 1. Message Bus - A simple message bus implementation [Blazr.Gallium] provides event notification.
 1. Immutability - Everything is immutable by default.  Entities and data objects are normally records. Everything that can be is a `readonly record struct`.
 1. A simple implementation of the `Flux` pattern [Blazr.FluxGate] is used to manage object mutation where appropriate.
+
+
+The Server version works, but the  WebAssembly/API Version is **Under Construction**.
