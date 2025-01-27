@@ -10,8 +10,9 @@ namespace Blazr.App.Core;
 /// are generated for volatile records in composite objects
 /// </summary>
 /// <typeparam name="TRecord"></typeparam>
-public interface INewRecordProvider<TRecord>
+public interface IEntityProvider<TRecord, TKey>
     where TRecord : new()
+    where TKey : IEntityId
 {
     public TRecord NewRecord();
 

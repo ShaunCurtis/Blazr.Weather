@@ -11,7 +11,7 @@ namespace Blazr.App.Presentation;
 /// </summary>
 public class WeatherForecastReadPresenter : ReadPresenter<DmoWeatherForecast, WeatherForecastId>
 {
-    public WeatherForecastReadPresenter(IMediator dataBroker, INewRecordProvider<DmoWeatherForecast> newRecordProvider) : base(dataBroker, newRecordProvider)  { }
+    public WeatherForecastReadPresenter(IMediator dataBroker, IEntityProvider<DmoWeatherForecast, WeatherForecastId> newRecordProvider) : base(dataBroker, newRecordProvider)  { }
 
     protected override Task<Result<DmoWeatherForecast>> GetItemAsync(WeatherForecastId id)
     {

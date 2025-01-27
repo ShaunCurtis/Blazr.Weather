@@ -37,6 +37,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{4D1EC4C1-3F4A-47E5-84A4-34C75103D9DC}"
 	ProjectSection(SolutionItems) = preProject
 		Documents\Antimony.md = Documents\Antimony.md
+		Documents\API.md = Documents\API.md
 		Documents\Commands.md = Documents\Commands.md
 		Documents\CQS.md = Documents\CQS.md
 		Documents\Entities-and-Value-Objects.md = Documents\Entities-and-Value-Objects.md
@@ -62,6 +63,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.App.Infrastructure.API", "source\Application\Blazr.App.Infrastructure.API\Blazr.App.Infrastructure.API.csproj", "{645F4A88-6E7F-422A-8FCC-410F0005F259}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Antimony.Server", "source\Libraries\Blazr.Antimony.Server\Blazr.Antimony.Server.csproj", "{A347DA7B-D7AA-4F24-81A9-346D22F4F8E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.App.API", "source\Application\Blazr.App.API\Blazr.App.API.csproj", "{74CF0F11-4095-4387-8760-E682FE1AD88C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -137,6 +140,10 @@ Global
 		{A347DA7B-D7AA-4F24-81A9-346D22F4F8E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A347DA7B-D7AA-4F24-81A9-346D22F4F8E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A347DA7B-D7AA-4F24-81A9-346D22F4F8E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74CF0F11-4095-4387-8760-E682FE1AD88C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74CF0F11-4095-4387-8760-E682FE1AD88C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74CF0F11-4095-4387-8760-E682FE1AD88C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74CF0F11-4095-4387-8760-E682FE1AD88C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -159,6 +166,7 @@ Global
 		{A8359C3A-A60A-4825-B14C-361DD55B4CCF} = {DAAAD249-E9A9-4993-93FB-EBACC3AE2130}
 		{645F4A88-6E7F-422A-8FCC-410F0005F259} = {DAAAD249-E9A9-4993-93FB-EBACC3AE2130}
 		{A347DA7B-D7AA-4F24-81A9-346D22F4F8E4} = {6CEEE38C-22A1-46F0-BFE8-2E623D6BB02E}
+		{74CF0F11-4095-4387-8760-E682FE1AD88C} = {DAAAD249-E9A9-4993-93FB-EBACC3AE2130}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6391AA79-7960-44BD-8C2A-7CFB5B84DB4B}

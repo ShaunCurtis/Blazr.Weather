@@ -15,7 +15,7 @@ public abstract class EditPresenter<TRecord, TRecordEditContext, TKey> : IEditPr
 {
     private readonly IRecordIdProvider<TRecord, TKey> _recordIdProvider;
     protected readonly IMediator Databroker;
-    private readonly INewRecordProvider<TRecord> _newRecordProvider;
+    private readonly IEntityProvider<TRecord, TKey> _entityProvider;
 
     protected TKey EntityId = default!;
     private bool _isLoaded;
@@ -27,11 +27,11 @@ public abstract class EditPresenter<TRecord, TRecordEditContext, TKey> : IEditPr
 
     public EditContext EditContext { get; protected set; }
 
-    public EditPresenter(IMediator mediator, IRecordIdProvider<TRecord, TKey> keyProvider, INewRecordProvider<TRecord> newRecordProvider)
+    public EditPresenter(IMediator mediator, IRecordIdProvider<TRecord, TKey> keyProvider, IEntityProvider<TRecord, TKey> newRecordProvider)
     {
         this.Databroker = mediator;
         _recordIdProvider = keyProvider;
-        _newRecordProvider = newRecordProvider;
+        _entityProvider = newRecordProvider;
 
         this.EditContext = new EditContext(EditMutator);
     }
@@ -88,7 +88,7 @@ public abstract class EditPresenter<TRecord, TRecordEditContext, TKey> : IEditPr
     {
         this.LastResult = DataResult.Success();
 
-        var record = _newRecordProvider.NewRecord();
+        var record = _entityProvider.NewRecord();
 
         this.EditMutator = new();
         this.EditMutator.Load(record);

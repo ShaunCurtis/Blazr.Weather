@@ -10,13 +10,13 @@ public abstract class ReadPresenter<TRecord, TKey> : IReadPresenter<TRecord, TKe
     where TKey : notnull, IEntityId
 {
     protected IMediator _dataBroker;
-    private readonly INewRecordProvider<TRecord> _newRecordProvider;
+    private readonly IEntityProvider<TRecord, WeatherForecastId> _newRecordProvider;
 
     public TRecord Item { get; protected set; } = new TRecord();
 
     public IDataResult LastResult { get; protected set; } = DataResult.Success();
 
-    public ReadPresenter(IMediator dataBroker, INewRecordProvider<TRecord> newRecordProvider)
+    public ReadPresenter(IMediator dataBroker, IEntityProvider<TRecord, WeatherForecastId> newRecordProvider)
     {
         _dataBroker = dataBroker;
         _newRecordProvider = newRecordProvider;

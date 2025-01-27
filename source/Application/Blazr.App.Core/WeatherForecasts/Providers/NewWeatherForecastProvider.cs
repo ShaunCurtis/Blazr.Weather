@@ -6,7 +6,7 @@
 
 namespace Blazr.App.Core;
 
-public class NewWeatherForecastProvider : INewRecordProvider<DmoWeatherForecast>
+public class NewWeatherForecastProvider : IEntityProvider<DmoWeatherForecast, WeatherForecastId>
 {
     public DmoWeatherForecast NewRecord()
     {

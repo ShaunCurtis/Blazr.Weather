@@ -11,7 +11,7 @@ namespace Blazr.App.Presentation;
 /// </summary>
 public class WeatherForecastEditPresenter : EditPresenter<DmoWeatherForecast, WeatherForecastEditContext, WeatherForecastId>
 {
-    public WeatherForecastEditPresenter(IMediator mediator, IRecordIdProvider<DmoWeatherForecast, WeatherForecastId> keyProvider, INewRecordProvider<DmoWeatherForecast> newRecordProvider)
+    public WeatherForecastEditPresenter(IMediator mediator, IRecordIdProvider<DmoWeatherForecast, WeatherForecastId> keyProvider, IEntityProvider<DmoWeatherForecast, WeatherForecastId> newRecordProvider)
         : base(mediator, keyProvider, newRecordProvider) { }
 
     protected override Task<Result<DmoWeatherForecast>> GetItemAsync()

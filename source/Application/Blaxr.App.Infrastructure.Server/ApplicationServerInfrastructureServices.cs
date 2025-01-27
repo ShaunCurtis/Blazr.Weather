@@ -5,15 +5,21 @@
 /// ============================================================
 namespace Blazr.App.Infrastructure.Server;
 
-public static class ApplicationInfrastructureServices
+public static class ApplicationServerInfrastructureServices
 {
     public static void AddAppServerInfrastructureServices(this IServiceCollection services)
     {
         services.AddDbContextFactory<InMemoryTestDbContext>(options
             => options.UseInMemoryDatabase($"TestDatabase-{Guid.NewGuid().ToString()}"));
 
+        var assemblies = new[] {
+            typeof(DmoWeatherForecast).Assembly,
+            typeof(DboWeatherForecast).Assembly,
+            typeof(ApplicationServerInfrastructureServices).Assembly
+        };
+
         services.AddMediatR(cfg =>
-            cfg.RegisterServicesFromAssemblies(typeof(DmoWeatherForecast).Assembly, typeof(DboWeatherForecast).Assembly)
+            cfg.RegisterServicesFromAssemblies(assemblies)
         );
 
         services.AddScoped<IMessageBus, MessageBus>();
