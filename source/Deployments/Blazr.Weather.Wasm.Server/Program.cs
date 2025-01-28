@@ -1,5 +1,6 @@
-using Blazr.Weather.Wasm.Client.Pages;
-using Blazr.Weather.Wasm.Server.Components;
+using Blazr.App.API;
+using Blazr.App.Infrastructure.Server;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,9 +10,18 @@ builder.AddServiceDefaults();
 builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 
+builder.Services.AddAppServerInfrastructureServices();
+
 var app = builder.Build();
 
+// get the DbContext factory and add the test data
+var factory = app.Services.GetService<IDbContextFactory<InMemoryTestDbContext>>();
+if (factory is not null)
+        TestDataProvider.Instance().LoadDbContext<InMemoryTestDbContext>(factory);
+
 app.MapDefaultEndpoints();
+
+app.AddAppAPIEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -31,7 +41,7 @@ app.UseHttpsRedirection();
 app.UseAntiforgery();
 
 app.MapStaticAssets();
-app.MapRazorComponents<App>()
+app.MapRazorComponents<Blazr.Weather.Wasm.Server.Components.App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(Blazr.Weather.Wasm.Client._Imports).Assembly);
 

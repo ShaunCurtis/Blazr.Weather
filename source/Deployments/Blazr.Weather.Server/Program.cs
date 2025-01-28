@@ -1,9 +1,7 @@
-using Blazr.Weather.Server.Components;
 using Blazr.App.Infrastructure.Server;
 using Blazr.App.Presentation;
 using Blazr.App.UI;
 using Microsoft.EntityFrameworkCore;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,8 +37,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-app.MapRazorComponents<App>()
+app.MapRazorComponents<Blazr.Weather.Server.Components.App>()
     .AddInteractiveServerRenderMode()
-    .AddAdditionalAssemblies(typeof(Blazr.App.UI._Imports).Assembly);
+    .AddAdditionalAssemblies(typeof(Blazr.App.UI.ApplicationUIServices).Assembly);
 
 app.Run();

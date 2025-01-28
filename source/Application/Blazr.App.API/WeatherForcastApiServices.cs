@@ -4,16 +4,14 @@
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
 
-using Blazr.App.Core;
-using MediatR;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-
 namespace Blazr.App.API;
 
+/// <summary>
+/// Weather Forecast API Endpoints
+/// </summary>
 public static class WeatherForecastApiServices
 {
-    public static void AddWeatherForecastApiEndpoints(this WebApplication app)
+    internal static void AddWeatherForecastApiEndpoints(this WebApplication app)
     {
         app.MapPost(AppDictionary.WeatherForecast.WeatherForecastListAPIUrl, GetListAsync);
         app.MapPost(AppDictionary.WeatherForecast.WeatherForecastItemAPIUrl, GetItemAsync);
@@ -31,7 +29,8 @@ public static class WeatherForecastApiServices
 
     internal static async Task<IResult> GetItemAsync(
         WeatherForecastItemRequest request,
-        IMediator mediator, CancellationToken cancellationToken)
+        IMediator mediator, 
+        CancellationToken cancellationToken)
     {
         var result = await mediator.Send(request);
 
@@ -40,7 +39,8 @@ public static class WeatherForecastApiServices
 
     internal static async Task<IResult> ExecuteCommandAsync(
         WeatherForecastCommandRequest request,
-        IMediator mediator, CancellationToken cancellationToken)
+        IMediator mediator, 
+        CancellationToken cancellationToken)
     {
         var result = await mediator.Send(request, cancellationToken);
         return Results.Ok(result);
