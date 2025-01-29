@@ -1,20 +1,36 @@
 # CQS and the Data Pipeline
 
-The Blazor.Antimony package provides the basic infrastructure for impkementing CQS.  You can read up about CQS elsewhere, so I'll assume you either alreeady know what CQS is, or have now acquainted yourself.
+The Blazor.Antimony package provides the basic infrastructure for implementing CQS.  You can read up about CQS elsewhere, so I'll assume you either alreeady know what CQS is, or have now acquainted yourself.
 
 The data pipeline has three distinct pathways:
 
 1. Commands - a Create/Update/Delete command to the datastore.
-2. Item Query - a request for a single item based on their unique identifier
+2. Record Query - a request for a single record based on its unique identifier.
 3. List Query - a request for a paged collection of items with optional sorting and filtering.
+
+## Domain Entities
+
+The domain entities are defined in the `Blazr.App.Core` project.  The `DmoWeatherForecast` entity is defined as:
+
+```csharp
+public sealed record DmoWeatherForecast
+{
+    public WeatherForecastId Id { get; init; } = WeatherForecastId.Default;
+    public Date Date { get; init; }
+    public Temperature Temperature { get; init; }
+    public string Summary { get; init; } = "[Not Defined]";
+}
+```
+
+It's a record: immutable and sealed: there no reason to inherit from it.
+
+The `Id` is a value object that wraps a `Guid`.  The `Date` and `Temperature` are also value objects that wrap a `DateOnly` and `Decimal` respectively.
 
 ## Entity Mapping
 
-When you design your domain entities correctly, you will often need to map between the domain entity and the database object.
+Well designed domain entities need mappers to move data out of and into the underlying data store objects.  There are various ways to implement this.  You can use a library, or build your own: I prefer to do my own.  It's not difficult as you will see, and you are in full control.
 
-There are various ways to so this.  You can use a library, or build your own.  I prefer to do my own.  It's not difficult and you are in full control.
-
-In the application the database mapped object is `DboWeatherForecast`.  We've back to primitives.
+In the application the database mapped object is `DboWeatherForecast`.  Its based on primitives.
 
 ```csharp
 public sealed record DboWeatherForecast : ICommandEntity

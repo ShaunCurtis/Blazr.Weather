@@ -8,8 +8,8 @@ namespace Blazr.App.Core;
 [APIInfo(pathName: "WeatherForecast", clientName: AppDictionary.Common.WeatherHttpClient)]
 public sealed record DmoWeatherForecast
 {
-    public WeatherForecastId Id { get; init; } = new(Guid.Empty);
+    public WeatherForecastId Id { get; init; } = WeatherForecastId.Default;
     public Date Date { get; init; }
     public Temperature Temperature { get; init; }
-    public string Summary { get; init; } = "Not Defined";
+    public string Summary { get; init; } = "[Not Defined]";
 }

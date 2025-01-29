@@ -13,6 +13,6 @@ public readonly record struct WeatherForecastId(Guid Value) : IEntityId
 
     public override string ToString()
     {
-        return this.IsDefault ? Value.ToString() : "Not Valid";
+        return this.IsDefault ? Value.ToString() : "Default";
     }
 }
