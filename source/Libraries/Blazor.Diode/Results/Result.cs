@@ -1,6 +1,4 @@
-﻿using System;
-
-/// ============================================================
+﻿/// ============================================================
 /// Author: Shaun Curtis, Cold Elm Coders
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
@@ -69,6 +67,11 @@ public record Result<T>
         => _exception is null
             ? success(_value!)
             : Result.Return(_exception);
+
+    public Result<U> MapSuccess<U>(Func<T, Result<U>> success)
+        => _exception is null
+            ? success(_value!)
+            : Result<U>.Return(_exception);
 
     public Result<T> MapFailure(Func<T, Result<T>> failure)
         => _exception is null

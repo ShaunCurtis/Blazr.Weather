@@ -2,11 +2,7 @@
 global using Blazr.App.Infrastructure;
 global using Blazr.Diode;
 global using Blazr.Diode.Infrastructure.EntityFramework;
-global using Blazr.Diode.Infrastructure;
 global using Blazr.Diode.Mediator;
 global using Blazr.Gallium;
 global using Microsoft.EntityFrameworkCore;
-global using Microsoft.Extensions.DependencyInjection;
-global using Microsoft.Extensions.Logging;
-global using System.ComponentModel.DataAnnotations;
 global using System.Linq.Expressions;

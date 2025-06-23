@@ -3,12 +3,14 @@
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
-using Blazr.Diode.Mediator;
+using System.ComponentModel.DataAnnotations;
 
-namespace Blazr.App.Core;
+namespace Blazr.App.Infrastructure;
 
-public record WeatherForecastListRequest
-    : BaseListRequest, IRequest<Result<ListItemsProvider<DmoWeatherForecast>>>
+public sealed record DboWeatherForecast : ICommandEntity
 {
+    [Key] public Guid WeatherForecastID { get; init; } = Guid.Empty;
+    public DateTime Date { get; init; }
+    public decimal Temperature { get; init; }
     public string? Summary { get; init; }
 }

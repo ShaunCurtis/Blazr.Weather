@@ -3,7 +3,7 @@
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
-using Blazr.EditState.Core;
+using Blazr.Indium.Core;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace Blazr.Indium;

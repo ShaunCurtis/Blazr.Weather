@@ -3,12 +3,14 @@
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
+using System.ComponentModel.DataAnnotations;
+
 namespace Blazr.App.Infrastructure;
 
-public static class WeatherForecastInfrastructureServices
+public sealed record DvoWeatherForecast
 {
-    public static void AddWeatherForecastServerInfrastructureServices(this IServiceCollection services)
-    {
-        services.AddScoped<IEntityProvider<DmoWeatherForecast, WeatherForecastId>, NewWeatherForecastProvider>();
-    }
+    [Key] public Guid WeatherForecastID { get; init; } = Guid.Empty;
+    public DateTime Date { get; init; }
+    public decimal Temperature { get; set; }
+    public string? Summary { get; set; }
 }

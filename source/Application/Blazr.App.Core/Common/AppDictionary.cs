@@ -21,8 +21,9 @@ public static class AppDictionary
         public const string TemperatureC = "TemperatureC";
         public const string Summary = "Summary";
 
+        public const string WeatherForecastAliveAPIUrl = "/api/WeatherForecast/Alive";
         public const string WeatherForecastListAPIUrl = "/API/WeatherForecast/GetItems";
-        public const string WeatherForecastItemAPIUrl = "/API/WeatherForecast/GetItem";
+        public const string WeatherForecastRecordAPIUrl = "/API/WeatherForecast/GetItem";
         public const string WeatherForecastCommandAPIUrl = "/API/WeatherForecast/Command";
     }
 }
