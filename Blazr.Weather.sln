@@ -11,19 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazr.Weather.Server", "sou
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{DAAAD249-E9A9-4993-93FB-EBACC3AE2130}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazr.App.Core", "source\Application\Blazr.App.Core\Blazr.App.Core.csproj", "{23456938-2AA7-4ADD-BF69-CC4EF29CF68A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazr.App", "source\Application\Blazr.App.Core\Blazr.App.csproj", "{23456938-2AA7-4ADD-BF69-CC4EF29CF68A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazr.App.Infrastructure", "source\Application\Blazr.App.Infrastructure\Blazr.App.Infrastructure.csproj", "{F51C411E-A452-4864-A5D4-68E5ED5C0421}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.App.Presentation", "source\application\Blazr.App.Presentation\Blazr.App.Presentation.csproj", "{8D8998B1-17C2-408F-8694-A3EDC8D541E3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.App.UI", "source\Application\Blazr.App.UI\Blazr.App.UI.csproj", "{ADF38A3E-CB9A-40DF-8F27-891692AC3FE1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Antimony", "source\Libraries\Blazor.Antimony\Blazor.Antimony.csproj", "{9641EB0D-5DFE-4356-92E8-241246C73FF2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.EditStateTracker", "source\Libraries\Blazr.EditStateTracker\Blazr.EditStateTracker.csproj", "{75E66B28-7214-4252-8CFD-AE9BDC1313DC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.FluentValidation", "source\Libraries\Blazr.FluentValidation\Blazr.FluentValidation.csproj", "{47069791-86F1-4AA3-8666-D8CEA755BD5B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Gallium", "source\Libraries\Blazr.Gallium\Blazr.Gallium.csproj", "{157AAEA7-93CE-4BE9-8F7D-B7E9BA144844}"
 EndProject
@@ -48,23 +42,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{
 		Documents\Notifications.md = Documents\Notifications.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Weather.AppHost", "source\Aspire\Blazr.Weather.AppHost\Blazr.Weather.AppHost.csproj", "{658E08D7-EC2E-4354-8884-CE44859145B1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Weather.ServiceDefaults", "source\Aspire\Blazr.Weather.ServiceDefaults\Blazr.Weather.ServiceDefaults.csproj", "{825AB854-2997-494E-84F3-E790E624C341}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Aspire", "Aspire", "{F6C406C2-7806-4398-A77C-BAC341AF362B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.App.Infrastructure.Server", "source\Application\Blaxr.App.Infrastructure.Server\Blazr.App.Infrastructure.Server.csproj", "{A8359C3A-A60A-4825-B14C-361DD55B4CCF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.App.Infrastructure.API", "source\Application\Blazr.App.Infrastructure.API\Blazr.App.Infrastructure.API.csproj", "{645F4A88-6E7F-422A-8FCC-410F0005F259}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Antimony.Server", "source\Libraries\Blazr.Antimony.Server\Blazr.Antimony.Server.csproj", "{A347DA7B-D7AA-4F24-81A9-346D22F4F8E4}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.App.API", "source\Application\Blazr.App.API\Blazr.App.API.csproj", "{74CF0F11-4095-4387-8760-E682FE1AD88C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Weather.Wasm.Server", "source\Deployments\Blazr.Weather.Wasm.Server\Blazr.Weather.Wasm.Server.csproj", "{EF31A2B3-C1F6-4F4E-8025-9CE1B95CF12D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Weather.Wasm.Client", "source\Deployments\Blazr.Weather.Wasm.Client\Blazr.Weather.Wasm.Client.csproj", "{7B840EEB-566F-4023-BF2D-4E0F662C8E0E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Diode", "source\Libraries\Blazor.Diode\Blazr.Diode.csproj", "{FAF25289-C2B4-0DF2-1655-A7B99C4B3729}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Diode.EntityFramework", "source\Libraries\Blazr.Diode.EntityFramework\Blazr.Diode.EntityFramework.csproj", "{6BCFF48A-CC17-F4A3-6D52-6BF1805A560B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Indium", "source\Libraries\Blazr.EditState\Blazr.Indium.csproj", "{6CBEF891-14ED-4550-ACC1-DDBBE475A135}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -92,18 +86,6 @@ Global
 		{ADF38A3E-CB9A-40DF-8F27-891692AC3FE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADF38A3E-CB9A-40DF-8F27-891692AC3FE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADF38A3E-CB9A-40DF-8F27-891692AC3FE1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9641EB0D-5DFE-4356-92E8-241246C73FF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9641EB0D-5DFE-4356-92E8-241246C73FF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9641EB0D-5DFE-4356-92E8-241246C73FF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9641EB0D-5DFE-4356-92E8-241246C73FF2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{75E66B28-7214-4252-8CFD-AE9BDC1313DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{75E66B28-7214-4252-8CFD-AE9BDC1313DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{75E66B28-7214-4252-8CFD-AE9BDC1313DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{75E66B28-7214-4252-8CFD-AE9BDC1313DC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{47069791-86F1-4AA3-8666-D8CEA755BD5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{47069791-86F1-4AA3-8666-D8CEA755BD5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{47069791-86F1-4AA3-8666-D8CEA755BD5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{47069791-86F1-4AA3-8666-D8CEA755BD5B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{157AAEA7-93CE-4BE9-8F7D-B7E9BA144844}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{157AAEA7-93CE-4BE9-8F7D-B7E9BA144844}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{157AAEA7-93CE-4BE9-8F7D-B7E9BA144844}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -112,14 +94,6 @@ Global
 		{68B22AC0-2683-4393-A2D9-7698438DB89F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68B22AC0-2683-4393-A2D9-7698438DB89F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68B22AC0-2683-4393-A2D9-7698438DB89F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{658E08D7-EC2E-4354-8884-CE44859145B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{658E08D7-EC2E-4354-8884-CE44859145B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{658E08D7-EC2E-4354-8884-CE44859145B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{658E08D7-EC2E-4354-8884-CE44859145B1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{825AB854-2997-494E-84F3-E790E624C341}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{825AB854-2997-494E-84F3-E790E624C341}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{825AB854-2997-494E-84F3-E790E624C341}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{825AB854-2997-494E-84F3-E790E624C341}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A8359C3A-A60A-4825-B14C-361DD55B4CCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A8359C3A-A60A-4825-B14C-361DD55B4CCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8359C3A-A60A-4825-B14C-361DD55B4CCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -128,10 +102,6 @@ Global
 		{645F4A88-6E7F-422A-8FCC-410F0005F259}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{645F4A88-6E7F-422A-8FCC-410F0005F259}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{645F4A88-6E7F-422A-8FCC-410F0005F259}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A347DA7B-D7AA-4F24-81A9-346D22F4F8E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A347DA7B-D7AA-4F24-81A9-346D22F4F8E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A347DA7B-D7AA-4F24-81A9-346D22F4F8E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A347DA7B-D7AA-4F24-81A9-346D22F4F8E4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{74CF0F11-4095-4387-8760-E682FE1AD88C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{74CF0F11-4095-4387-8760-E682FE1AD88C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74CF0F11-4095-4387-8760-E682FE1AD88C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -144,6 +114,18 @@ Global
 		{7B840EEB-566F-4023-BF2D-4E0F662C8E0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B840EEB-566F-4023-BF2D-4E0F662C8E0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B840EEB-566F-4023-BF2D-4E0F662C8E0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAF25289-C2B4-0DF2-1655-A7B99C4B3729}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAF25289-C2B4-0DF2-1655-A7B99C4B3729}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAF25289-C2B4-0DF2-1655-A7B99C4B3729}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAF25289-C2B4-0DF2-1655-A7B99C4B3729}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BCFF48A-CC17-F4A3-6D52-6BF1805A560B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BCFF48A-CC17-F4A3-6D52-6BF1805A560B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BCFF48A-CC17-F4A3-6D52-6BF1805A560B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BCFF48A-CC17-F4A3-6D52-6BF1805A560B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CBEF891-14ED-4550-ACC1-DDBBE475A135}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CBEF891-14ED-4550-ACC1-DDBBE475A135}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CBEF891-14ED-4550-ACC1-DDBBE475A135}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CBEF891-14ED-4550-ACC1-DDBBE475A135}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -154,19 +136,16 @@ Global
 		{F51C411E-A452-4864-A5D4-68E5ED5C0421} = {DAAAD249-E9A9-4993-93FB-EBACC3AE2130}
 		{8D8998B1-17C2-408F-8694-A3EDC8D541E3} = {DAAAD249-E9A9-4993-93FB-EBACC3AE2130}
 		{ADF38A3E-CB9A-40DF-8F27-891692AC3FE1} = {DAAAD249-E9A9-4993-93FB-EBACC3AE2130}
-		{9641EB0D-5DFE-4356-92E8-241246C73FF2} = {6CEEE38C-22A1-46F0-BFE8-2E623D6BB02E}
-		{75E66B28-7214-4252-8CFD-AE9BDC1313DC} = {6CEEE38C-22A1-46F0-BFE8-2E623D6BB02E}
-		{47069791-86F1-4AA3-8666-D8CEA755BD5B} = {6CEEE38C-22A1-46F0-BFE8-2E623D6BB02E}
 		{157AAEA7-93CE-4BE9-8F7D-B7E9BA144844} = {6CEEE38C-22A1-46F0-BFE8-2E623D6BB02E}
 		{68B22AC0-2683-4393-A2D9-7698438DB89F} = {6CEEE38C-22A1-46F0-BFE8-2E623D6BB02E}
-		{658E08D7-EC2E-4354-8884-CE44859145B1} = {F6C406C2-7806-4398-A77C-BAC341AF362B}
-		{825AB854-2997-494E-84F3-E790E624C341} = {F6C406C2-7806-4398-A77C-BAC341AF362B}
 		{A8359C3A-A60A-4825-B14C-361DD55B4CCF} = {DAAAD249-E9A9-4993-93FB-EBACC3AE2130}
 		{645F4A88-6E7F-422A-8FCC-410F0005F259} = {DAAAD249-E9A9-4993-93FB-EBACC3AE2130}
-		{A347DA7B-D7AA-4F24-81A9-346D22F4F8E4} = {6CEEE38C-22A1-46F0-BFE8-2E623D6BB02E}
 		{74CF0F11-4095-4387-8760-E682FE1AD88C} = {DAAAD249-E9A9-4993-93FB-EBACC3AE2130}
 		{EF31A2B3-C1F6-4F4E-8025-9CE1B95CF12D} = {E3100046-0EDB-4022-A0B4-988DAF4A2444}
 		{7B840EEB-566F-4023-BF2D-4E0F662C8E0E} = {E3100046-0EDB-4022-A0B4-988DAF4A2444}
+		{FAF25289-C2B4-0DF2-1655-A7B99C4B3729} = {6CEEE38C-22A1-46F0-BFE8-2E623D6BB02E}
+		{6BCFF48A-CC17-F4A3-6D52-6BF1805A560B} = {6CEEE38C-22A1-46F0-BFE8-2E623D6BB02E}
+		{6CBEF891-14ED-4550-ACC1-DDBBE475A135} = {6CEEE38C-22A1-46F0-BFE8-2E623D6BB02E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6391AA79-7960-44BD-8C2A-7CFB5B84DB4B}

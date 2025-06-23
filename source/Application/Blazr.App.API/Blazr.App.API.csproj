@@ -8,7 +8,7 @@
 
   <ItemGroup>
 	  <PackageReference Include="MediatR" Version="12.4.1" />
-	  <ProjectReference Include="..\Blazr.App.Core\Blazr.App.Core.csproj" />
+	  <ProjectReference Include="..\Blazr.App.Core\Blazr.App.csproj" />
   </ItemGroup>
 
 </Project>

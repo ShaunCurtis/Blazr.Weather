@@ -5,7 +5,7 @@
 /// ============================================================
 namespace Blazr.App.Core;
 
-public class WeatherForecastIdProvider : IRecordIdProvider<DmoWeatherForecast, WeatherForecastId>
+public class WeatherForecastIdProvider
 {
     public WeatherForecastId GetKey(object key)
     {
