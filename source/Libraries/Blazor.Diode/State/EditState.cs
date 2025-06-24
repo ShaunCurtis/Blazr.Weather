@@ -15,10 +15,10 @@ namespace Blazr.Diode;
 /// </summary>
 public readonly record struct EditState
 {
-    private const int StateCleanIndex = 0;
-    private const int StateNewIndex = 1;
-    private const int StateDirtyIndex = 2;
-    private const int StateDeletedIndex = -1;
+    public const int StateCleanIndex = 0;
+    public const int StateNewIndex = 1;
+    public const int StateDirtyIndex = 2;
+    public const int StateDeletedIndex = -1;
 
     public int Index { get; private init; } = 0;
     public string Value { get; private init; } = "None";

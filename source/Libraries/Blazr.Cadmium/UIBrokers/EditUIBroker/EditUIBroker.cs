@@ -130,7 +130,6 @@ public class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBroker<TRe
 
         var mutatedResult = EditMutator.AsRecord;
 
-
         var commandResult = await _entityProvider.RecordCommand.Invoke(mutatedResult, this.State);
 
         this.LastResult = commandResult.Map();

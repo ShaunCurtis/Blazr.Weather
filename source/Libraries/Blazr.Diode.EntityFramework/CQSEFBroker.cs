@@ -23,7 +23,7 @@ public static class CQSEFBroker<TDbContext>
         var result = 0;
         switch (request.State.Index)
         {
-            case EditState.StateNew:
+            case EditState.StateNewIndex:
                 dbContext.Add<TRecord>(request.Item);
                 result = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(ConfigureAwaitOptions.None);
 
@@ -31,7 +31,7 @@ public static class CQSEFBroker<TDbContext>
                     ? Result<TRecord>.Return(request.Item)
                     : Result<TRecord>.ReturnException("Error adding Record");
 
-            case EditState.StateDeleted:
+            case EditState.StateDeletedIndex:
                 dbContext.Remove<TRecord>(request.Item);
                 result = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(ConfigureAwaitOptions.None);
 
@@ -39,7 +39,7 @@ public static class CQSEFBroker<TDbContext>
                     ? Result<TRecord>.Return(request.Item)
                     : Result<TRecord>.ReturnException("Error deleting Record");
 
-            case EditState.StateDirty:
+            case EditState.StateDirtyIndex:
                 dbContext.Update<TRecord>(request.Item);
                 result = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(ConfigureAwaitOptions.None);
 

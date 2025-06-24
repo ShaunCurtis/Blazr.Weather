@@ -3,9 +3,10 @@
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
+using Blazr.Diode;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Blazr.App.Presentation;
+namespace Blazr.Cadmium.Presentation;
 
 public class EditUIBrokerFactory : IEditUIBrokerFactory
 {

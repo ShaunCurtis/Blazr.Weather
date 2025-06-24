@@ -9,7 +9,7 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\..\Libraries\Blazor.Diode\Blazr.Diode.csproj" />
 	  <ProjectReference Include="..\..\Libraries\Blazr.Cadmium\Blazr.Cadmium.csproj" />
-	  <ProjectReference Include="..\..\Libraries\Blazr.EditState\Blazr.Indium.csproj" />
+	  <ProjectReference Include="..\..\Libraries\Blazr.Indium\Blazr.Indium.csproj" />
 	</ItemGroup>
 
 </Project>
