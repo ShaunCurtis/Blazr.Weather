@@ -31,6 +31,23 @@ public record Result<T>
             failure(_exception!);
     }
 
+    public void MatchSuccess(Action<T> success)
+    {
+        if (_exception is null)
+            success(_value!);
+    }
+
+    public void MatchFailure(Action<Exception> failure)
+    {
+        if (_exception is not null)
+            failure(_exception!);
+    }
+
+    public TOut MapOut<TOut>(Func<T, TOut> success, Func<TOut> failure)
+        => _exception is null
+            ? success(_value!)
+            : failure();
+
     public Result<U> Bind<U>(Func<T, Result<U>> func)
     {
         return _exception is null
@@ -88,6 +105,11 @@ public record Result<T>
         => _exception is null
             ? func(_value!)
             : Result.Return(_exception);
+
+    public Result Map()
+        => _exception is null
+            ? Result.Return()
+            : Result.Return(_exception!);
 
     public Result<T> Map(Func<T, Result<T>> success, Func<Exception, Result<T>> failure)
         => _exception is null

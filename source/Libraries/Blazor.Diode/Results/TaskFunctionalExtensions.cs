@@ -3,11 +3,9 @@
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
-using System.Threading.Tasks;
-
 namespace Blazr.Diode;
 
-public static class FunctionalExtensions
+public static class TaskFunctionalExtensions
 {
     public static async ValueTask<Result<T>> MapAsync<T>(this ValueTask<Result<T>> task)
     {
@@ -22,18 +20,16 @@ public static class FunctionalExtensions
         };
     }
 
-    public static async ValueTask<Result<T,U>> Bind<U>(Func<T, U> func)
+    public static async Task<Result<T>> MapAsync<T>(this Task<Result<T>> task)
     {
-        if (_exception is not null)
-            return Result<U>.Return(_exception!);
+        var asyncResult = await task;
 
-        try
+        return task.Status switch
         {
-            return Result<U>.Return(func(_value!));
-        }
-        catch (Exception ex)
-        {
-            return Result<U>.Return(ex);
-        }
+            TaskStatus.RanToCompletion => asyncResult,
+            TaskStatus.Faulted => Result<T>.Return(task.Exception ?? new Exception("The task did not complete successfully.")),
+            TaskStatus.Canceled => Result<T>.Return(new OperationCanceledException("The task was cancelled.")),
+            _ => asyncResult
+        };
     }
 }
