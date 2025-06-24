@@ -38,6 +38,52 @@ public record Result<T>
             : Result<U>.Return(_exception!);
     }
 
+    public Result<U> Bind<U>(Func<T, U> func)
+    {
+        if (_exception is not null)
+            return Result<U>.Return(_exception!);
+
+        try
+        {
+            return Result<U>.Return(func(_value!));
+        }
+        catch (Exception ex)
+        {
+            return Result<U>.Return(ex);
+        }
+    }
+
+    public Result<T> Bind(Func<T, T> func)
+    {
+        if (_exception is not null)
+            return this;
+
+        try
+        {
+            return Result<T>.Return(func(_value!));
+        }
+        catch (Exception ex)
+        {
+            return Result<T>.Return(ex);
+        }
+    }
+
+    public Result Bind(Action<T> action)
+    {
+        if (_exception is not null)
+            return Result.Return(_exception!);
+
+        try
+        {
+            action(_value!);
+            return Result.Return();
+        }
+        catch (Exception ex)
+        {
+            return Result.Return(ex);
+        }
+    }
+
     public Result Bind(Func<T, Result> func)
         => _exception is null
             ? func(_value!)
@@ -126,7 +172,7 @@ public record Result
     /// </summary>
     /// <param name="success"></param>
     /// <param name="failure"></param>
-    public void Map(Action success, Action<Exception> failure)
+    public void Match(Action success, Action<Exception> failure)
     {
 
         if (_exception is not null)
