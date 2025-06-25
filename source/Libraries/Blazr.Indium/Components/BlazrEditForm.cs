@@ -40,6 +40,7 @@ public class BlazrEditForm : ComponentBase
     /// also supply <see cref="Model"/>, since the model value will be taken
     /// from the <see cref="EditContext.Model"/> property.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Blazor", "BL0007")]
     [Parameter]
     public EditContext? EditContext
     {

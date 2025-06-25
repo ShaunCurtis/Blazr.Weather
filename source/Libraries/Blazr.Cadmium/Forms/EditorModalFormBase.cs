@@ -7,7 +7,7 @@ using Blazr.Cadmium;
 using Blazr.Cadmium.Core;
 using Blazr.Cadmium.Presentation;
 using Blazr.Diode;
-using Blazr.UI;
+using Blazr.Uranium;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 

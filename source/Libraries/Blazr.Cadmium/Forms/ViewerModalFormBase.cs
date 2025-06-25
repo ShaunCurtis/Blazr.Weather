@@ -6,7 +6,7 @@
 using Blazr.Cadmium;
 using Blazr.Cadmium.Presentation;
 using Blazr.Diode;
-using Blazr.UI;
+using Blazr.Uranium;
 using Microsoft.AspNetCore.Components;
 
 namespace Blazr.App.UI;

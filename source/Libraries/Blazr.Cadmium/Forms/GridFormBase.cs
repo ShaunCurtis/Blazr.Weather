@@ -7,7 +7,7 @@ using Blazr.App.Presentation;
 using Blazr.Cadmium;
 using Blazr.Cadmium.QuickGrid;
 using Blazr.Diode;
-using Blazr.UI;
+using Blazr.Uranium;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.QuickGrid;
 using Microsoft.Extensions.Logging;

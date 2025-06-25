@@ -13,7 +13,7 @@
 
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Blazor.Diode\Blazr.Diode.csproj" />
+	  <ProjectReference Include="..\Blazr.Diode\Blazr.Diode.csproj" />
 	</ItemGroup>
 
 </Project>

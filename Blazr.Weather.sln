@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazr.Weather.Server", "sou
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{DAAAD249-E9A9-4993-93FB-EBACC3AE2130}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazr.App", "source\Application\Blazr.App.Core\Blazr.App.csproj", "{23456938-2AA7-4ADD-BF69-CC4EF29CF68A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazr.App", "source\Application\Blazr.App\Blazr.App.csproj", "{23456938-2AA7-4ADD-BF69-CC4EF29CF68A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Gallium", "source\Libraries\Blazr.Gallium\Blazr.Gallium.csproj", "{157AAEA7-93CE-4BE9-8F7D-B7E9BA144844}"
 EndProject
@@ -36,7 +36,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Aspire", "Aspire", "{F6C406C2-7806-4398-A77C-BAC341AF362B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Diode", "source\Libraries\Blazor.Diode\Blazr.Diode.csproj", "{FAF25289-C2B4-0DF2-1655-A7B99C4B3729}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Diode", "source\Libraries\Blazr.Diode\Blazr.Diode.csproj", "{FAF25289-C2B4-0DF2-1655-A7B99C4B3729}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Diode.EntityFramework", "source\Libraries\Blazr.Diode.EntityFramework\Blazr.Diode.EntityFramework.csproj", "{6BCFF48A-CC17-F4A3-6D52-6BF1805A560B}"
 EndProject
