@@ -10,7 +10,7 @@
         @this.formTitle
     </div>
     <div class="justify-content-end">
-        <UIButton class="btn btn-sm btn-primary" @onclick="() => OnAddAsync()">Add New Weather Forecast</UIButton>
+        <UIButton class="btn btn-sm btn-primary" ClickEvent="() => OnAddAsync()">Add New Weather Forecast</UIButton>
     </div>
 </div>
 
@@ -33,8 +33,8 @@
             @context.Temperature.TemperatureF.ToString("F0")
         </SortedPropertyColumn>
 
-        <PropertyColumn Title="Owner" Sortable="true" Property="@(c => c!.Owner)" Align=Align.End />
-
+@*         <PropertyColumn Title="Owner" Sortable="true" Property="@(c => c!.Owner)" Align=Align.End />
+ *@
         <PropertyColumn Title="Summary" Sortable="true" Property="@(c => c!.Summary)" Align=Align.End />
 
         <TemplateColumn Class="nowrap-column no-max-width" Align="Align.End">

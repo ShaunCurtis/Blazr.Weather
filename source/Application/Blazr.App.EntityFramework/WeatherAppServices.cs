@@ -5,7 +5,7 @@
 /// ============================================================
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Blazr.App.Weather.EntityFramework;
+namespace Blazr.App.EntityFramework;
 
 public static partial class WeatherApplicationServerServices
 {

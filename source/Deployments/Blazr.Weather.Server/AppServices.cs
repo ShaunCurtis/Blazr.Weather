@@ -3,15 +3,13 @@
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
-using Blazored.Toast;
-using Blazr.Antimony.Mediator;
-using Blazr.App.Invoice.Core;
-using Blazr.App.Invoice.Infrastructure.Server;
-using Blazr.App.Presentation;
 using Blazr.Gallium;
 using System.Reflection;
+using Blazr.Diode.Mediator;
+using Blazr.App.EntityFramework;
+using Blazr.Cadmium.Presentation;
 
-namespace Blazr.App.Infrastructure.Server;
+namespace Blazr.Weather.Server;
 
 public static class ApplicationServerServices
 {
@@ -19,14 +17,11 @@ public static class ApplicationServerServices
     {
         // Add Blazor Mediator Service
         services.AddMediator(new Assembly[] {
-                typeof(DmoCustomer).Assembly
+                typeof(Blazr.App.EntityFramework.WeatherApplicationServerServices).Assembly
         });
 
         // Add the Gallium Message Bus Server services
         services.AddScoped<IMessageBus, MessageBus>();
-
-        // Add the Blazored Toast services
-        services.AddBlazoredToast();
 
         // InMemory Scoped State Store 
         services.AddScoped<ScopedStateProvider>();
@@ -39,6 +34,6 @@ public static class ApplicationServerServices
         // Add the QuickGrid Entity Framework Adapter
         services.AddQuickGridEntityFrameworkAdapter();
 
-        services.AddInvoiceAppServices();
+        services.AddWeatherAppEFServices();
     }
 }

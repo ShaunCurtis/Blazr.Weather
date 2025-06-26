@@ -5,6 +5,8 @@ using Blazr.Gallium;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using Blazr.Diode.Mediator;
+using Blazr.Weather.Server;
+using Blazr.App.EntityFramework;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,33 +16,10 @@ builder.Services.AddRazorComponents()
 
 var services = builder.Services;
 
-// Add Mediator
-services.AddMediator(new Assembly[] {
-                typeof(Blazr.App.Weather.EntityFramework.WeatherApplicationServerServices).Assembly
-        });
 
-// Add the Gallium Message Bus Server services
-services.AddScoped<IMessageBus, MessageBus>();
-
-// InMemory Scoped State Store 
-services.AddScoped<ScopedStateProvider>();
-
-// Presenter Factories
-services.AddScoped<ILookupUIBrokerFactory, LookupUIBrokerFactory>();
-services.AddScoped<IEditUIBrokerFactory, EditUIBrokerFactory>();
-services.AddTransient<IReadUIBrokerFactory, ReadUIBrokerFactory>();
-
-// Add the QuickGrid Entity Framework Adapter
-services.AddQuickGridEntityFrameworkAdapter();
-
-
-builder.Services.AddAppServerInfrastructureServices();
-builder.Services.AddAppUIServices();
-builder.Services.AddAppPresentationServices();
+builder.Services.AddAppServices();
 
 var app = builder.Build();
-
-app.MapDefaultEndpoints();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -50,10 +29,12 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// get the DbContext factory and add the test data
-var factory = app.Services.GetService<IDbContextFactory<InMemoryTestDbContext>>();
-if (factory is not null)
-    TestDataProvider.Instance().LoadDbContext<InMemoryTestDbContext>(factory);
+app.Services.AddWeatherTestData();
+
+//// get the DbContext factory and add the test data
+//var factory = app.Services.GetService<IDbContextFactory<InMemoryWeatherTestDbContext>>();
+//if (factory is not null)
+//    WeatherTestDataProvider.Instance().LoadDbContext<InMemoryWeatherTestDbContext>(factory);
 
 app.UseHttpsRedirection();
 
@@ -62,6 +43,6 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<Blazr.Weather.Server.Components.App>()
     .AddInteractiveServerRenderMode()
-    .AddAdditionalAssemblies(typeof(Blazr.App.UI.ApplicationUIServices).Assembly);
+    .AddAdditionalAssemblies(typeof(Blazr.App.WeatherForecastServices).Assembly);
 
 app.Run();

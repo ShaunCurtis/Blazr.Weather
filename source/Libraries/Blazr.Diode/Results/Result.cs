@@ -201,7 +201,6 @@ public record Result
     /// <param name="failure"></param>
     public void Match(Action success, Action<Exception> failure)
     {
-
         if (_exception is not null)
             failure(_exception!);
         else
@@ -216,7 +215,6 @@ public record Result
     /// <param name="failure"></param>
     public void MatchSuccess(Action success)
     {
-
         if (_exception is null)
             success();
     }
@@ -229,7 +227,6 @@ public record Result
     /// <param name="failure"></param>
     public void MatchFailure(Action<Exception> failure)
     {
-
         if (_exception is not null)
             failure(_exception!);
     }
