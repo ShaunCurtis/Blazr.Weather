@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -10,11 +10,6 @@
 	  <ProjectReference Include="..\..\Libraries\Blazr.Diode\Blazr.Diode.csproj" />
 	  <ProjectReference Include="..\..\Libraries\Blazr.Cadmium\Blazr.Cadmium.csproj" />
 	  <ProjectReference Include="..\..\Libraries\Blazr.Indium\Blazr.Indium.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="WeatherForecasts\DomainEntities\" />
-	  <Folder Include="WeatherForecasts\Entity\EntityObjects\" />
 	</ItemGroup>
 
 </Project>

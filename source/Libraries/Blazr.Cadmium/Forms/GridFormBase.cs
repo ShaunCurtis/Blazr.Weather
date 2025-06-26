@@ -3,8 +3,7 @@
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
-using Blazr.App.Presentation;
-using Blazr.Cadmium;
+using Blazr.Cadmium.Presentation;
 using Blazr.Cadmium.QuickGrid;
 using Blazr.Diode;
 using Blazr.Uranium;
@@ -13,7 +12,7 @@ using Microsoft.AspNetCore.Components.QuickGrid;
 using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
 
-namespace Blazr.App.UI;
+namespace Blazr.Cadmium.UI;
 
 public abstract partial class GridFormBase<TRecord, TKey> : ComponentBase, IDisposable
     where TRecord : class, new()

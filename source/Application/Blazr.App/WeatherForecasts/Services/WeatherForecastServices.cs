@@ -7,12 +7,12 @@
 using Blazr.App.Core;
 using Blazr.App.Presentation;
 using Blazr.App.UI;
-using Blazr.App.Weather.Core;
-using Blazr.App.Weather.Presentation;
-using Blazr.App.Weather.UI;
+using Blazr.Cadmium;
+using Blazr.Cadmium.Core;
+using Blazr.Cadmium.Presentation;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Blazr.App.Weather;
+namespace Blazr.App;
 
 public static class WeatherForecastServices
 {

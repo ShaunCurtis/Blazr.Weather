@@ -34,6 +34,18 @@ public class WeatherForecastEntityProvider : IEntityProvider<DmoWeatherForecast,
         _mediator = mediator;
     }
 
+    public async ValueTask<Result<WeatherForecastEntity>> GetEntityAsync(WeatherForecastId id)
+    {
+        var result = (await _mediator.Send(new WeatherForecastRecordRequest(id)))
+            .MapSuccess<WeatherForecastEntity>((record) => 
+            {
+                new WeatherForecastEntity(_mediator, record);
+                return Result<WeatherForecastEntity>.ReturnException("");
+            });
+
+        return result;
+    }
+    
     public WeatherForecastId GetKey(object obj)
     {
         return obj switch

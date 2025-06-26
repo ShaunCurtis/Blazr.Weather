@@ -28,6 +28,14 @@ public sealed class EntityState<T>
             : EditState.Clean;
     }
 
+    public Result Reset(StateRecord<T> stateRecord)
+    {
+        this.Record = stateRecord.Record;
+        this.State = stateRecord.State;
+        _lastState = null;
+        return Result.Return();
+    }
+
     public Result Update(T record, Guid transactionId)
     {
         this.SaveState(transactionId);
@@ -45,9 +53,14 @@ public sealed class EntityState<T>
         return Result.Return();
     }
 
+    public Result MarkAsPersisted()
+    {
+        this.State = EditState.Clean;
+        return Result.Return();
+    }
+
     private void SaveState(Guid? transactionId = null)
         => _lastState = new(this.Record, this.State, transactionId ?? Guid.NewGuid());
-
 
     public Result RollBackLastUpdate(Guid transactionId)
     {

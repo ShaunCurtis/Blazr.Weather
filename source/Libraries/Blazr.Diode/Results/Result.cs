@@ -1,6 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-
-/// ============================================================
+﻿/// ============================================================
 /// Author: Shaun Curtis, Cold Elm Coders
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
@@ -171,13 +169,6 @@ public record Result
     public static Result ReturnException(string message) => new(new ResultException(message));
 
     /// <summary>
-    /// Binds a function to the Result instance.
-    /// </summary>
-    /// <param name="bind"></param>
-    /// <returns></returns>
-    public static Result Bind(Func<Result> bind) => bind();
-
-    /// <summary>
     /// Return based on the instance exception state:
     ///  - A Result<T> containing the exception if in exception state
     ///  - The Result<T> provided by the delegate
@@ -185,10 +176,22 @@ public record Result
     /// <typeparam name="T"></typeparam>
     /// <param name="func"></param>
     /// <returns></returns>
-    public Result<T> Bind<T>(Func<Result<T>> func)
+    public Result<T> Bind<T>(Func<Result<T>> success)
         => _exception is null
-            ? func()
+            ? success()
             : Result<T>.Return(_exception!);
+
+    /// <summary>
+    /// Return based on the instance exception state:
+    ///  - The current result if exception
+    ///  - A Result provided by the delegate
+    /// </summary>
+    /// <param name="success"></param>
+    /// <returns></returns>
+    public Result Bind(Func<Result> success)
+        => _exception is null
+            ? success()
+            : this;
 
     /// <summary>
     /// Maps a success or failure to the provided actions
@@ -204,6 +207,33 @@ public record Result
         else
             success();
     }
+
+    /// <summary>
+    /// Runs the provided action on Success
+    /// The underlying Result is unchanged
+    /// </summary>
+    /// <param name="success"></param>
+    /// <param name="failure"></param>
+    public void MatchSuccess(Action success)
+    {
+
+        if (_exception is null)
+            success();
+    }
+
+    /// <summary>
+    /// Runs the provided action on Failure
+    /// The underlying Result is unchanged
+    /// </summary>
+    /// <param name="success"></param>
+    /// <param name="failure"></param>
+    public void MatchFailure(Action<Exception> failure)
+    {
+
+        if (_exception is not null)
+            failure(_exception!);
+    }
+
     /// <summary>
     /// Maps a success or failure to the provided functions
     /// The Result is provided by the delegates
@@ -215,6 +245,22 @@ public record Result
         => _exception is null
             ? success()
             : failure(_exception!);
+
+    /// <summary>
+    /// Maps a success or failure to the provided functions
+    /// The Result is provided by the delegates
+    /// </summary>
+    /// <param name="success"></param>
+    /// <param name="failure"></param>
+    /// <returns></returns>
+    public Result Map(Action success, Action<Exception> failure)
+    {
+        if (_exception is null)
+            success();
+        else
+            failure(_exception!);
+        return this;
+    }
 
     /// <summary>
     /// Maps a success to the provided function

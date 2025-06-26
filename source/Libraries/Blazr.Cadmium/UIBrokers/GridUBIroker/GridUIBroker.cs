@@ -10,7 +10,7 @@ using Blazr.Diode.Mediator;
 using Blazr.Gallium;
 using Microsoft.AspNetCore.Components.QuickGrid;
 
-namespace Blazr.App.Presentation;
+namespace Blazr.Cadmium.Presentation;
 
 // This is the boilerplate code for any GridUIBroker
 // It is an abstract class that implements the IGridUIBroker interface

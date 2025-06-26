@@ -5,7 +5,7 @@
 /// ============================================================
 using Blazr.Diode;
 
-namespace Blazr.App.Core;
+namespace Blazr.Cadmium.Core;
 
 /// <summary>
 /// Abstract template class for building Record Edit Contexts

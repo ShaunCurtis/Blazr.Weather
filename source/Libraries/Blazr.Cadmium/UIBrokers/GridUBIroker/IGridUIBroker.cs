@@ -7,7 +7,7 @@ using Blazr.Cadmium.QuickGrid;
 using Blazr.Diode;
 using Microsoft.AspNetCore.Components.QuickGrid;
 
-namespace Blazr.App.Presentation;
+namespace Blazr.Cadmium.Presentation;
 
 public interface IGridUIBroker<TRecord>
     where TRecord : class, new()

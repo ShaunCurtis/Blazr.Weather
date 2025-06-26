@@ -3,7 +3,6 @@
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
-using Blazr.Cadmium;
 using Blazr.Cadmium.Core;
 using Blazr.Cadmium.Presentation;
 using Blazr.Diode;
@@ -11,7 +10,7 @@ using Blazr.Uranium;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace Blazr.App.UI;
+namespace Blazr.Cadmium.UI;
 
 public abstract class EditorModalFormBase<TRecord, TKey, TEditContext, TEntityService>
     : ComponentBase, IDisposable

@@ -7,7 +7,7 @@ using Blazr.Cadmium.Core;
 using Blazr.Cadmium.Presentation;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Blazr.App.Presentation;
+namespace Blazr.Cadmium.Presentation;
 
 public class LookupUIBrokerFactory : ILookupUIBrokerFactory
 {
