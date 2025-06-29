@@ -12,16 +12,14 @@ using Microsoft.JSInterop;
 
 namespace Blazr.Cadmium.UI;
 
-public abstract class EditorModalFormBase<TRecord, TKey, TEditContext, TEntityService>
+public abstract class EditorModalFormBase<TRecord, TKey, TEditContext>
     : ComponentBase, IDisposable
     where TRecord : class, new()
     where TKey : notnull, IEntityId
     where TEditContext : class, IRecordEditContext<TRecord>, new()
-    where TEntityService : class, IUIEntityProvider<TRecord>
 {
-    [Inject] protected IEditUIBrokerFactory UIBrokerFactory { get; set; } = default!;
     [Inject] protected IJSRuntime Js { get; set; } = default!;
-    [Inject] protected IUIEntityProvider<TRecord> UIEntityService { get; set; } = default!;
+    [Inject] protected IUIEntityProvider<TRecord,TKey> UIEntityProvider { get; set; } = default!;
 
     [CascadingParameter] private IModalDialog? ModalDialog { get; set; }
     [Parameter, EditorRequired] public TKey Uid { get; set; } = default!;
@@ -31,13 +29,13 @@ public abstract class EditorModalFormBase<TRecord, TKey, TEditContext, TEntitySe
 
     protected EditFormButtonsOptions editFormButtonsOptions = new();
     protected bool IsNewRecord => this.UIBroker.State == EditState.New;
-    protected string FormTitle => $"{this.UIEntityService.SingleDisplayName} Editor";
+    protected string FormTitle => $"{this.UIEntityProvider.SingleDisplayName} Editor";
 
     protected async override Task OnInitializedAsync()
     {
         ArgumentNullException.ThrowIfNull(Uid);
 
-        this.UIBroker = await this.UIBrokerFactory.GetAsync<TEditContext, TKey>(Uid);
+        this.UIBroker = await this.UIEntityProvider.GetEditUIBrokerAsync<TEditContext>(Uid);
         this.UIBroker.EditContext.OnFieldChanged += OnEditStateMayHaveChanged;
     }
 

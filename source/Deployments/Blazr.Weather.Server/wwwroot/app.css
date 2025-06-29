@@ -54,3 +54,11 @@ h1:focus {
 .hide-blank-rows td:empty {
     display: none;
 }
+
+.label-small {
+    font-size: 0.75rem;
+}
+
+.no-max-width {
+    max-width: none !important;
+}

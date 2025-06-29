@@ -5,14 +5,49 @@
 /// ============================================================
 using Blazr.App.Core;
 using Blazr.Cadmium;
+using Blazr.Cadmium.Core;
+using Blazr.Cadmium.Presentation;
+using Blazr.Diode.Mediator;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace Blazr.App.UI;
 
-public sealed record WeatherForecastUIEntityProvider : IUIEntityProvider<DmoWeatherForecast>
+public sealed record WeatherForecastUIEntityProvider : IUIEntityProvider<DmoWeatherForecast, WeatherForecastId>
 {
+    private readonly IServiceProvider _serviceProvider;
+
     public string SingleDisplayName { get; } = "Weather Forecast";
     public string PluralDisplayName { get; } = "Weather Forecasts";
     public Type? EditForm { get; } = typeof(WeatherForecastEditForm);
     public Type? ViewForm { get; } = typeof(WeatherForecastViewForm);
     public string Url { get; } = "/weatherForecast";
+
+    public WeatherForecastUIEntityProvider(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+    }
+
+    public async ValueTask<IReadUIBroker<DmoWeatherForecast, WeatherForecastId>> GetReadUIBrokerAsync(WeatherForecastId id)
+    {
+        var presenter = ActivatorUtilities.CreateInstance<ReadUIBroker<DmoWeatherForecast, WeatherForecastId>>(_serviceProvider);
+        await presenter.LoadAsync(id);
+
+        return presenter;
+    }
+
+    public ValueTask<IGridUIBroker<DmoWeatherForecast>> GetGridUIBrokerAsync()
+    {
+        var presenter = ActivatorUtilities.CreateInstance<GridUIBroker<DmoWeatherForecast, WeatherForecastId>>(_serviceProvider);
+
+        return ValueTask.FromResult<IGridUIBroker<DmoWeatherForecast>>(presenter);
+    }
+
+    public async ValueTask<IEditUIBroker<WeatherForecastEditContext, WeatherForecastId>> GetEditUIBrokerAsync<WeatherForecastEditContext>(WeatherForecastId id)
+        where WeatherForecastEditContext : IRecordEditContext<DmoWeatherForecast>, new()
+    {
+        var presenter = ActivatorUtilities.CreateInstance<EditUIBroker<DmoWeatherForecast, WeatherForecastEditContext, WeatherForecastId>>(_serviceProvider);
+        await presenter.LoadAsync(id);
+        return presenter;
+    }
 }

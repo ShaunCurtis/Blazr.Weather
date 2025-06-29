@@ -7,6 +7,11 @@ using Blazr.Diode.Mediator;
 
 namespace Blazr.App.Core;
 
+/// <summary>
+/// The entity for the WeatherForecast domain object.
+/// This provides the state management for the WeatherForecast domain object.
+/// Obtain instances through the WeatherForecastEntityProvider.
+/// </summary>
 public sealed partial class WeatherForecastEntity
 {
     private readonly IMediatorBroker _mediatorBroker;

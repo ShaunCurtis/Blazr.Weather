@@ -134,6 +134,7 @@ public class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBroker<TRe
 
         this.LastResult = commandResult.Map();
 
+        //TODO - Not sure this will work!!!
         var asyncResult = commandResult.Map<ValueTask>(
             success: key =>
             {
@@ -143,6 +144,7 @@ public class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBroker<TRe
             },
             failure: error => Result<ValueTask>.Return(ValueTask.CompletedTask)
             );
+
         asyncResult.MatchSuccess(async task => await task);
         
     }

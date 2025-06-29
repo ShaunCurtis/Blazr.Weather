@@ -28,8 +28,8 @@ public static class ApplicationServerServices
 
         // Presenter Factories
         services.AddScoped<ILookupUIBrokerFactory, LookupUIBrokerFactory>();
-        services.AddScoped<IEditUIBrokerFactory, EditUIBrokerFactory>();
-        services.AddTransient<IReadUIBrokerFactory, ReadUIBrokerFactory>();
+        //services.AddScoped<IEditUIBrokerFactory, EditUIBrokerFactory>();
+        //services.AddTransient<IReadUIBrokerFactory, ReadUIBrokerFactory>();
 
         // Add the QuickGrid Entity Framework Adapter
         services.AddQuickGridEntityFrameworkAdapter();

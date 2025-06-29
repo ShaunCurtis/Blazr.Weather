@@ -70,7 +70,7 @@ public record Result<T>
         }
     }
 
-    public Result<T> Bind(Func<T, T> func)
+    public Result<T> Map(Func<T, T> func)
     {
         if (_exception is not null)
             return this;
@@ -85,7 +85,7 @@ public record Result<T>
         }
     }
 
-    public Result Bind(Action<T> action)
+    public Result Map(Action<T> action)
     {
         if (_exception is not null)
             return Result.Return(_exception!);

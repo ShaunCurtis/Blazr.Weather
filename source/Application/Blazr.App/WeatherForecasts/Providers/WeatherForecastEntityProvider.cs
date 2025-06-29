@@ -1,18 +1,20 @@
-﻿/// ============================================================
-/// Author: Shaun Curtis, Cold Elm Coders
+﻿/// Author: Shaun Curtis, Cold Elm Coders
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
 using Blazr.App.Core;
 using Blazr.Cadmium.Core;
+using Blazr.Cadmium.Presentation;
 using Blazr.Cadmium.QuickGrid;
 using Blazr.Diode.Mediator;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Blazr.App.Presentation;
 
 public class WeatherForecastEntityProvider : IEntityProvider<DmoWeatherForecast, WeatherForecastId>
 {
     private readonly IMediatorBroker _mediator;
+    private readonly IServiceProvider _serviceProvider;
 
     public Func<WeatherForecastId, Task<Result<DmoWeatherForecast>>> RecordRequest
         => (id) => _mediator.Send(new WeatherForecastRecordRequest(id));
@@ -29,15 +31,16 @@ public class WeatherForecastEntityProvider : IEntityProvider<DmoWeatherForecast,
             SortDescending = state.SortDescending
         });
 
-    public WeatherForecastEntityProvider(IMediatorBroker mediator)
+    public WeatherForecastEntityProvider(IMediatorBroker mediator, IServiceProvider serviceProvider)
     {
         _mediator = mediator;
+        _serviceProvider = serviceProvider;
     }
 
     public async ValueTask<Result<WeatherForecastEntity>> GetEntityAsync(WeatherForecastId id)
     {
         var result = (await _mediator.Send(new WeatherForecastRecordRequest(id)))
-            .MapSuccess<WeatherForecastEntity>((record) => 
+            .MapSuccess<WeatherForecastEntity>((record) =>
             {
                 new WeatherForecastEntity(_mediator, record);
                 return Result<WeatherForecastEntity>.ReturnException("");
@@ -45,7 +48,7 @@ public class WeatherForecastEntityProvider : IEntityProvider<DmoWeatherForecast,
 
         return result;
     }
-    
+
     public WeatherForecastId GetKey(object obj)
     {
         return obj switch
@@ -64,5 +67,5 @@ public class WeatherForecastEntityProvider : IEntityProvider<DmoWeatherForecast,
     }
 
     public DmoWeatherForecast NewRecord
-        => new DmoWeatherForecast { Id = WeatherForecastId.Default};
+        => new DmoWeatherForecast { Id = WeatherForecastId.Default };
 }

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.QuickGrid;
 using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
+using Blazr.Cadmium.Core;
 
 namespace Blazr.Cadmium.UI;
 
@@ -20,18 +21,17 @@ public abstract partial class GridFormBase<TRecord, TKey> : ComponentBase, IDisp
 {
     [Inject] protected NavigationManager NavManager { get; set; } = default!;
     [Inject] protected ILogger<GridFormBase<TRecord, TKey>> Logger { get; set; } = default!;
-    [Inject] protected IGridUIBroker<TRecord> UIBroker { get; set; } = default!;
-    [Inject] protected IUIEntityProvider<TRecord> UIEntityService { get; set; } = default!;
+    [Inject] protected IUIEntityProvider<TRecord,TKey> UIEntityProvider { get; set; } = default!;
 
     [Parameter] public string? FormTitle { get; set; }
     [Parameter] public Guid GridContextId { get; set; } = Guid.NewGuid();
     [Parameter] public int PageSize { get; set; } = 15;
     [Parameter] public bool ResetGridContext { get; set; }
 
-
+    protected IGridUIBroker<TRecord> UIBroker { get; private set; } = default!;
     protected IModalDialog modalDialog = default!;
     protected QuickGrid<TRecord> quickGrid = default!;
-    protected virtual string formTitle => this.FormTitle ?? $"List of {this.UIEntityService?.PluralDisplayName ?? "Items"}";
+    protected virtual string formTitle => this.FormTitle ?? $"List of {this.UIEntityProvider?.PluralDisplayName ?? "Items"}";
 
     protected PaginationState Pagination = new PaginationState { ItemsPerPage = 10 };
     protected Expression<Func<TRecord, bool>>? DefaultFilter { get; set; } = null;
@@ -41,6 +41,8 @@ public abstract partial class GridFormBase<TRecord, TKey> : ComponentBase, IDisp
 
     protected async override Task OnInitializedAsync()
     {
+        UIBroker = await this.UIEntityProvider.GetGridUIBrokerAsync();
+
         this.UIBroker.StateChanged += OnStateChanged;
 
         this.UIBroker.SetContext(this.GridContextId);
@@ -82,9 +84,9 @@ public abstract partial class GridFormBase<TRecord, TKey> : ComponentBase, IDisp
         var options = new ModalOptions();
         options.ControlParameters.Add("Uid", id);
 
-        ArgumentNullException.ThrowIfNull(this.UIEntityService.EditForm);
+        ArgumentNullException.ThrowIfNull(this.UIEntityProvider.EditForm);
 
-        await modalDialog.ShowAsync(this.UIEntityService.EditForm, options);
+        await modalDialog.ShowAsync(this.UIEntityProvider.EditForm, options);
     }
 
     protected virtual async Task OnViewAsync(TKey id)
@@ -92,9 +94,9 @@ public abstract partial class GridFormBase<TRecord, TKey> : ComponentBase, IDisp
         var options = new ModalOptions();
         options.ControlParameters.Add("Uid", id);
 
-        ArgumentNullException.ThrowIfNull(this.UIEntityService.ViewForm);
+        ArgumentNullException.ThrowIfNull(this.UIEntityProvider.ViewForm);
 
-        await modalDialog.ShowAsync(this.UIEntityService.ViewForm, options);
+        await modalDialog.ShowAsync(this.UIEntityProvider.ViewForm, options);
     }
 
     protected virtual async Task OnAddAsync()
@@ -102,14 +104,14 @@ public abstract partial class GridFormBase<TRecord, TKey> : ComponentBase, IDisp
         var options = new ModalOptions();
         // we don't set UId, so it will be default telling the edit this is a new record
 
-        ArgumentNullException.ThrowIfNull(this.UIEntityService.EditForm);
+        ArgumentNullException.ThrowIfNull(this.UIEntityProvider.EditForm);
 
-        await modalDialog.ShowAsync(this.UIEntityService.EditForm, options);
+        await modalDialog.ShowAsync(this.UIEntityProvider.EditForm, options);
     }
 
     protected virtual Task OnDashboardAsync(TKey id)
     {
-        this.NavManager.NavigateTo($"{this.UIEntityService.Url}/dash/{id.ToString()}");
+        this.NavManager.NavigateTo($"{this.UIEntityProvider.Url}/dash/{id.ToString()}");
 
         return Task.CompletedTask;
     }
