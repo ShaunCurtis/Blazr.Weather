@@ -42,7 +42,7 @@ public class WeatherForecastEntityProvider : IEntityProvider<DmoWeatherForecast,
         var result = (await _mediator.Send(new WeatherForecastRecordRequest(id)))
             .MapSuccess<WeatherForecastEntity>((record) =>
             {
-                new WeatherForecastEntity(_mediator, record);
+                new WeatherForecastEntity(record);
                 return Result<WeatherForecastEntity>.ReturnException("");
             });
 

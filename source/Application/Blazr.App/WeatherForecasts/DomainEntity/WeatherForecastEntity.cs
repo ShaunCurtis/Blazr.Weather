@@ -3,8 +3,6 @@
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
-using Blazr.Diode.Mediator;
-
 namespace Blazr.App.Core;
 
 /// <summary>
@@ -14,7 +12,6 @@ namespace Blazr.App.Core;
 /// </summary>
 public sealed partial class WeatherForecastEntity
 {
-    private readonly IMediatorBroker _mediatorBroker;
     private readonly EntityState<DmoWeatherForecast> _weatherForecast;
 
     // The initial records so we can reset 
@@ -30,13 +27,11 @@ public sealed partial class WeatherForecastEntity
 
     public WeatherForecastId Id => _weatherForecast.Record.Id;
 
-    public WeatherForecastEntity(IMediatorBroker mediatorBroker, DmoWeatherForecast weatherForecast)
+    public WeatherForecastEntity(DmoWeatherForecast weatherForecast)
     {
         var isNew = weatherForecast.Id.IsDefault;
 
-        // Create new MembershipContext for the Membership
         _weatherForecast = new(weatherForecast, isNew);
-        _mediatorBroker = mediatorBroker;
         _baseWeatherForecast = _weatherForecast.AsRecord;
     }
 }

@@ -19,10 +19,34 @@ public record Result<T>
     private Result()
         => _exception = new ResultException("An error occurred. No specific exception provided.");
 
-    public static Result<T> Return(T value) => new(value);
+    /// <summary>
+    /// Returns a success/failure Result<T> with the provided value based on the null state of the value.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static Result<T> Return(T? value) => value is null
+        ? new(new ResultException("T was null."))
+        : new(value);
+
+    /// <summary>
+    /// Returns a failure Result<T> with the provided exception.
+    /// </summary>
+    /// <param name="exception"></param>
+    /// <returns></returns>
     public static Result<T> Return(Exception exception) => new(exception);
+
+    /// <summary>
+    /// Returns a failure result with the message wrapped in a ResultException
+    /// </summary>
+    /// <param name="message"></param>
+    /// <returns></returns>
     public static Result<T> ReturnException(string message) => new(new ResultException(message));
 
+    /// <summary>
+    /// Provides the way to unwrap a Result based on success or failure 
+    /// </summary>
+    /// <param name="success"></param>
+    /// <param name="failure"></param>
     public void Match(Action<T> success, Action<Exception> failure)
     {
         if (_exception is null)
@@ -55,7 +79,7 @@ public record Result<T>
             : Result<U>.Return(_exception!);
     }
 
-    public Result<U> Bind<U>(Func<T, U> func)
+    public Result<U> Map<U>(Func<T, U> func)
     {
         if (_exception is not null)
             return Result<U>.Return(_exception!);
@@ -67,21 +91,6 @@ public record Result<T>
         catch (Exception ex)
         {
             return Result<U>.Return(ex);
-        }
-    }
-
-    public Result<T> Map(Func<T, T> func)
-    {
-        if (_exception is not null)
-            return this;
-
-        try
-        {
-            return Result<T>.Return(func(_value!));
-        }
-        catch (Exception ex)
-        {
-            return Result<T>.Return(ex);
         }
     }
 
@@ -111,11 +120,6 @@ public record Result<T>
             ? Result.Return()
             : Result.Return(_exception!);
 
-    public Result<T> Map(Func<T, Result<T>> success, Func<Exception, Result<T>> failure)
-        => _exception is null
-            ? success(_value!)
-            : failure(_exception!);
-
     public Result<U> Map<U>(Func<T, Result<U>> success, Func<Exception, Result<U>> failure)
         => _exception is null
             ? success(_value!)
@@ -125,11 +129,6 @@ public record Result<T>
         => _exception is null
             ? success(_value!)
             : failure(_exception!);
-
-    public Result<T> MapSuccess(Func<T, Result<T>> success)
-        => _exception is null
-            ? success(_value!)
-            : this;
 
     public Result MapSuccess(Func<T, Result> success)
         => _exception is null
@@ -167,19 +166,6 @@ public record Result
     public static Result Return() => new();
     public static Result Return(Exception? exception) => new(exception);
     public static Result ReturnException(string message) => new(new ResultException(message));
-
-    /// <summary>
-    /// Return based on the instance exception state:
-    ///  - A Result<T> containing the exception if in exception state
-    ///  - The Result<T> provided by the delegate
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="func"></param>
-    /// <returns></returns>
-    public Result<T> Bind<T>(Func<Result<T>> success)
-        => _exception is null
-            ? success()
-            : Result<T>.Return(_exception!);
 
     /// <summary>
     /// Return based on the instance exception state:
@@ -256,6 +242,7 @@ public record Result
             success();
         else
             failure(_exception!);
+
         return this;
     }
 

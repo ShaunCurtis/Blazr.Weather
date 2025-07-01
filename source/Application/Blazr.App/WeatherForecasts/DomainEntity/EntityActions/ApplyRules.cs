@@ -3,33 +3,16 @@
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
-using static Blazr.App.Core.WeatherForecastActions;
-
 namespace Blazr.App.Core;
-
-public static partial class WeatherForecastActions
-{
-    public readonly record struct ApplyRulesAction(object? sender = null)
-    {
-        public static ApplyRulesAction Empty => new ApplyRulesAction();
-    }
-}
 
 public sealed partial class WeatherForecastEntity
 {
     private bool _processing;
 
-    /// <summary>
-    /// Applies the business rules to the Weather Forecast
-    /// </summary>
-    /// <param name="sender"></param>
-    public ValueTask<Result> DispatchAsync(ApplyRulesAction action)
-        => ValueTask.FromResult(ApplyRules(action));
-
-    private Result ApplyRules(ApplyRulesAction action)
+    private Result ApplyRules(object? sender)
         => SetProcessing()
             .Bind(RunRules)
-            .MapSuccess(() => this.StateHasChanged?.Invoke(action.sender ?? this, this.Id)
+            .MapSuccess(() => this.StateHasChanged?.Invoke(sender ?? this, this.Id)
         );
 
     private Result RunRules()

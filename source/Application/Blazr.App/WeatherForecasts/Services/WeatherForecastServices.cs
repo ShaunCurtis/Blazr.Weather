@@ -19,7 +19,7 @@ public static class WeatherForecastServices
     public static void AddWeatherForecastServices(this IServiceCollection services)
     {
         services.AddScoped<IEntityProvider<DmoWeatherForecast, WeatherForecastId>, WeatherForecastEntityProvider>();
-        services.AddSingleton<IUIEntityProvider<DmoWeatherForecast>, WeatherForecastUIEntityProvider>();
+        services.AddScoped<IUIEntityProvider<DmoWeatherForecast, WeatherForecastId>, WeatherForecastUIEntityProvider>();
 
         //services.AddTransient<IGridUIBroker<DmoWeatherForecast>, GridUIBroker<DmoWeatherForecast, WeatherForecastId>>();
         //services.AddTransient<IEditUIBroker<WeatherForecastEditContext, WeatherForecastId>, EditUIBroker<DmoWeatherForecast, WeatherForecastEditContext, WeatherForecastId>>();
