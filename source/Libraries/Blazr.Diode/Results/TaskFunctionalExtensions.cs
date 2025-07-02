@@ -5,6 +5,20 @@
 /// ============================================================
 namespace Blazr.Diode;
 
+public static class NullableFunctionalExtensions
+{
+    public static Nullable<T> Match<T>(this Nullable<T> value, Action<T> IsNotNull, Action IsNull)
+        where T : struct
+    {
+        if (value.HasValue)
+            IsNotNull(value.Value);
+        else
+            IsNull();
+
+        return value;
+    }
+}
+
 public static class TaskFunctionalExtensions
 {
     public static Task<T> Map<R, T>(this Task<R> task, System.Func<R, T> f)
