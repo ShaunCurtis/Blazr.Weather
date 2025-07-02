@@ -3,7 +3,7 @@
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
-namespace Blazr.Diode;
+namespace Blazr.Manganese;
 
 public record Maybe<T> where T : class
 {
@@ -31,9 +31,6 @@ public record Maybe<T> where T : class
 
     public Maybe<T> Match(Action<T> Yes, Action No)
     {
-        return _value is null
-            ? No() is not null ? this : Maybe<T>.None()
-            : Yes(_value) is not null ? this : Maybe<T>.None();
         if (_value is null)
         {
             No();

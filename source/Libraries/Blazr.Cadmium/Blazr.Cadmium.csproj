@@ -22,6 +22,7 @@
     <ProjectReference Include="..\Blazr.Diode\Blazr.Diode.csproj" />
     <ProjectReference Include="..\Blazr.Diode\Blazr.Diode.csproj" />
     <ProjectReference Include="..\Blazr.Gallium\Blazr.Gallium.csproj" />
+    <ProjectReference Include="..\Blazr.Manganese\Blazr.Manganese.csproj" />
     <ProjectReference Include="..\Blazr.Uranium\Blazr.Uranium.csproj" />
   </ItemGroup>
 

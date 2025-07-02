@@ -1,60 +1,82 @@
 # Monads
 
-Monads are an enigma to many programmers.  There are a plethera of articles and publications that try to explain them but fail.
+I know: not the **M** word.  To everyone it has a different meaning, and elicits the full gamut of reactions: The **F** word of programmers.
 
-If you stick to you're OOP dogma, fail to open your mind, this will be another.
+The internet is awash with articles that try to explain what a Monad is.  This is yet another, probably doomed to failure in enlightening the unenlightened.
 
+As a C# OOP programmer the most important thing to do is open your mind.  Forget the OOP dogma that has ruled your programming life.
 
-Consider the following console App:
+Functional programming [**FP** from now on] requires a different way of thinking. It addresses  coding problems that constantly vex OOP programmers from a different direction.
+
+Consider this ugly, horrible code [yes it's platform code produced by MS]:
 
 ```csharp
-string? text = Console.ReadLine();
-
-var resultOrException = Result<string>.Return(text);
-
-var result = text.Trim() // Removes leading and trailing whitespace
-    .Replace("  ", " ") // Replaces double spaces with a single space
-    .ToUpper(); // Converts to uppercase
-
-Console.WriteLine(result);
+public static bool TryParse(string? s, IFormatProvider? provider, out int result);
 ```
 
-Null warnings, but the code compiles.  Press `<CTL>Z<Return>` and you will crash the program: we need to deal with nulls.  
+It sprouts results in all directions!
 
-In the real world, methods like `Trim` and `Replace` could return nulls.
-
-Your code is littered with: 
+Here's a classicaly coded console app using it:
 
 ```csharp
-if (x is not null)
+var input = Console.ReadLine();
+
+bool isInt = int.TryParse(input, out int value);
+
+// apply some transforms to the result of the parsing
+double result = 0;
+if (isInt)
 {
-    // do work
+    result = Math.Sqrt(value);
+    result = Math.Round(result, 2);
+}
+
+if (isInt)
+{
+    Console.WriteLine($"Parsed successfully: The transformed value of {value} is: {result}");
 }
 else
 {
-    // Do something else
+    Console.WriteLine($"Failed to parse input: {input}");
 }
 ```
 
-## Enter The Monad
+And a functionally programmed version.
 
-We'll build and use a `Result<T>` nomad.  It's a variation on the common `Maybe<T>` and `Option<T>` nomads, and built for data pipelines where we want to flow the error up the pipeline. 
+```csharp
+var input = Console.ReadLine();
+
+input
+    .Map(int.Parse)
+    .Map(value => Math.Sqrt(value))
+    .Map(value => Math.Round(value, 2))
+    .Match(
+        success: value => Console.WriteLine($"Parsed successfully: The transform result of {input} is: {value}"),
+        failure: ex => Console.WriteLine($"Failed to parse input: {ex.Message}"
+    ));
+```
+
+The rest of this article explains this code and how it works.
+
+## The Result Monad
+
+The `Result<T>` nomad is a variation of the common `Maybe<T>` and `Option<T>` nomads.  It's built for data pipelines to flow any errors up the pipeline. 
 
 A result has two possible states:
 - **Success**: The operation completed successfully
 - **Failure**: The operation failed, and the result contains an error message. 
 
-We can define a result as follows:
+Defined as either a Value of `T` or an `Exception`:
 
 ```csharp
 public record Result<T>
 {
-    private readonly Exception? _exception;
     private readonly T? _value;
+    private readonly Exception? _exception;
 }
 ```
 
-With three private constructors:
+There are three private constructors: private to tightly control object creation through static constructors.
 
 ```csharp
 private Result(T? value)
@@ -68,53 +90,51 @@ private Result()
  }
 ```
 
-## Creating a `Result<T>`
+## Creating/Initialising `Result<T>`
 
-The constructors are private to tightly control object creation.
-
-For our case we can define a static method:
+Three static methods provide object intialisation.
 
 ```csharp
 public static Result<T> Return(T? value) => value is null ? new(new ResultException("T was null")) : new(value);
+public static Result<T> Return(Exception exception) => new(exception);
+public static Result<T> ReturnException(string message) => new(new ResultException(message));
 ```
 
-I'm sticking fairly closely to standard Monad nomenclature, so  using `Return`.  In practice you can call the method what you like.
+I use standard Monad nomenclature here: `Return`.  In practice you can call the methods whatever you like as shoen below.
+
+```csharp
+public static Result<T> Success(T value) => new(value);
+public static Result<T> Failure(Exception exception) => new(exception);
+public static Result<T> Failure(string message) => new(new ResultException(message));
+```
 
 We can then define:
 
 ```csharp
-var result = Result<string>.Return(text);
+var input = Console.ReadLine();
+
+var result = Result<string>.Return(input);
 ```
 
-The `Return` basic template is:
+The `Return` basic template can be expressed like this:
 
 ```csharp
     T > Monad<T>
 ```
 
-There's a further three `Return` methods:
-
-```csharp
-public static Result<T> Return(T value) => new(value);
-public static Result<T> Return(Exception exception) => new(exception);
-public static Result<T> ReturnException(string message) => new(new ResultException(message));
-```
-
 ## Working with `Result<T>`
 
-Our console app can now look like this:
+Our console app now looks like this:
 
 ```csharp
 string? text = Console.ReadLine();
 
 var result = Result<string>.Return(text);
-
-Console.WriteLine(result);
 ```
 
-The next problem is handling the Monad in `Console.WriteLine`.
+Next we need to handle the Monad in `Console.WriteLine`.
 
-We access the result using `Match` methods.  The standard implementation looks like this:
+For this we implement a `Match` method.  A standard implementation looks like this:
 
 ```csharp
 public void Match(Action<T> success, Action<Exception> failure)
@@ -126,7 +146,7 @@ public void Match(Action<T> success, Action<Exception> failure)
 }
 ```
 
-And the console app:
+The console app now looks like this:
 
 ```csharp
 string? text = Console.ReadLine();
@@ -139,7 +159,13 @@ result.Match(
 );
 ```
 
-or even:
+We're passing methods into match, and exectuing the appropriate method for the `Result` state.  The success path is only executed if a valid value exists.
+
+## Chaining
+
+At this point, interesting, a different way of coding, but there's no real savings.  The real benefits come when we start chaining things together.
+
+We can update our console app to start chaining:
 
 ```csharp
 string? text = Console.ReadLine();
@@ -152,91 +178,79 @@ Result<string>
     );
 ```
 
-## Chaining
+Great, but the real power is in `Map` and `Bind`.
 
-At this point, interesting, but there's no real savings.
+## Map
 
-Let's add two more static constructors:
-
-```csharp
-public static Result<T> Return(Exception exception) => new(exception);
-public static Result<T> ReturnException(string message) => new(new ResultException(message));
-```
-
-Next we introduce `Map` which wraps a normal function into the Monad.  It can be represented like this:
+`Map` merges a normal function into the Monad.  It can be represented like this:
 
 ```
-(a->b) -> Monad<a> -> Monad<b>.
+(in->out) -> Monad<in> -> Monad<out>.
 ```
 
 The basic `Map` in `Result<T>` looks like this:
 
 ```csharp
-public Result<U> Map<U>(Func<T, U> func)
+public Result<TOut> Map<TOut>(Func<T, TOut> func)
 {
     if (_exception is not null)
-        return Result<U>.Return(_exception);
+        return Result<TOut>.Return(_exception);
 
     try
     {
-        return new Result<U>(func(_value!));
+        return new Result<TOut>(func(_value!));
     }
     catch (Exception ex)
     {
-        return new Result<U>(ex);
+        return new Result<TOut>(ex);
     }
 }
 ```
 
-Note that `Map` can switch types, so `T->U` and `T->U` methods are both valid.
+There are two paths:
 
-If the input `Result<T>` is in error, it is passed the `Result<T>` on to the caller.  Otherwise, it calls the provided `Func` in a `catch` and returns the result, or captures any generated exception and wraps it in a new `Result<T>`.
+- **Success** - `Func` is executed within a `try/catch` and the result returned in a new `Result<TOut>`, or any generated exception captured and wrapped in a new `Result<TOut>`.
+- **Failure** - The excpetion in the input `Result<T>` is wrapped in a `Result<TOut>` and returned.
 
-The original program can now be re-written used lambda expressions:
+Now Consider:
 
 ```csharp
-string? text = Console.ReadLine();
-
-Result<string>
-    .Return(text)
-    .Map(value => value.Trim())
-    .Map(value => Regex.Replace(value, @"\s+", " "))
-    .Map(value => value.ToUpper())
-    .Match(
-        success: value => Console.WriteLine($"Success: {value}"),
-        failure: ex => Console.WriteLine($"Failure: {ex.Message}")
-    );
+public static int Parse(string s);
 ```
 
-Or we can define specific functions:
-
-We could also define pattern methods:
+It fits the pattern, so we can chain it into our pipeline:
 
 ```csharp
-  string ReplaceSpaces(string value)
-    => Regex.Replace(value, @"\s+", " ");
-
-string Trim(string value)
-   => value.Trim();
-
-string ToUpper(string value)
-   => value.ToUpper();
+Result<string>
+    .Return(input)
+    .Map(int.Parse)
+    .Match(
+        success: value => Console.WriteLine($"Parsed successfully: The transform result of {input} is: {value}"),
+        failure: ex => Console.WriteLine($"Failed to parse input: {ex.Message}"
+    ));
 ```
 
-And the original program can now be re-written:
+Note that `Map` can switch types, so `T->TOut` and `T->T` methods are both valid.  In this case we switch from an input `string` to an output `int`.
+
+For the next step we run into a problem While `Math.Sqrt(value)` fits the pattern, the output from `.Map(int.Parse)` is a `int`.  We solve this by changing out the parser method to `double.Parse`:
 
 ```csharp
-string? text = Console.ReadLine();
-
 Result<string>
-    .Return(text)
-    .Map(Trim)
-    .Map(ReplaceSpaces)
-    .Map(ToUpper)
+    .Return(input)
+    .Map(double.Parse)
+    .Map(Math.Sqrt)
     .Match(
-        success: value => Console.WriteLine($"Success: {value}"),
-        failure: ex => Console.WriteLine($"Failure: {ex.Message}")
-    );
+        success: value => Console.WriteLine($"Parsed successfully: The transform result of {input} is: {value}"),
+        failure: ex => Console.WriteLine($"Failed to parse input: {ex.Message}"
+    ));
+```
+
+Next `Math.Round(value, 2)`.  It doesn't fit the pattern.
+
+The solution is to build a lambda expression that fits the pattern:
+
+```csharp
+    .Map(value => Math.Round(value, 2))
 ```
 
 ## Bind
@@ -244,43 +258,117 @@ Result<string>
 The basic bind pattern is:
 
 ```csharp
-(T->Monad(U)) -> Monad<T> -> Monad<U>.
+(in->Monad(out)) -> Monad<in> -> Monad<out>.
 ```
 
-So we could re-write `ReplaceSpaces` to output a `Result<string>`:    
+The `Bind` implementation in `Result<T>`:
 
 ```csharp
-Result<string> ReplaceSpaces(string value)
-   => Result<string>.Return( Regex.Replace(value, @"\s+", " ")P);
-```
-
-And add `Bind` to `Result<T>`:
-
-```csharp
-public Result<U> Bind<U>(Func<T, Result<U>> func)
-{
-    return _exception is null
+public Result<TOut> Bind<TOut>(Func<T, Result<TOut>> func)
+    => _exception is null
         ? func(_value!)
-        : Result<U>.Return(_exception!);
-}
+        : Result<TOut>.Return(_exception!);
 ```
-Note that `Bind` can switch types, so `T->Result<T>` and `T->Result<U?` methods are both valid.
 
+We can now write a function to round:    
+
+```csharp
+Result<double> RoundToTwoPlaces(double value)
+    => Result<double>.Return(Math.Round(value, 2));
+```
 
 And the original program can now be re-written:
 
 ```csharp
-string? text = Console.ReadLine();
-
 Result<string>
-    .Return(text)
-    .Map(Trim)
-    .Bind(ReplaceSpaces)
-    .Map(ToUpper)
+    .Return(input)
+    .Map(double.Parse)
+    .Map(Math.Sqrt)
+    .Bind(RoundToTwoPlaces)
     .Match(
-        success: value => Console.WriteLine($"Success: {value}"),
-        failure: ex => Console.WriteLine($"Failure: {ex.Message}")
-    );
+        success: value => Console.WriteLine($"Parsed successfully: The transform result of {input} is: {value}"),
+        failure: ex => Console.WriteLine($"Failed to parse input: {ex.Message}"
+    ));
 ```
 
+We can incorporate flexible rounding:
+
+```csharp
+Result<double> Round(double value, int places)
+    => Result<double>.Return(Math.Round(value, places));
+```
+
+And:
+
+```csharp
+    .Bind(value => Round(value, 2))
+```
+
+## Monadic Extensions
+
+While we've made the pipeline very succinct and expressive, the constructor looks a little clumsy.
+
+```csharp
+Result<string>
+    .Return(input)
+```
+
+We can improve this by adding a `Map` extension method to `string` like this:
+
+```csharp
+public static Result<TOut> Map<TOut>(this string? input, Func<string, TOut> mapper)
+    => Result<string>
+        .Return(input)
+        .Map(mapper);
+```
+
+So our final code:
+
+```csharp
+string? text = Console.ReadLine();
+
+input
+    .Map(double.Parse)
+    .Map(Math.Sqrt)
+    .Bind(value => Round(value, 2))
+    .Match(
+        success: value => Console.WriteLine($"Parsed successfully: The transform result of {input} is: {value}"),
+        failure: ex => Console.WriteLine($"Failed to parse input: {ex.Message}"
+    ));
+```
+
+## So What Have We Learnt
+
+Hopefully, you've realised that *Monads* are just wrappers/containers: nothing mythical.  They can be applied to any type.  They add functional coding patterns to the wrapped type.  They let you code in a different way.  They provide high level coding functionality. 
+
+### Functions
+
+Functions are methods that take an input, apply one or more transforms, and produce an output.
+Functions are the building blocks of FP.  `Map`, `Bind` and more complex functional patterns pass around functions as arguments.
+
+You will often hear the phrase "Functions are first class citizens".  In OOP you rarely pass methods as arguments into other methods.  In FP you do it all the time
+
+In functional programming you apply functions to data.  In OOP programming you pass data into methods and objects.
+
+### Railway Orientated Programming
+
+Whether you realised it or not, FP patterns such as `Bind` and `Map` in `Result<T>` implement *Railway Orientated Programming*.  If the input `Result<T>` is in failure state, they take the exception and pass it on in the output `Result<TOut>`.  Once you've jumped onto the failure track you stay there.  Execution is safe because success code never gets executed once you're on the failure track.
+
+### High Level Features
+
+There are many high level features built into C#: `Task` and `IEnumerable` are good examples.  The low level code C# code is very different from the code we type.  `Linq` is a library that adds a lot of Monadic functionality to `IEnumerable`.
+
+`Result<T>` is no different.  It's high level code, *syntactic sugar*, that abstracts higher level functionality into lower boilerplate code.
+
+## Appendix
+
+The `ResultException`:
+
+```csharp
+public class ResultException : Exception
+{
+    public ResultException() : base("The Result is Failure.") { }
+    public ResultException(string message) : base(message) { }
+}
+```
 

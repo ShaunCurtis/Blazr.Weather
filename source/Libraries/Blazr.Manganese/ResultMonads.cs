@@ -3,7 +3,7 @@
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
-namespace Blazr.Diode;
+namespace Blazr.Manganese;
 
 public record Result<T>
 {
