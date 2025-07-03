@@ -7,13 +7,30 @@ namespace Blazr.Manganese;
 
 public static class TaskFunctionalExtensions
 {
-    public static Task<T> Map<R, T>(this Task<R> task, System.Func<R, T> f)
-        => task.ContinueWith(r => f(task.Result));
+    public static async Task<Result<T>> Match<T>(this Task<Result<T>> task, Action<T> success, Action<Exception> failure)
+    {
+        var result = await task;
+        result.Match(
+            success: success,
+            failure: failure);
+        return result;
+    }
 
-    public static async Task<T> Bind<R, T>(this Task<R> task, Func<R, Task<T>> f)
+    public static async Task<Result> MapToResult<T>(this Task<Result<T>> task)
+    {
+        var result = await task;
+        return result.MapToResult();
+
+    }
+
+
+    public static Task<T> Map<R, T>(this Task<R> task, Func<R, T> map)
+        => task.ContinueWith(r => map(task.Result));
+
+    public static async Task<T> Bind<R, T>(this Task<R> task, Func<R, Task<T>> bind)
     {
         var r = await task;
-        return await f(r);
+        return await bind(r);
     }
 
     public static async ValueTask<T> Bind<R, T>(this ValueTask<R> task, Func<R, ValueTask<T>> f)

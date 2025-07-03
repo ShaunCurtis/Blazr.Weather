@@ -115,7 +115,7 @@ public record Result<T>
             ? func(_value!)
             : Result.Return(_exception);
 
-    public Result Map()
+    public Result MapToResult()
         => _exception is null
             ? Result.Return()
             : Result.Return(_exception!);

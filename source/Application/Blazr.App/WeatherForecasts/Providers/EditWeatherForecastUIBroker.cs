@@ -4,6 +4,7 @@
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
 using Blazr.App.Core;
+using Blazr.App.Presentation;
 using Blazr.Cadmium.Core;
 using Blazr.Diode;
 using Microsoft.AspNetCore.Components.Forms;
@@ -11,12 +12,12 @@ using System.Diagnostics;
 
 namespace Blazr.Cadmium.Presentation;
 
-public class EditWeatherForecastUIBroker 
+public class EditWeatherForecastUIBroker
 {
-    private readonly IEntityProvider<DmoWeatherForecast, WeatherForecastId> _entityProvider;
-    private WeatherForecastEntity _weatherForecast = default!;
-    private bool _isLoaded;
-    
+    private readonly WeatherForecastEntityProvider _entityProvider;
+    private WeatherForecastEntity _entity = default!;
+    private YesNo _isLoaded;
+
     public EditState State { get; private set; } = EditState.Clean;
 
     public Result LastResult { get; protected set; } = Result.Return();
@@ -27,28 +28,68 @@ public class EditWeatherForecastUIBroker
 
     public EditWeatherForecastUIBroker(IEntityProvider<DmoWeatherForecast, WeatherForecastId> entityProvider)
     {
-        _entityProvider = entityProvider;
+        _entityProvider = entityProvider as WeatherForecastEntityProvider ?? throw new Exception("The provided EntityProvider is not a WeatherForecastEntityProvider ");
 
         this.EditContext = new EditContext(EditMutator);
     }
 
     public async ValueTask LoadAsync(WeatherForecastId id)
     {
-        if (_isLoaded)
-        {
-            LastResult = Result.ReturnException("The UIBroker has already been loaded. You cannot reload the UIBroker.");
-            return;
-        }
+        _isLoaded.Match(
+            yes: () =>
+            {
+                LastResult = Result.ReturnException("The UIBroker has already been loaded. You cannot reload the UIBroker.");
+            },
+            no: () =>
+            {
+                LastResult = Result.Return();
+            }
+        );
 
         // check if we have a real Id to get
         if (id.IsDefault)
         {
-            await GetRecordItemAsync();
+            await GetRecordItemAsync(id);
             return;
         }
 
         // We don't have a real Id, so we need to initialize with a new item
         await this.GetNewItemAsync();
+    }
+
+    private async ValueTask<Result<WeatherForecastEntity>> GetEntityAsync(WeatherForecastId id)
+    {
+        var broker = this;
+
+        return await _entityProvider.EntityRequest(id)
+            .Match(
+                success: entity =>
+                {
+                    _entity = entity;
+                    broker.EditMutator = new();
+                    broker.EditMutator.Load(entity.WeatherForecast);
+
+                    broker.EditContext = new EditContext(EditMutator);
+                },
+                failure: ex => broker.LastResult = Result.Return(ex)
+            );
+    }
+
+    private Result<WeatherForecastEntity> GetNewEntity()
+    {
+        this.LastResult = Result.Return();
+
+        _entity = _entityProvider.NewEntity;
+
+        this.EditMutator = new();
+        this.EditMutator.Load(_entity.WeatherForecast);
+
+        this.EditContext = new EditContext(EditMutator);
+
+        this.State = EditState.New;
+        _isLoaded = true;
+
+        return ValueTask.CompletedTask;
     }
 
     public ValueTask ResetItemAsync()
@@ -84,10 +125,10 @@ public class EditWeatherForecastUIBroker
     {
         this.LastResult = Result.Return();
 
-        var record = _entityProvider.NewRecord;
+        _entity = _entityProvider.NewEntity;
 
         this.EditMutator = new();
-        this.EditMutator.Load(record);
+        this.EditMutator.Load(_entity.WeatherForecast);
 
         this.EditContext = new EditContext(EditMutator);
 
@@ -101,15 +142,16 @@ public class EditWeatherForecastUIBroker
     {
         this.LastResult = Result.Return();
 
-        var asyncResult = await _entityProvider.RecordRequest.Invoke(this.EntityId);
+        var asyncResult = await _entityProvider.EntityRequest(id);
 
-        LastResult = asyncResult.Map();
+        LastResult = asyncResult.MapToResult();
 
         asyncResult.MatchSuccess(
-            success: record =>
+            success: entity =>
             {
+                _entity = entity;
                 this.EditMutator = new();
-                this.EditMutator.Load(record!);
+                this.EditMutator.Load(entity.WeatherForecast);
 
                 this.EditContext = new EditContext(EditMutator);
             });
@@ -125,11 +167,32 @@ public class EditWeatherForecastUIBroker
         if (this.State == EditState.Clean)
             this.State = this.EditMutator.IsDirty ? EditState.Dirty : this.State;
 
-        var mutatedResult = EditMutator.AsRecord;
+        var mutatedRecord = EditMutator.AsRecord;
 
-        var commandResult = await _entityProvider.RecordCommand.Invoke(mutatedResult, this.State);
+        var entityResult = WeatherForecastEntity.UpdateWeatherForecastAction.Create(mutatedRecord).WithTransactionId(Guid.NewGuid())
+            .WithSender(this)
+            .Execute(_entity);
 
-        this.LastResult = commandResult.Map();
+            //.Match(
+            //    success: () =>
+            //    {
+            //        this.State = EditState.Clean;
+            //        LastResult = Result.Return();
+            //        if (refreshOnNew && this.State == EditState.New)
+            //            _ = GetRecordItemAsync(_entity.Id);
+            //    },
+            //    failure: ex =>
+            //    {
+            //        LastResult = Result.Return(ex);
+            //    }
+            );
+
+
+
+
+        var commandResult = await _entityProvider.EntityCommand(_entity);
+
+        this.LastResult = commandResult.MapToResult();
 
         //TODO - Not sure this will work!!!
         var asyncResult = commandResult.Map<ValueTask>(
@@ -143,6 +206,6 @@ public class EditWeatherForecastUIBroker
             );
 
         asyncResult.MatchSuccess(async task => await task);
-        
+
     }
 }

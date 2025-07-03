@@ -34,4 +34,7 @@ public sealed partial class WeatherForecastEntity
         _weatherForecast = new(weatherForecast, isNew);
         _baseWeatherForecast = _weatherForecast.AsRecord;
     }
+
+    public static WeatherForecastEntity Create(DmoWeatherForecast weatherForecast)
+            => new WeatherForecastEntity(weatherForecast);
 }

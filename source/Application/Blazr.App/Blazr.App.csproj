@@ -6,6 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="WeatherForecasts\Requests\WeatherForecastEntityCommandRequest.cs~RF2269b278.TMP" />
+  </ItemGroup>
+
 	<ItemGroup>
 	  <ProjectReference Include="..\..\Libraries\Blazr.Diode\Blazr.Diode.csproj" />
 	  <ProjectReference Include="..\..\Libraries\Blazr.Cadmium\Blazr.Cadmium.csproj" />

@@ -31,9 +31,11 @@ public class WeatherForecastEntityProvider
         return asyncResult.Bind<GridItemsProviderResult<DmoWeatherForecast>>(FromListItemsProvider);
     }
 
-    public Func<WeatherForecastId, Task<Result<DmoWeatherForecast>>> EntityRequest
-        => (id) => _mediator.Send(new WeatherForecastRecordRequest(id));
+    public Func<WeatherForecastId, Task<Result<WeatherForecastEntity>>> EntityRequest
+        => (id) => _mediator.Send(new WeatherForecastEntityRequest(id));
 
+    public Func<WeatherForecastEntity, Task<Result<WeatherForecastId>>> EntityCommand
+        => (record) => _mediator.Send(new WeatherForecastEntityCommandRequest(record));
 
     public Func<WeatherForecastId, Task<Result<DmoWeatherForecast>>> RecordRequest
         => (id) => _mediator.Send(new WeatherForecastRecordRequest(id));
@@ -87,4 +89,7 @@ public class WeatherForecastEntityProvider
 
     public DmoWeatherForecast NewRecord
         => new DmoWeatherForecast { Id = WeatherForecastId.Default };
+
+    public WeatherForecastEntity NewEntity
+        => new WeatherForecastEntity(new DmoWeatherForecast());
 }

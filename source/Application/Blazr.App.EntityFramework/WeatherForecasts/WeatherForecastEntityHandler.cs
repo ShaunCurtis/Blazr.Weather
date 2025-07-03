@@ -3,8 +3,6 @@
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
-using Blazr.Manganese;
-
 namespace Blazr.App.EntityFramework;
 
 /// <summary>
@@ -24,9 +22,8 @@ public sealed class WeatherForecastEntityHandler : IRequestHandler<WeatherForeca
         var asyncResult = await _factory.CreateDbContext()
             .GetRecordAsync<DvoWeatherForecast>(new RecordQueryRequest<DvoWeatherForecast>(item => item.WeatherForecastID == request.Id.Value));
 
-
-        //var result = asyncResult.Map<DmoWeatherForecast>(WeatherForecastMap.Map).Map((x) => );
-
-        return Result<WeatherForecastEntity>.Return(new WeatherForecastEntity(new DmoWeatherForecast()));
+        return asyncResult
+            .Map<DmoWeatherForecast>(WeatherForecastMap.Map)
+            .Map(WeatherForecastEntity.Create);
     }
 }

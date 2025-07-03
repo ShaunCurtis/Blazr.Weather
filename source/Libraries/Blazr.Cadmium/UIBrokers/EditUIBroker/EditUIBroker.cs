@@ -106,7 +106,7 @@ public class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBroker<TRe
 
         var asyncResult = await _entityProvider.RecordRequest.Invoke(this.EntityId);
 
-        LastResult = asyncResult.Map();
+        LastResult = asyncResult.MapToResult();
 
         asyncResult.MatchSuccess(
             success: record =>
@@ -132,7 +132,7 @@ public class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBroker<TRe
 
         var commandResult = await _entityProvider.RecordCommand.Invoke(mutatedResult, this.State);
 
-        this.LastResult = commandResult.Map();
+        this.LastResult = commandResult.MapToResult();
 
         //TODO - Not sure this will work!!!
         var asyncResult = commandResult.Map<ValueTask>(

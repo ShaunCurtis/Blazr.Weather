@@ -19,7 +19,7 @@ public sealed partial class WeatherForecastEntity
 
         private UpdateWeatherForecastAction() { }
 
-        public Result Dispatch(WeatherForecastEntity entity)
+        public Result Execute(WeatherForecastEntity entity)
             => entity._weatherForecast
                 .Update(this.Item, this.TransactionId)
                 .Bind(() => entity.ApplyRules(this.sender))
