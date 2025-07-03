@@ -3,18 +3,37 @@
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
 using Blazr.App.Core;
+using Blazr.Cadmium;
 using Blazr.Cadmium.Core;
-using Blazr.Cadmium.Presentation;
 using Blazr.Cadmium.QuickGrid;
 using Blazr.Diode.Mediator;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Components.QuickGrid;
 
 namespace Blazr.App.Presentation;
 
-public class WeatherForecastEntityProvider : IEntityProvider<DmoWeatherForecast, WeatherForecastId>
+public class WeatherForecastEntityProvider
+   : EntityProvider<DmoWeatherForecast>,
+    IEntityProvider<DmoWeatherForecast, WeatherForecastId>
 {
     private readonly IMediatorBroker _mediator;
     private readonly IServiceProvider _serviceProvider;
+
+    public async ValueTask<Result<GridItemsProviderResult<DmoWeatherForecast>>> GetItemsAsync(GridState<DmoWeatherForecast> state)
+    {
+        var asyncResult = await _mediator.Send(new WeatherForecastListRequest()
+        {
+            PageSize = state.PageSize,
+            StartIndex = state.StartIndex,
+            SortColumn = state.SortField,
+            SortDescending = state.SortDescending
+        });
+
+        return asyncResult.Bind<GridItemsProviderResult<DmoWeatherForecast>>(FromListItemsProvider);
+    }
+
+    public Func<WeatherForecastId, Task<Result<DmoWeatherForecast>>> EntityRequest
+        => (id) => _mediator.Send(new WeatherForecastRecordRequest(id));
+
 
     public Func<WeatherForecastId, Task<Result<DmoWeatherForecast>>> RecordRequest
         => (id) => _mediator.Send(new WeatherForecastRecordRequest(id));

@@ -23,7 +23,7 @@ public sealed partial class WeatherForecastEntity
         public ResetAction WithSender(object sender)
             => this with { Sender = sender };
 
-        public Result Dispatch(WeatherForecastEntity entity)
+        public Result Execute(WeatherForecastEntity entity)
             => entity._weatherForecast.Reset(entity._baseWeatherForecast)
                 .Bind(() => entity.ApplyRules(this.Sender))
                 .MapSuccess(() => entity.StateHasChanged?.Invoke(this.Sender, entity.Id));
