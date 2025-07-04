@@ -16,7 +16,7 @@ public class EditWeatherForecastUIBroker
 {
     private readonly WeatherForecastEntityProvider _entityProvider;
     private WeatherForecastEntity _entity = default!;
-    private YesNo _isLoaded;
+    private bool _isLoaded;
 
     public EditState State { get; private set; } = EditState.Clean;
 
@@ -33,63 +33,40 @@ public class EditWeatherForecastUIBroker
         this.EditContext = new EditContext(EditMutator);
     }
 
-    public async ValueTask LoadAsync(WeatherForecastId id)
+    public ValueTask LoadAsync(WeatherForecastId id)
     {
         _isLoaded.Match(
-            yes: () =>
-            {
-                LastResult = Result.ReturnException("The UIBroker has already been loaded. You cannot reload the UIBroker.");
-            },
-            no: () =>
+            isTrue: () => LastResult = Result.ReturnException("The UIBroker has already been loaded. You cannot reload the UIBroker."),
+            isFalse: async () =>
             {
                 LastResult = Result.Return();
+                await GetEntityAsync(id);
             }
         );
-
-        // check if we have a real Id to get
-        if (id.IsDefault)
-        {
-            await GetRecordItemAsync(id);
-            return;
-        }
-
-        // We don't have a real Id, so we need to initialize with a new item
-        await this.GetNewItemAsync();
+        return ValueTask.CompletedTask;
     }
 
-    private async ValueTask<Result<WeatherForecastEntity>> GetEntityAsync(WeatherForecastId id)
+    private async Task<Result<WeatherForecastEntity>> GetEntityAsync(WeatherForecastId id)
     {
         var broker = this;
 
-        return await _entityProvider.EntityRequest(id)
-            .Match(
-                success: entity =>
+        LastResult = Result.Return();
+
+        return await id.IsDefault
+            .BindToResultAsync<WeatherForecastEntity>(
+                isTrue: () => _entityProvider.NewEntityAsync,
+                isFalse: () => _entityProvider.EntityRequest(id))
+            .MatchSuccess(
+                success: (entity) =>
                 {
                     _entity = entity;
                     broker.EditMutator = new();
                     broker.EditMutator.Load(entity.WeatherForecast);
 
                     broker.EditContext = new EditContext(EditMutator);
-                },
-                failure: ex => broker.LastResult = Result.Return(ex)
-            );
-    }
 
-    private Result<WeatherForecastEntity> GetNewEntity()
-    {
-        this.LastResult = Result.Return();
-
-        _entity = _entityProvider.NewEntity;
-
-        this.EditMutator = new();
-        this.EditMutator.Load(_entity.WeatherForecast);
-
-        this.EditContext = new EditContext(EditMutator);
-
-        this.State = EditState.New;
-        _isLoaded = true;
-
-        return ValueTask.CompletedTask;
+                    _isLoaded = true;
+                });
     }
 
     public ValueTask ResetItemAsync()

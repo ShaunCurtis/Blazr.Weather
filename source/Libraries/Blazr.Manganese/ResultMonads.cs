@@ -55,16 +55,20 @@ public record Result<T>
             failure(_exception!);
     }
 
-    public void MatchSuccess(Action<T> success)
+    public Result<T> MatchSuccess(Action<T> success)
     {
         if (_exception is null)
             success(_value!);
+
+        return this;
     }
 
-    public void MatchFailure(Action<Exception> failure)
+    public Result<T> MatchFailure(Action<Exception> failure)
     {
         if (_exception is not null)
             failure(_exception!);
+
+        return this;
     }
 
     public TOut MapOut<TOut>(Func<T, TOut> success, Func<TOut> failure)

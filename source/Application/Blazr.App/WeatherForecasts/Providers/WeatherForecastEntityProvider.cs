@@ -90,6 +90,9 @@ public class WeatherForecastEntityProvider
     public DmoWeatherForecast NewRecord
         => new DmoWeatherForecast { Id = WeatherForecastId.Default };
 
-    public WeatherForecastEntity NewEntity
-        => new WeatherForecastEntity(new DmoWeatherForecast());
+    public Task<Result<WeatherForecastEntity>> NewEntityAsync
+        => Task.FromResult(Result<WeatherForecastEntity>.Return(new WeatherForecastEntity(new DmoWeatherForecast())));
+
+    public Result<WeatherForecastEntity> NewEntity
+        => Result<WeatherForecastEntity>.Return(new WeatherForecastEntity(new DmoWeatherForecast()));
 }

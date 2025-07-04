@@ -16,6 +16,13 @@ public record YesNo
 
     public YesNo Switch => new YesNo(!_value);
 
+    public Result<T> BindToResult<T>(Func<Result<T>> yes, Func<Result<T>> no)
+    {
+        if (_value)
+            return yes();
+ 
+        return no();
+    }
 
     public YesNo Match(Action yes, Action no)
     {
