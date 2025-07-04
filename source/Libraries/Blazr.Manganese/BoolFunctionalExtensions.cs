@@ -14,6 +14,7 @@ public static class BoolFunctionalExtensions
         else 
             isFalse();
     }
+
     public static void MatchTrue(this bool value, Action isTrue)
     {
         if (value)
@@ -26,16 +27,31 @@ public static class BoolFunctionalExtensions
             isFalse();
     }
 
-    public static Result<T> BindToResult<T>(this bool value, Func<Result<T>> isTrue, Func<Result<T>> isFalse)
-        where T : struct
+    public static Result<T> Bind<T>(this bool value, Func<Result<T>> isTrue, Func<Result<T>> isFalse)
+    {
+        if (value)
+            return isTrue();
+        else
+            return isFalse();
+    }
+
+    public static Result<T> BindTrue<T>(this bool value, Func<Result<T>> isTrue)
     {
         if (value)
             return isTrue();
 
-        return isFalse();
+        return Result<T>.ReturnException("The bound bool was false");
     }
 
-    public static async ValueTask<Result<T>> BindToResultValueAsync<T>(this bool value, Func<ValueTask<Result<T>>> isTrue, Func<ValueTask<Result<T>>> isFalse)
+    public static Result<T> BindFalse<T>(this bool value, Func<Result<T>> isFalse)
+    {
+        if (!value)
+            return isFalse();
+
+        return Result<T>.ReturnException("The bound bool was true");
+    }
+
+    public static async ValueTask<Result<T>> BindAsync<T>(this bool value, Func<ValueTask<Result<T>>> isTrue, Func<ValueTask<Result<T>>> isFalse)
     {
         if (value)
         {
@@ -47,7 +63,7 @@ public static class BoolFunctionalExtensions
         return resultFalse;
     }
 
-    public static async Task<Result<T>> BindToResultAsync<T>(this bool value, Func<Task<Result<T>>> isTrue, Func<Task<Result<T>>> isFalse)
+    public static async Task<Result<T>> BindAsync<T>(this bool value, Func<Task<Result<T>>> isTrue, Func<Task<Result<T>>> isFalse)
     {
         if (value)
         {

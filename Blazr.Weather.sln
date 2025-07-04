@@ -17,6 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Gallium", "source\Lib
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8AC18295-8822-4B92-BB71-525A8918B827}"
 	ProjectSection(SolutionItems) = preProject
+		Error.txt = Error.txt
 		readme.md = readme.md
 	EndProjectSection
 EndProject

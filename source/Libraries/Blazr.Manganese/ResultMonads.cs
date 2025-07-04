@@ -47,12 +47,14 @@ public record Result<T>
     /// </summary>
     /// <param name="success"></param>
     /// <param name="failure"></param>
-    public void Match(Action<T> success, Action<Exception> failure)
+    public Result<T> Match(Action<T> success, Action<Exception> failure)
     {
         if (_exception is null)
             success(_value!);
         else
             failure(_exception!);
+
+        return this;
     }
 
     public Result<T> MatchSuccess(Action<T> success)

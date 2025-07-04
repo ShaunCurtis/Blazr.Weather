@@ -37,6 +37,9 @@ public class WeatherForecastEntityProvider
     public Func<WeatherForecastEntity, Task<Result<WeatherForecastId>>> EntityCommand
         => (record) => _mediator.Send(new WeatherForecastEntityCommandRequest(record));
 
+    public Func<WeatherForecastEntity, Task<Result<WeatherForecastId>>> EntityCommandFunction
+        => (record) => _mediator.Send(new WeatherForecastEntityCommandRequest(record));
+
     public Func<WeatherForecastId, Task<Result<DmoWeatherForecast>>> RecordRequest
         => (id) => _mediator.Send(new WeatherForecastRecordRequest(id));
 
