@@ -83,7 +83,6 @@ public partial class EditWeatherForecastUIBroker
             isTrue: async () =>
             {
                 LastResult = Result.Return();
-                this.State = EditState.Deleted;
                 await this.UpdateRecordAsync();
             }
         );
@@ -116,7 +115,7 @@ public partial class EditWeatherForecastUIBroker
             .MapAsync<WeatherForecastEntity>(
                 isTrue: () => _entityProvider.NewEntityAsync,
                 isFalse: () => _entityProvider.EntityRequest(id))
-            .MatchSuccessAsync(
+            .SideEffectAsync(
                 success: (entity) =>
                 {
                     _entity = entity;
@@ -130,75 +129,38 @@ public partial class EditWeatherForecastUIBroker
     }
 
 
-    private async ValueTask GetRecordItemAsync(WeatherForecastId id)
-    {
-        this.LastResult = Result.Return();
+    //private async ValueTask GetRecordItemAsync(WeatherForecastId id)
+    //{
+    //    this.LastResult = Result.Return();
 
-        var asyncResult = await _entityProvider.EntityRequest(id);
+    //    var asyncResult = await _entityProvider.EntityRequest(id);
 
-        LastResult = asyncResult.MapToResult();
+    //    LastResult = asyncResult.MapToResult();
 
-        asyncResult.MatchSuccess(
-            success: entity =>
-            {
-                _entity = entity;
-                this.EditMutator = new();
-                this.EditMutator.Load(entity.WeatherForecast);
+    //    asyncResult.MatchSuccess(
+    //        success: entity =>
+    //        {
+    //            _entity = entity;
+    //            this.EditMutator = new();
+    //            this.EditMutator.Load(entity.WeatherForecast);
 
-                this.EditContext = new EditContext(EditMutator);
-            });
+    //            this.EditContext = new EditContext(EditMutator);
+    //        });
 
-        _isLoaded = true;
-    }
+    //    _isLoaded = true;
+    //}
 
     private async ValueTask UpdateRecordAsync(bool refreshOnNew = true)
     {
-        LastResult = Result.ReturnException("Nothing to Do");
-
         var mutatedRecord = EditMutator.AsRecord;
 
         var entityResult = WeatherForecastEntity.UpdateWeatherForecastAction
             .Create(mutatedRecord)
-            .WithTransactionId(Guid.NewGuid())
             .WithSender(this)
             .Execute(_entity);
 
-        var commandResult = await _entityProvider.EntityCommand(_entity)
-            .AndThenAsync<WeatherForecastId, WeatherForecastEntity>(_entityProvider.EntityRequest);
-
-
-        //.Match(
-        //    success: () =>
-        //    {
-        //        this.State = EditState.Clean;
-        //        LastResult = Result.Return();
-        //        if (refreshOnNew && this.State == EditState.New)
-        //            _ = GetRecordItemAsync(_entity.Id);
-        //    },
-        //    failure: ex =>
-        //    {
-        //        LastResult = Result.Return(ex);
-        //    }
-        //);
-
-
-
-        var commandResult = await _entityProvider.EntityCommand(_entity);
-
-        this.LastResult = commandResult.MapToResult();
-
-        //TODO - Not sure this will work!!!
-        var asyncResult = commandResult.Map<ValueTask>(
-            success: key =>
-            {
-                this.EntityId = _entityProvider.GetKey(key);
-                var task = GetRecordItemAsync();
-                return Result<ValueTask>.Return(task);
-            },
-            failure: error => Result<ValueTask>.Return(ValueTask.CompletedTask)
-            );
-
-        asyncResult.MatchSuccess(async task => await task);
-
+        LastResult =  await _entityProvider.EntityCommand(_entity)
+            .AndThenAsync<WeatherForecastId, WeatherForecastEntity>(_entityProvider.EntityRequest)
+            .MapToResultAsync();
     }
 }

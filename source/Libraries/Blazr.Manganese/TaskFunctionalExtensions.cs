@@ -11,13 +11,7 @@ public static class TaskFunctionalExtensions
     {
         var result = await inTask.HandleTaskCompletionAsync();
 
-        var x =  result.SideEffect(
-            success: value => { },
-            failure: ex => { }
-            );
-
-
-        return result.Bind<TOut>(async (x) =>  await mapping(x));
+        return await result.MapSuccess(mapping);
     }
 
     public static async Task<Result<T>> SideEffectAsync<T>(this Task<Result<T>> task, Action<T> success, Action<Exception> failure)
