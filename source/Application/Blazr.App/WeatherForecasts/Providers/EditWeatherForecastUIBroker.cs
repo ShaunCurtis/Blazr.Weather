@@ -113,7 +113,7 @@ public partial class EditWeatherForecastUIBroker
         LastResult = Result.Return();
 
         return await id.IsDefault
-            .BindAsync<WeatherForecastEntity>(
+            .MapAsync<WeatherForecastEntity>(
                 isTrue: () => _entityProvider.NewEntityAsync,
                 isFalse: () => _entityProvider.EntityRequest(id))
             .MatchSuccessAsync(
@@ -164,7 +164,7 @@ public partial class EditWeatherForecastUIBroker
             .Execute(_entity);
 
         var commandResult = await _entityProvider.EntityCommand(_entity)
-            .BindAsync<WeatherForecastId, WeatherForecastEntity>(_entityProvider.EntityRequest);
+            .AndThenAsync<WeatherForecastId, WeatherForecastEntity>(_entityProvider.EntityRequest);
 
 
         //.Match(

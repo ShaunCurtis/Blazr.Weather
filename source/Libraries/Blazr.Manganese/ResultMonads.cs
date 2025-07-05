@@ -5,7 +5,7 @@
 /// ============================================================
 namespace Blazr.Manganese;
 
-public record Result<T>
+public partial record Result<T>
 {
     private readonly Exception? _exception;
     private readonly T? _value;
@@ -19,6 +19,78 @@ public record Result<T>
     private Result()
         => _exception = new ResultException("An error occurred. No specific exception provided.");
 
+
+    public static Result<T> Create(T? value) => value is null
+    ? new(new ResultException("T was null."))
+    : new(value);
+
+    public static Result<T> Success(T value) => new(value);
+
+    public static Result<T> Failure(Exception exception) => new(exception);
+
+    public static Result<T> Failure(string message) => new(new ResultException(message));
+
+    public Result<T> SideEffect(Action<T> success, Action<Exception> failure)
+    {
+        if (_exception is null)
+            success(_value!);
+        else
+            failure(_exception!);
+
+        return this;
+    }
+
+    public Result<T> SideEffect(Action<T> success)
+    {
+        if (_exception is null)
+            success(_value!);
+
+        return this;
+    }
+
+    public Result<T> SideEffect(Action<Exception> failure)
+    {
+        if (_exception is not null)
+            failure(_exception!);
+
+        return this;
+    }
+
+    public Result<TOut> Map<TOut>(Func<T, Result<TOut>> success, Func<Exception, Result<TOut>> failure)
+    {
+        if (_exception is null)
+            return success(_value!);
+
+        return failure(_exception!);
+    }
+
+    public Result MapToResult()
+    {
+        if (_exception is null)
+            return Result.Success();
+
+        return Result.Failure(_exception!);
+    }
+
+    public Result<T> MapOnSuccess<TOut>(Func<T, Result<TOut>> success)
+    {
+        if (_exception is null)
+            success(_value!);
+
+        return this;
+    }
+
+    public Result<T> MapOnFailure(Func<Exception, Result<T>> failure)
+    {
+        if (_exception is not null)
+            return failure(_exception!);
+
+        return this;
+    }
+}
+
+public partial record Result<T>
+{
     /// <summary>
     /// Returns a success/failure Result<T> with the provided value based on the null state of the value.
     /// </summary>
@@ -120,17 +192,6 @@ public record Result<T>
         => _exception is null
             ? func(_value!)
             : Result.Return(_exception);
-
-    public Result MapToResult()
-        => _exception is null
-            ? Result.Return()
-            : Result.Return(_exception!);
-
-    public Result<U> Map<U>(Func<T, Result<U>> success, Func<Exception, Result<U>> failure)
-        => _exception is null
-            ? success(_value!)
-            : failure(_exception!);
-
     public Result Map(Func<T, Result> success, Func<Exception, Result> failure)
         => _exception is null
             ? success(_value!)
@@ -172,6 +233,9 @@ public record Result
     public static Result Return() => new();
     public static Result Return(Exception? exception) => new(exception);
     public static Result ReturnException(string message) => new(new ResultException(message));
+    public static Result Success() => new();
+    public static Result Failure(Exception? exception) => new(exception);
+    public static Result Failure(string message) => new(new ResultException(message));
 
     /// <summary>
     /// Return based on the instance exception state:

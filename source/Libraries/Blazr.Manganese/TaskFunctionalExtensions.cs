@@ -1,7 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-using System.Threading.Tasks;
-
-/// ============================================================
+﻿/// ============================================================
 /// Author: Shaun Curtis, Cold Elm Coders
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
@@ -10,35 +7,41 @@ namespace Blazr.Manganese;
 
 public static class TaskFunctionalExtensions
 {
-    public static async Task<Result<TOut>> BindAsync<T, TOut>(this Task<Result<T>> task, Func<T, Result<TOut>> map)
+    public static async Task<Result<TOut>> AndThenAsync<T, TOut>(this Task<Result<T>> inTask, Func<T, Task<Result<TOut>>> mapping)
     {
-        var result = await task.HandleTaskCompletionAsync();
+        var result = await inTask.HandleTaskCompletionAsync();
 
-        return result.Bind<TOut>(map);
+        var x =  result.SideEffect(
+            success: value => { },
+            failure: ex => { }
+            );
+
+
+        return result.Bind<TOut>(async (x) =>  await mapping(x));
     }
 
-    public static async Task<Result<T>> MatchAsync<T>(this Task<Result<T>> task, Action<T> success, Action<Exception> failure)
+    public static async Task<Result<T>> SideEffectAsync<T>(this Task<Result<T>> task, Action<T> success, Action<Exception> failure)
     {
         var result = await task.HandleTaskCompletionAsync();
 
-        return result.Match(
+        return result.SideEffect(
             success: success,
             failure: failure);
     }
 
-    public static async Task<Result<T>> MatchSuccessAsync<T>(this Task<Result<T>> task, Action<T> success)
+    public static async Task<Result<T>> SideEffectAsync<T>(this Task<Result<T>> task, Action<T> success)
     {
         var result = await task.HandleTaskCompletionAsync();
 
-        return result.MatchSuccess(success);
+        return result.SideEffect(success);
     }
 
-    public static async Task<Result<T>> MatchFailureAsync<T>(this Task<Result<T>> task, Action<Exception> failure)
+    public static async Task<Result<T>> SideEffectAsync<T>(this Task<Result<T>> task, Action<Exception> failure)
     {
         var result = await task.HandleTaskCompletionAsync();
 
         return result
-            .MatchFailure(failure);
+            .SideEffect(failure);
     }
 
     public static async Task<Result> MapToResultAsync<T>(this Task<Result<T>> task)
@@ -52,7 +55,7 @@ public static class TaskFunctionalExtensions
     {
         var result = await task;
 
-        return task.IsCompletedSuccessfully.BindFalse<T>(
+        return task.IsCompletedSuccessfully.MapFalse<T>(
             isFalse: () => Result<T>.Return(task.Exception
                 ?? new Exception("The Task failed to complete successfully")));
     }

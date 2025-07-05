@@ -27,7 +27,7 @@ public static class BoolFunctionalExtensions
             isFalse();
     }
 
-    public static Result<T> Bind<T>(this bool value, Func<Result<T>> isTrue, Func<Result<T>> isFalse)
+    public static Result<T> Map<T>(this bool value, Func<Result<T>> isTrue, Func<Result<T>> isFalse)
     {
         if (value)
             return isTrue();
@@ -35,7 +35,7 @@ public static class BoolFunctionalExtensions
             return isFalse();
     }
 
-    public static Result<T> BindTrue<T>(this bool value, Func<Result<T>> isTrue)
+    public static Result<T> MapTrue<T>(this bool value, Func<Result<T>> isTrue)
     {
         if (value)
             return isTrue();
@@ -43,7 +43,7 @@ public static class BoolFunctionalExtensions
         return Result<T>.ReturnException("The bound bool was false");
     }
 
-    public static Result<T> BindFalse<T>(this bool value, Func<Result<T>> isFalse)
+    public static Result<T> MapFalse<T>(this bool value, Func<Result<T>> isFalse)
     {
         if (!value)
             return isFalse();
@@ -51,7 +51,7 @@ public static class BoolFunctionalExtensions
         return Result<T>.ReturnException("The bound bool was true");
     }
 
-    public static async ValueTask<Result<T>> BindAsync<T>(this bool value, Func<ValueTask<Result<T>>> isTrue, Func<ValueTask<Result<T>>> isFalse)
+    public static async ValueTask<Result<T>> MapAsync<T>(this bool value, Func<ValueTask<Result<T>>> isTrue, Func<ValueTask<Result<T>>> isFalse)
     {
         if (value)
         {
@@ -63,7 +63,7 @@ public static class BoolFunctionalExtensions
         return resultFalse;
     }
 
-    public static async Task<Result<T>> BindAsync<T>(this bool value, Func<Task<Result<T>>> isTrue, Func<Task<Result<T>>> isFalse)
+    public static async Task<Result<T>> MapAsync<T>(this bool value, Func<Task<Result<T>>> isTrue, Func<Task<Result<T>>> isFalse)
     {
         if (value)
         {
