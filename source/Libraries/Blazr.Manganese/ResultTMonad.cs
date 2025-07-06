@@ -19,7 +19,6 @@ public partial record Result<T>
     private Result()
         => _exception = new ResultException("An error occurred. No specific exception provided.");
 
-
     public static Result<T> Create(T? value) => value is null
     ? new(new ResultException("T was null."))
     : new(value);
@@ -64,7 +63,7 @@ public partial record Result<T>
         return failure(_exception!);
     }
 
-    public async Task<Result<TOut>> Map<TOut>(Func<T, Task<Result<TOut>>> success, Func<Exception, Task<Result<TOut>>> failure)
+    public async Task<Result<TOut>> MapAsync<TOut>(Func<T, Task<Result<TOut>>> success, Func<Exception, Task<Result<TOut>>> failure)
     {
         if (_exception is null)
             return await success(_value!);
@@ -72,7 +71,7 @@ public partial record Result<T>
         return await failure(_exception!);
     }
 
-    public async Task<Result<TOut>> MapSuccess<TOut>(Func<T, Task<Result<TOut>>> success)
+    public async Task<Result<TOut>> MapAsync<TOut>(Func<T, Task<Result<TOut>>> success)
     {
         if (_exception is null)
             return await success(_value!);
@@ -102,6 +101,25 @@ public partial record Result<T>
             return failure(_exception!);
 
         return this;
+    }
+    public void Match(Action<T> success, Action<Exception> failure)
+    {
+        if (_exception is null)
+            success(_value!);
+        else
+            failure(_exception!);
+    }
+
+    public void Match(Action<T> success)
+    {
+        if (_exception is null)
+            success(_value!);
+    }
+
+    public void Match(Action<Exception> failure)
+    {
+        if (_exception is not null)
+            failure(_exception!);
     }
 }
 
@@ -135,31 +153,6 @@ public partial record Result<T>
     /// </summary>
     /// <param name="success"></param>
     /// <param name="failure"></param>
-    public Result<T> Match(Action<T> success, Action<Exception> failure)
-    {
-        if (_exception is null)
-            success(_value!);
-        else
-            failure(_exception!);
-
-        return this;
-    }
-
-    public Result<T> MatchSuccess(Action<T> success)
-    {
-        if (_exception is null)
-            success(_value!);
-
-        return this;
-    }
-
-    public Result<T> MatchFailure(Action<Exception> failure)
-    {
-        if (_exception is not null)
-            failure(_exception!);
-
-        return this;
-    }
 
     public TOut MapOut<TOut>(Func<T, TOut> success, Func<TOut> failure)
         => _exception is null

@@ -4,7 +4,9 @@
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
 
+using Blazr.App.Core;
 using Blazr.App.EntityFramework;
+using Blazr.App.Infrastructure;
 using Blazr.Cadmium.Presentation;
 using Blazr.Diode.Mediator;
 using Blazr.Gallium;
@@ -51,4 +53,14 @@ public partial class WeatherForecastTests
 
         return provider!;
     }
+
+    private DmoWeatherForecast AsDmoWeatherForecast(DboWeatherForecast weatherForecast)
+        => new DmoWeatherForecast
+        {
+            Id = new WeatherForecastId(weatherForecast.WeatherForecastID),
+            Date = new Date(weatherForecast.Date),
+            Summary = weatherForecast.Summary ?? string.Empty,
+            Temperature = new Temperature(weatherForecast.Temperature)
+        };
+
 }

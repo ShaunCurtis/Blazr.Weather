@@ -108,7 +108,7 @@ public class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBroker<TRe
 
         LastResult = asyncResult.MapToResult();
 
-        asyncResult.MatchSuccess(
+        asyncResult.Match(
             success: record =>
             {
                 this.EditMutator = new();
@@ -145,7 +145,7 @@ public class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBroker<TRe
             failure: error => Result<ValueTask>.Return(ValueTask.CompletedTask)
             );
 
-        asyncResult.MatchSuccess(async task => await task);
+        asyncResult.Match(async task => await task);
         
     }
 }

@@ -109,7 +109,7 @@ public partial class EditWeatherForecastUIBroker
         LastResult = Result.Return();
 
         return await id.IsDefault
-            .MapAsync<WeatherForecastEntity>(
+            .MapToResultAsync<WeatherForecastEntity>(
                 isTrue: () => _entityProvider.NewEntityAsync,
                 isFalse: () => _entityProvider.EntityRequest(id))
             .SideEffectAsync(

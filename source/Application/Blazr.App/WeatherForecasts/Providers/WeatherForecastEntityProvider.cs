@@ -52,6 +52,9 @@ public class WeatherForecastEntityProvider
             SortDescending = state.SortDescending
         });
 
+    public Func<WeatherForecastListRequest, Task<Result<ListItemsProvider<DmoWeatherForecast>>>> WeatherListRequest
+        => (request) => _mediator.Send(request);
+
     public WeatherForecastEntityProvider(IMediatorBroker mediator, IServiceProvider serviceProvider)
     {
         _mediator = mediator;

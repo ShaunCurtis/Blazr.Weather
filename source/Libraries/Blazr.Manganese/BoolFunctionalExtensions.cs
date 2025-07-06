@@ -27,7 +27,7 @@ public static class BoolFunctionalExtensions
             isFalse();
     }
 
-    public static Result<T> Map<T>(this bool value, Func<Result<T>> isTrue, Func<Result<T>> isFalse)
+    public static Result<T> MapToResult<T>(this bool value, Func<Result<T>> isTrue, Func<Result<T>> isFalse)
     {
         if (value)
             return isTrue();
@@ -35,7 +35,7 @@ public static class BoolFunctionalExtensions
             return isFalse();
     }
 
-    public static Result<T> MapTrue<T>(this bool value, Func<Result<T>> isTrue)
+    public static Result<T> MapToResultTrue<T>(this bool value, Func<Result<T>> isTrue)
     {
         if (value)
             return isTrue();
@@ -43,27 +43,19 @@ public static class BoolFunctionalExtensions
         return Result<T>.ReturnException("The bound bool was false");
     }
 
-    public static Result<T> MapFalse<T>(this bool value, Func<Result<T>> isFalse)
-    {
-        if (!value)
-            return isFalse();
+    //public static async ValueTask<Result<T>> MapToResultAsync<T>(this bool value, Func<ValueTask<Result<T>>> isTrue, Func<ValueTask<Result<T>>> isFalse)
+    //{
+    //    if (value)
+    //    {
+    //        var resultTrue = await isTrue();
+    //        return resultTrue;
+    //    }
 
-        return Result<T>.ReturnException("The bound bool was true");
-    }
+    //    var resultFalse = await isFalse();
+    //    return resultFalse;
+    //}
 
-    public static async ValueTask<Result<T>> MapAsync<T>(this bool value, Func<ValueTask<Result<T>>> isTrue, Func<ValueTask<Result<T>>> isFalse)
-    {
-        if (value)
-        {
-            var resultTrue = await isTrue();
-            return resultTrue;
-        }
-
-        var resultFalse = await isFalse();
-        return resultFalse;
-    }
-
-    public static async Task<Result<T>> MapAsync<T>(this bool value, Func<Task<Result<T>>> isTrue, Func<Task<Result<T>>> isFalse)
+    public static async Task<Result<T>> MapToResultAsync<T>(this bool value, Func<Task<Result<T>>> isTrue, Func<Task<Result<T>>> isFalse)
     {
         if (value)
         {
