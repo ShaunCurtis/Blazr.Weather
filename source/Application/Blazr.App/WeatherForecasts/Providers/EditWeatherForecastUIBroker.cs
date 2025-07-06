@@ -6,10 +6,7 @@
 using Blazr.App.Core;
 using Blazr.App.Presentation;
 using Blazr.Cadmium.Core;
-using Blazr.Diode;
-using Blazr.Manganese;
 using Microsoft.AspNetCore.Components.Forms;
-using System.Diagnostics;
 
 namespace Blazr.Cadmium.Presentation;
 
@@ -83,7 +80,7 @@ public partial class EditWeatherForecastUIBroker
             isTrue: async () =>
             {
                 LastResult = Result.Return();
-                await this.UpdateRecordAsync();
+                await this.DeleteItemAsync();
             }
         );
 
@@ -128,28 +125,6 @@ public partial class EditWeatherForecastUIBroker
                 });
     }
 
-
-    //private async ValueTask GetRecordItemAsync(WeatherForecastId id)
-    //{
-    //    this.LastResult = Result.Return();
-
-    //    var asyncResult = await _entityProvider.EntityRequest(id);
-
-    //    LastResult = asyncResult.MapToResult();
-
-    //    asyncResult.MatchSuccess(
-    //        success: entity =>
-    //        {
-    //            _entity = entity;
-    //            this.EditMutator = new();
-    //            this.EditMutator.Load(entity.WeatherForecast);
-
-    //            this.EditContext = new EditContext(EditMutator);
-    //        });
-
-    //    _isLoaded = true;
-    //}
-
     private async ValueTask UpdateRecordAsync(bool refreshOnNew = true)
     {
         var mutatedRecord = EditMutator.AsRecord;
@@ -159,8 +134,21 @@ public partial class EditWeatherForecastUIBroker
             .WithSender(this)
             .Execute(_entity);
 
-        LastResult =  await _entityProvider.EntityCommand(_entity)
+        LastResult = await _entityProvider.EntityCommand(_entity)
             .AndThenAsync<WeatherForecastId, WeatherForecastEntity>(_entityProvider.EntityRequest)
             .MapToResultAsync();
     }
+
+    private async ValueTask DeleteRecordAsync()
+    {
+        var entityResult = WeatherForecastEntity.DeleteWeatherForecastAction
+            .Create()
+            .WithSender(this)
+            .Execute(_entity);
+
+        LastResult = await _entityProvider.EntityCommand(_entity)
+            .AndThenAsync<WeatherForecastId, WeatherForecastEntity>(_entityProvider.EntityRequest)
+            .MapToResultAsync();
+    }
+
 }
