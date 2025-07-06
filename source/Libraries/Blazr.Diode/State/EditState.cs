@@ -31,7 +31,7 @@ public readonly record struct EditState
         Value = value;
     }
 
-    public EditState AsDirty => StateCleanIndex == StateNewIndex ? EditState.Dirty : this; 
+    public EditState AsDirty => this.Index == StateCleanIndex ? EditState.Dirty : this; 
 
     public override string ToString()
     {

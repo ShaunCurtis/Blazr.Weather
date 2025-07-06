@@ -131,7 +131,7 @@ public partial class EditWeatherForecastUIBroker
 
         var entityResult = WeatherForecastEntity.UpdateWeatherForecastAction
             .Create(mutatedRecord)
-            .WithSender(this)
+            .AddSender(this)
             .Execute(_entity);
 
         LastResult = await _entityProvider.EntityCommand(_entity)
@@ -143,7 +143,7 @@ public partial class EditWeatherForecastUIBroker
     {
         var entityResult = WeatherForecastEntity.DeleteWeatherForecastAction
             .Create()
-            .WithSender(this)
+            .AddSender(this)
             .Execute(_entity);
 
         LastResult = await _entityProvider.EntityCommand(_entity)
