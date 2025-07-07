@@ -9,19 +9,21 @@ public partial record Result<T>
 {
     private readonly Exception? _exception;
     private readonly T? _value;
+    private ResultException _defaultException => new ResultException("An error occurred. No specific exception provided.");
 
-    private Result(T? value)
+    private Result(T? value) 
         => _value = value;
 
-    private Result(Exception? exception)
-        => _exception = exception ?? new ResultException("An error occurred. No specific exception provided.");
+    private Result(Exception? exception) 
+        => _exception = exception ?? _defaultException;
 
-    private Result()
-        => _exception = new ResultException("An error occurred. No specific exception provided.");
+    private Result() 
+        => _exception = _defaultException;
 
-    public static Result<T> Create(T? value) => value is null
-    ? new(new ResultException("T was null."))
-    : new(value);
+    public static Result<T> Create(T? value) => 
+        value is null
+            ? new(new ResultException("T was null."))
+            : new(value);
 
     public static Result<T> Success(T value) => new(value);
 

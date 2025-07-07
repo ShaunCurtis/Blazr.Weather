@@ -52,7 +52,7 @@ public static class TaskFunctionalExtensions
         // Function to check for task completion and wrap any exceptions into the Result
         Func<Task<Result<T>>, Result<T>> CheckForTaskException = (t) =>
         {
-            return t.IsCompletedSuccessfully.MapToResult<T>(
+            return t.IsCompletedSuccessfully.Map<T>(
                 isTrue: () => t.Result,
                 isFalse: () => Result<T>.Return(t.Exception
                     ?? new Exception("The Task failed to complete successfully")));

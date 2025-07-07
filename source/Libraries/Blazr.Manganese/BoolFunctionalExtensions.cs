@@ -7,55 +7,50 @@ namespace Blazr.Manganese;
 
 public static class BoolFunctionalExtensions
 {
-    public static void Match(this bool value, Action isTrue, Action isFalse)
+    public static void Output(this bool value, Action? isTrue = null, Action? isFalse = null)
     {
-        if (value)
+        if (value && isTrue != null)
+        {
             isTrue();
-        else 
+            return;
+        }
+
+        if (!value && isFalse != null)
+        {
             isFalse();
+            return;
+        }
+        return;
     }
 
-    public static void MatchTrue(this bool value, Action isTrue)
+    public static bool SideEffect(this bool value, Action? isTrue = null, Action? isFalse = null)
     {
-        if (value)
+        if (value && isTrue != null)
+        {
             isTrue();
-    }
+            return value;
+        }
 
-    public static void MatchFalse(this bool value, Action isFalse)
-    {
-        if (!value)
+        if (!value && isFalse != null)
+        {
             isFalse();
+            return value;
+        }
+        return value;
     }
 
-    public static Result<T> MapToResult<T>(this bool value, Func<Result<T>> isTrue, Func<Result<T>> isFalse)
+    public static Result<T> Map<T>(this bool value, Func<Result<T>> isTrue, Func<Result<T>>? isFalse)
     {
         if (value)
             return isTrue();
-        else
+
+        if(!value && isFalse != null)
             return isFalse();
-    }
-
-    public static Result<T> MapToResultTrue<T>(this bool value, Func<Result<T>> isTrue)
-    {
-        if (value)
-            return isTrue();
 
         return Result<T>.ReturnException("The bound bool was false");
     }
 
-    //public static async ValueTask<Result<T>> MapToResultAsync<T>(this bool value, Func<ValueTask<Result<T>>> isTrue, Func<ValueTask<Result<T>>> isFalse)
-    //{
-    //    if (value)
-    //    {
-    //        var resultTrue = await isTrue();
-    //        return resultTrue;
-    //    }
-
-    //    var resultFalse = await isFalse();
-    //    return resultFalse;
-    //}
-
-    public static async Task<Result<T>> MapToResultAsync<T>(this bool value, Func<Task<Result<T>>> isTrue, Func<Task<Result<T>>> isFalse)
+    public static async Task<Result<T>> MapAsync<T>(this bool value, Func<Task<Result<T>>> isTrue, Func<Task<Result<T>>> isFalse)
     {
         if (value)
         {

@@ -16,10 +16,8 @@ public partial record Result
     private readonly Exception? _exception;
 
     private Result(Exception? exception)
-    {
-        _exception = exception
+        => _exception = exception
             ?? new ResultException("An error occurred. No specific exception provided.");
-    }
 
     private Result() { }
 
