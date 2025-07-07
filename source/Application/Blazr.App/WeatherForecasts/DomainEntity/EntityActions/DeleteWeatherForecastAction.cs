@@ -29,10 +29,10 @@ public sealed partial class WeatherForecastEntity
         public static DeleteWeatherForecastAction Create()
             => new() { TransactionId = Guid.NewGuid() };
 
-        public DeleteWeatherForecastAction WithSender(object? sender)
+        public DeleteWeatherForecastAction AddSender(object? sender)
             => this with { sender = sender };
 
-        public DeleteWeatherForecastAction WithTransactionId(Guid transactionId)
+        public DeleteWeatherForecastAction AddTransactionId(Guid transactionId)
             => this with { TransactionId = transactionId };
     }
 }

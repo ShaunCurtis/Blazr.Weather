@@ -32,10 +32,10 @@ public sealed partial class WeatherForecastEntity
         public static UpdateWeatherForecastAction Create(DmoWeatherForecast item)
             => new() { Item = item, TransactionId = Guid.NewGuid() };
 
-        public UpdateWeatherForecastAction WithSender(object? sender)
+        public UpdateWeatherForecastAction AddSender(object? sender)
             => this with { sender = sender };
 
-        public UpdateWeatherForecastAction WithTransactionId(Guid transactionId)
+        public UpdateWeatherForecastAction AddTransactionId(Guid transactionId)
             => this with { TransactionId = transactionId };
     }
 }

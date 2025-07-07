@@ -14,6 +14,7 @@ using Blazr.Diode.Mediator;
 using Blazr.Gallium;
 using Blazr.Manganese;
 using Microsoft.Extensions.DependencyInjection;
+using Xunit;
 
 namespace Blazr.Test;
 
@@ -27,8 +28,6 @@ public partial class WeatherForecastTests
         var provider = GetServiceProvider();
 
         //Injects the data broker
-        var broker = provider.GetService<IMediatorBroker>()!;
-        var messageBus = provider.GetService<IMessageBus>()!;
         var entityProvider = provider.GetService<IEntityProvider<DmoWeatherForecast, WeatherForecastId>>()!;
 
         // Get the test item and it's Id from the Test Provider
@@ -107,7 +106,7 @@ public partial class WeatherForecastTests
         var testSummary = "Warm";
         var testQuery = _testDataProvider.WeatherForecasts.Where(item => testSummary.Equals(item.Summary, StringComparison.CurrentCultureIgnoreCase));
         var testCount = testQuery.Count();
-        var testFirstItem = this.AsDmoWeatherForecast( testQuery.First());
+        var testFirstItem = this.AsDmoWeatherForecast(testQuery.First());
 
         //Outputs from the process that need to be tested
         bool result = false;
@@ -140,112 +139,208 @@ public partial class WeatherForecastTests
         Assert.Equal(testFirstItem, listItemsProvider.Items.First());
     }
 
-    //[Fact]
-    //public async void GetASortedForecastList()
-    //{
-    //    var provider = GetServiceProvider();
-    //    var broker = provider.GetService<IDataBroker>()!;
+    [Fact]
+    public async Task GetASortedForecastList()
+    {
+        var provider = GetServiceProvider();
 
-    //    var testCount = _testDataProvider.WeatherForecasts.Count();
-    //    var testFirstItem = _testDataProvider.WeatherForecasts.Last();
+        //Injects the data broker
+        var _entityProvider = provider.GetService<IEntityProvider<DmoWeatherForecast, WeatherForecastId>>()!;
+        var entityProvider = (WeatherForecastEntityProvider)_entityProvider;
 
-    //    SortDefinition sort = new("Date", true);
-    //    var sortList = new List<SortDefinition>() { sort }; 
+        // Set up the test data
+        var pageSize = 10;
+        var testQuery = _testDataProvider.WeatherForecasts.OrderByDescending(item => item.Date);
+        var testCount = testQuery.Count();
+        var testFirstItem = this.AsDmoWeatherForecast(testQuery.First());
+        //Outputs from the process that need to be tested
+        bool result = false;
+        ListItemsProvider<DmoWeatherForecast> listItemsProvider = default!;
 
-    //    var request = new ListQueryRequest { PageSize = 10000, StartIndex = 0, Sorters = sortList };
-    //    var loadResult = await broker.ExecuteQueryAsync<WeatherForecast>(request);
-    //    Assert.True(loadResult.Successful);
+        // We create a Result from a new WeatherForecastListRequest defining our test parameters
+        // and then map it to the WeatherListRequest method of the entity provider
+        // This will execute the request and return a ListItemsProvider<DmoWeatherForecast> Result
+        // which we then match to get the items provider.
 
-    //    Assert.Equal(testFirstItem, loadResult.Items.First());
+        await Result<WeatherForecastListRequest>
+            .Create(new()
+            {
+                PageSize = pageSize,
+                StartIndex = 0,
+                SortColumn = "Date",
+                SortDescending = true
+            })
+            .MapAsync<ListItemsProvider<DmoWeatherForecast>>(entityProvider.WeatherListRequest)
+            .MatchAsync(success: (provider) =>
+            {
+                listItemsProvider = provider;
+                result = true;
+            });
 
-    //    sort = new("Date", false);
-    //    sortList = new List<SortDefinition>() { sort };
+        Assert.True(result);
 
-    //    request = new ListQueryRequest { PageSize = 100000, StartIndex = 0, Sorters = sortList };
-    //    loadResult = await broker.ExecuteQueryAsync<WeatherForecast>(request);
-    //    Assert.True(loadResult.Successful);
+        // Test the results are as expected
+        Assert.Equal(testCount, listItemsProvider.TotalCount);
+        Assert.Equal(pageSize, listItemsProvider.Items.Count());
+        Assert.Equal(testFirstItem, listItemsProvider.Items.First());
+    }
 
-    //    Assert.Equal(testFirstItem, loadResult.Items.Last());
-    //}
+    [Fact]
+    public async Task UpdateAForecast()
+    {
+        // Get a fully stocked DI container
+        var provider = GetServiceProvider();
 
-    //[Fact]
-    //public async void UpdateAForecast()
-    //{
-    //    // Get a fully stocked DI container
-    //    var provider = GetServiceProvider();
-    //    var broker = provider.GetService<IDataBroker>()!;
+        //Injects the data broker
+        var _entityProvider = provider.GetService<IEntityProvider<DmoWeatherForecast, WeatherForecastId>>()!;
+        var entityProvider = (WeatherForecastEntityProvider)_entityProvider;
 
-    //    // Get a record id to edit
-    //    var testItem = _testDataProvider.WeatherForecasts.First();
-    //    var testUid = testItem.WeatherForecastUid;
+        // Get the test item and it's Id from the Test Provider
+        var testItem = _testDataProvider.WeatherForecasts.First();
 
-    //    // Build an item query and execute it against the broker to get the record to edit
-    //    var request = ItemQueryRequest.Create(testUid);
-    //    var loadResult = await broker.ExecuteQueryAsync<WeatherForecast>(request);
-    //    Assert.True(loadResult.Successful);
-    //    var dbItem = loadResult.Item!;
+        var testId = new WeatherForecastId(testItem.WeatherForecastID);
 
-    //    // construct a recordEditContext for the record
-    //    // Normally you would plug your edit form fields into this context
-    //    // We just update the temperature
-    //    var recordEditContext = new WeatherForecastEditContext(dbItem);
-    //    recordEditContext.TemperatureC = recordEditContext.TemperatureC + 10;
+        //Outputs from the process that need to be tested
+        bool result = false;
+        WeatherForecastEntity entity = default!;
+        WeatherForecastId updatedId = default!;
 
-    //    // In a real edit setting, you would be doing validation to ensure the
-    //    // recordEditContext values are valid before attempting to save the record
-    //    // Note that the validation is on the WeatherForecastEditContext, not WeatherForecast!
-    //    var newItem = recordEditContext.AsRecord;
+        var recordResult = await entityProvider.EntityRequest(testId)
+            .SideEffectAsync(
+            success: (item) =>
+            {
+                entity = item;
+                result = true;
+            });
 
-    //    // Create an update command and execute it against the broker
-    //    var command = new CommandRequest<WeatherForecast>(newItem, CommandState.Update);
-    //    var commandResult = await broker.ExecuteCommandAsync<WeatherForecast>(command);
-    //    Assert.True(commandResult.Successful);
+        // check the query was successful
+        Assert.True(result);
 
-    //    // Get the updated record from the broker and test they are the same
-    //    request = ItemQueryRequest.Create(testUid);
-    //    loadResult = await broker.ExecuteQueryAsync<WeatherForecast>(request);
-    //    Assert.True(loadResult.Successful);
-    //    var dbNewItem = loadResult.Item!;
-    //    Assert.Equal(newItem, dbNewItem);
+        DmoWeatherForecast testRecord = entity.WeatherForecast;
 
-    //    // Execute a list query against the data broker and check the count is still the same
-    //    // i.e. we haven't added a record instead of updating one
-    //    var queryRequest = new ListQueryRequest { PageSize = 10, StartIndex = 0 };
-    //    var queryResult = await broker.ExecuteQueryAsync<WeatherForecast>(queryRequest);
-    //    Assert.True(queryResult.Successful);
+        var updatedRecord = testRecord with { Summary = "Test Edit" };
 
-    //    var testCount = _testDataProvider.WeatherForecasts.Count();
-    //    Assert.Equal(testCount, queryResult.TotalCount);
-    //}
+        await WeatherForecastEntity.UpdateWeatherForecastAction.Create(updatedRecord)
+            .AddSender(this)
+            .Execute(entity)
+            .MapAsync(entityProvider.EntityCommand)
+            .MatchAsync(success: (id) =>
+            {
+                result = true;
+                updatedId = id;
+            });
 
-    //[Fact]
-    //public async void DeleteAForecast()
-    //{
-    //    // Get a fully stocked DI container
-    //    var provider = GetServiceProvider();
-    //    var broker = provider.GetService<IDataBroker>()!;
+        // check the update was successful
+        Assert.True(result);
 
-    //    // get the test record
-    //    var testItem = _testDataProvider.WeatherForecasts.First();
-    //    var testUid = testItem.WeatherForecastUid;
-    //    var testCount = _testDataProvider.WeatherForecasts.Count() - 1;
 
-    //    // build a command and execute it against the database
-    //    var command = new CommandRequest<WeatherForecast>(testItem, CommandState.Delete);
-    //    var commandResult = await broker.ExecuteCommandAsync<WeatherForecast>(command);
-    //    Assert.True(commandResult.Successful);
+        result = false;
+        DmoWeatherForecast? dbRecord = null;
 
-    //    // build a item request and ensure the record no longwer exists
-    //    var request = ItemQueryRequest.Create(testUid);
-    //    var loadResult = await broker.ExecuteQueryAsync<WeatherForecast>(request);
-    //    Assert.False(loadResult.Successful);
+        await entityProvider.RecordRequest(updatedId)
+            .MatchAsync(
+            success: (record) =>
+            {
+                dbRecord = record;
+                result = true;
+            });
 
-    //    // build a list query and check we have one less rcord 
-    //    var queryRequest = new ListQueryRequest { PageSize = 10, StartIndex = 0 };
-    //    var queryResult = await broker.ExecuteQueryAsync<WeatherForecast>(queryRequest);
-    //    Assert.True(queryResult.Successful);
-    //    Assert.Equal(testCount, queryResult.TotalCount);
-    //}
+        // check the query was successful
+        Assert.True(result);
+        // check it matches the update record
+        Assert.Equal(updatedRecord, dbRecord);
+    }
+
+    [Fact]
+    public async Task DeleteAForecast()
+    {
+        // Get a fully stocked DI container
+        var provider = GetServiceProvider();
+
+        //Injects the data broker
+        var _entityProvider = provider.GetService<IEntityProvider<DmoWeatherForecast, WeatherForecastId>>()!;
+        var entityProvider = (WeatherForecastEntityProvider)_entityProvider;
+
+        // Get the test item and it's Id from the Test Provider
+        var testItem = _testDataProvider.WeatherForecasts.First();
+
+        var testId = new WeatherForecastId(testItem.WeatherForecastID);
+
+        //Outputs from the process that need to be tested
+        bool result = false;
+        WeatherForecastEntity entity = default!;
+        WeatherForecastId updatedId = default!;
+
+        var recordResult = await entityProvider.EntityRequest(testId)
+            .SideEffectAsync(
+            success: (item) =>
+            {
+                entity = item;
+                result = true;
+            });
+
+        // check the query was successful
+        Assert.True(result);
+
+        DmoWeatherForecast testRecord = entity.WeatherForecast;
+
+
+        await WeatherForecastEntity.DeleteWeatherForecastAction.Create()
+            .AddSender(this)
+            .Execute(entity)
+            .MapAsync(entityProvider.EntityCommand)
+            .MatchAsync(success: (id) =>
+            {
+                result = true;
+                updatedId = id;
+            });
+
+        // check the update was successful
+        Assert.True(result);
+
+        
+        result = false;
+        Exception? exception = null;
+
+        await entityProvider.RecordRequest(updatedId)
+            .MatchAsync(
+            failure: (ex) =>
+            {
+                exception = ex;
+                result = true;
+            });
+
+        // check the query was successful
+        Assert.True(result);
+        // check it matches the update record
+        Assert.NotNull(exception);
+
+
+        //    // Get a fully stocked DI container
+        //    var provider = GetServiceProvider();
+        //    var broker = provider.GetService<IDataBroker>()!;
+
+        //    // get the test record
+        //    var testItem = _testDataProvider.WeatherForecasts.First();
+        //    var testUid = testItem.WeatherForecastUid;
+        //    var testCount = _testDataProvider.WeatherForecasts.Count() - 1;
+
+        //    // build a command and execute it against the database
+        //    var command = new CommandRequest<WeatherForecast>(testItem, CommandState.Delete);
+        //    var commandResult = await broker.ExecuteCommandAsync<WeatherForecast>(command);
+        //    Assert.True(commandResult.Successful);
+
+        //    // build a item request and ensure the record no longwer exists
+        //    var request = ItemQueryRequest.Create(testUid);
+        //    var loadResult = await broker.ExecuteQueryAsync<WeatherForecast>(request);
+        //    Assert.False(loadResult.Successful);
+
+        //    // build a list query and check we have one less rcord 
+        //    var queryRequest = new ListQueryRequest { PageSize = 10, StartIndex = 0 };
+        //    var queryResult = await broker.ExecuteQueryAsync<WeatherForecast>(queryRequest);
+        //    Assert.True(queryResult.Successful);
+        //    Assert.Equal(testCount, queryResult.TotalCount);
+    }
 
     //[Fact]
     //public async void AddAForecast()
