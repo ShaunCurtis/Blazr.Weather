@@ -47,8 +47,11 @@ public static class BoolFunctionalExtensions
         if(!value && isFalse != null)
             return isFalse();
 
-        return Result<T>.ReturnException("The bound bool was false");
+        return Result<T>.Failure("The bound bool was false");
     }
+
+    public static Result<T> Map<T>(this bool value, Func<bool, Result<T>> mapping)
+        => mapping(value);
 
     public static async Task<Result<T>> MapAsync<T>(this bool value, Func<Task<Result<T>>> isTrue, Func<Task<Result<T>>> isFalse)
     {

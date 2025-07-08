@@ -18,21 +18,21 @@ public static class TaskFunctionalExtensions
     {
         var result = await task.HandleTaskCompletionAsync();
 
-        result.Match(success, failure);
+        result.Output(success: success, failure: failure);
     }
 
     public static async Task MatchAsync<T>(this Task<Result<T>> task, Action<T> success)
     {
         var result = await task.HandleTaskCompletionAsync();
 
-        result.Match(success);
+        result.Output(success: success);
     }
 
     public static async Task MatchAsync<T>(this Task<Result<T>> task, Action<Exception> failure)
     {
         var result = await task.HandleTaskCompletionAsync();
 
-        result.Match(failure);
+        result.Output(failure: failure);
     }
 
     public static Task<Result<T>> SideEffectAsync<T>(this Task<Result<T>> task, Action<T> success, Action<Exception> failure)
@@ -54,7 +54,7 @@ public static class TaskFunctionalExtensions
         {
             return t.IsCompletedSuccessfully.Map<T>(
                 isTrue: () => t.Result,
-                isFalse: () => Result<T>.Return(t.Exception
+                isFalse: () => Result<T>.Failure(t.Exception
                     ?? new Exception("The Task failed to complete successfully")));
         };
 

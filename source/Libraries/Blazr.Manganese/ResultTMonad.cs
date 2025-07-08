@@ -57,26 +57,50 @@ public partial record Result<T>
         return this;
     }
 
-    public Result<TOut> Map<TOut>(Func<T, Result<TOut>> success, Func<Exception, Result<TOut>> failure)
+    public Result<TOut> MapOut<TOut>(Func<T, Result<TOut>> success, Func<Exception, Result<TOut>>? failure = null)
     {
         if (_exception is null)
             return success(_value!);
 
-        return failure(_exception!);
+        if (_exception is not null && failure != null)
+            return failure(_exception!);
+
+        return Result<TOut>.Failure(_exception!);
     }
 
-    public async Task<Result<TOut>> MapAsync<TOut>(Func<T, Task<Result<TOut>>> success, Func<Exception, Task<Result<TOut>>> failure)
+    public Result<T> Map(Func<T, Result<T>>? success = null, Func<Exception, Result<T>>? failure = null)
+    {
+        if (_exception is null && success != null)
+            return success(_value!);
+
+        if (_exception is not null && failure != null)
+            return failure(_exception!);
+
+        return this;
+    }
+
+    public Result<U> Map<U>(Func<T, U> func)
+    {
+        if (_exception is not null)
+            return Result<U>.Failure(_exception!);
+
+        try
+        {
+            return Result<U>.Create(func(_value!));
+        }
+        catch (Exception ex)
+        {
+            return Result<U>.Failure(ex);
+        }
+    }
+
+    public async Task<Result<TOut>> MapAsync<TOut>(Func<T, Task<Result<TOut>>> success, Func<Exception, Task<Result<TOut>>>? failure = null)
     {
         if (_exception is null)
             return await success(_value!);
 
-        return await failure(_exception!);
-    }
-
-    public async Task<Result<TOut>> MapAsync<TOut>(Func<T, Task<Result<TOut>>> success)
-    {
-        if (_exception is null)
-            return await success(_value!);
+        if(_exception is not null && failure != null)
+            return await failure(_exception!);
 
         return Result<TOut>.Failure(_exception!);
     }
@@ -104,122 +128,13 @@ public partial record Result<T>
 
         return this;
     }
-    public void Match(Action<T> success, Action<Exception> failure)
+
+    public void Output(Action<T>? success = null, Action<Exception>? failure = null)
     {
-        if (_exception is null)
+        if (_exception is null && success != null)
             success(_value!);
-        else
+
+        if (_exception is not null && failure != null)
             failure(_exception!);
     }
-
-    public void Match(Action<T> success)
-    {
-        if (_exception is null)
-            success(_value!);
-    }
-
-    public void Match(Action<Exception> failure)
-    {
-        if (_exception is not null)
-            failure(_exception!);
-    }
-}
-
-public partial record Result<T>
-{
-    /// <summary>
-    /// Returns a success/failure Result<T> with the provided value based on the null state of the value.
-    /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    public static Result<T> Return(T? value) => value is null
-        ? new(new ResultException("T was null."))
-        : new(value);
-
-    /// <summary>
-    /// Returns a failure Result<T> with the provided exception.
-    /// </summary>
-    /// <param name="exception"></param>
-    /// <returns></returns>
-    public static Result<T> Return(Exception exception) => new(exception);
-
-    /// <summary>
-    /// Returns a failure result with the message wrapped in a ResultException
-    /// </summary>
-    /// <param name="message"></param>
-    /// <returns></returns>
-    public static Result<T> ReturnException(string message) => new(new ResultException(message));
-
-    /// <summary>
-    /// Provides the way to unwrap a Result based on success or failure 
-    /// </summary>
-    /// <param name="success"></param>
-    /// <param name="failure"></param>
-
-    public TOut MapOut<TOut>(Func<T, TOut> success, Func<TOut> failure)
-        => _exception is null
-            ? success(_value!)
-            : failure();
-
-    public Result<U> Bind<U>(Func<T, Result<U>> func)
-    {
-        return _exception is null
-            ? func(_value!)
-            : Result<U>.Return(_exception!);
-    }
-
-    public Result<U> Map<U>(Func<T, U> func)
-    {
-        if (_exception is not null)
-            return Result<U>.Return(_exception!);
-
-        try
-        {
-            return Result<U>.Return(func(_value!));
-        }
-        catch (Exception ex)
-        {
-            return Result<U>.Return(ex);
-        }
-    }
-
-    public Result Map(Action<T> action)
-    {
-        if (_exception is not null)
-            return Result.Return(_exception!);
-
-        try
-        {
-            action(_value!);
-            return Result.Return();
-        }
-        catch (Exception ex)
-        {
-            return Result.Return(ex);
-        }
-    }
-
-    public Result Bind(Func<T, Result> func)
-        => _exception is null
-            ? func(_value!)
-            : Result.Return(_exception);
-    public Result Map(Func<T, Result> success, Func<Exception, Result> failure)
-        => _exception is null
-            ? success(_value!)
-            : failure(_exception!);
-
-    public Result MapSuccess(Func<T, Result> success)
-        => _exception is null
-            ? success(_value!)
-            : Result.Return(_exception);
-
-    public Result<U> MapSuccess<U>(Func<T, Result<U>> success)
-        => _exception is null
-            ? success(_value!)
-            : Result<U>.Return(_exception);
-
-    public Result<T> MapFailure(Func<T, Result<T>> failure)
-        => _exception is null
-            ? this
-            : failure(_value!);
 }

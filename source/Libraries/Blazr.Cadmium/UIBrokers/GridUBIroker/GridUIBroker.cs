@@ -79,14 +79,15 @@ public class GridUIBroker<TRecord, TKey>
     /// <returns></returns>
     public async ValueTask<GridItemsProviderResult<TRecord>> GetItemsAsync()
     {
-        var asyncResult = await _entityProvider.GetItemsAsync(this.GridState);
+        var result = GridItemsProviderResult.From<TRecord>(new List<TRecord>(), 0);
 
+        var asyncResult = await _entityProvider.GetItemsAsync(this.GridState);
+ 
         LastResult = asyncResult.MapToResult();
 
-        return asyncResult.MapOut<GridItemsProviderResult<TRecord>>(
-            success: itemsProvider => itemsProvider,
-            failure: () => GridItemsProviderResult.From<TRecord>(new List<TRecord>(), 0)
-        );
+        asyncResult.Output(success: (provider) => result = provider);
+
+        return result;
     }
 
     private void OnStateChanged(object? message)

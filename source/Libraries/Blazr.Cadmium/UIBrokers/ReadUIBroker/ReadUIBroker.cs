@@ -37,14 +37,11 @@ public class ReadUIBroker<TRecord, TKey> : IReadUIBroker<TRecord, TKey>, IDispos
         _key = id;
 
         // Call the RecordRequest on the record specific EntityProvider to get the record
-        var result = await _entityProvider.RecordRequest.Invoke(id);
-
-        LastResult = result.MapSuccess(
-            success: (record) =>
-            {
-                this.Item = record ?? _entityProvider.NewRecord;
-                return Result.Return();
-            });
+        LastResult = await _entityProvider.RecordRequest.Invoke(id)
+            .SideEffectAsync(
+                success:(record) => this.Item = record ?? _entityProvider.NewRecord
+             )
+            .MapToResultAsync();
     }
 
     private async void OnRecordChanged(object? obj)

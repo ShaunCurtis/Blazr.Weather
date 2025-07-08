@@ -13,7 +13,7 @@ public interface IEntityProvider<TRecord, TKey>
     where TRecord : class, new()
     where TKey : notnull, IEntityId
 {
-    public ValueTask<Result<GridItemsProviderResult<TRecord>>> GetItemsAsync(GridState<TRecord> state);
+    public Task<Result<GridItemsProviderResult<TRecord>>> GetItemsAsync(GridState<TRecord> state);
 
     public Func<TKey, Task<Result<TRecord>>> RecordRequest { get; }
 

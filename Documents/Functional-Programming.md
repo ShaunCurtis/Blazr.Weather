@@ -1,12 +1,14 @@
 # Functional Programming in C#
 
-Applying the Functional Programming [FP from now on] paradigm to Object Oriented Programming [OOP] languages such as C# requires compromises on both sides.  There are some fundimental concepts that don't sit well on the other side.
+Applying the Functional Programming paradigm to Object Oriented Programming languages such as C# requires compromises on both sides.  There are some fundimental concepts that don't sit well on the other side.
 
-This article is my take on melding FP into C# to take advantage of the benefits.
+> Note: From here on Functional Programming is **FP** and Object Oriented Programming is **OOP**.  
+
+This article is my personal implementation on melding FP into C# and the DotNet Framework.
 
 ## `Result<T>` and `Result`
 
-`Result<T>` and `Result` are the foundation stones of my FP implementation - as `Task` and `Task<T>` are to async coding.
+Everything revolves around `Result<T>` and `Result`.  They are the foundation stones of my FP implementation,  Just as `Task` and `Task<T>` are to async coding.
 
 Any method that would return a value:
 
@@ -32,12 +34,12 @@ returns a `Result`:
 public Result DoSomething(string value) {..}
 ```
 
-There's a separate article dealing with `Result<T>` and `Result`, so I'll only cover the basics here.
+There's a separate article that covers `Result<T>` and `Result` in detail, so I'll only cover the basics here.
 
 A result has two possible states:
 
-- **Success**: The operation completed successfully
-- **Failure**: The operation failed, and the result contains an `Exception` or an error message wrapped in an `ResultException`. 
+- **Success**: The operation completed successfully.
+- **Failure**: The operation failed, and the result contains an `Exception` or an error message wrapped in a `ResultException`. 
 
 The basic definitions are as follows:
 
@@ -91,7 +93,7 @@ public record Result
 }
 ```
 
-The real power of Result comes when we add FP methods.  Before we start on those, we need to cover some more basics.
+The real power in Result comes when we add FP methods.  Before we start on those, we need to cover some more basics.
 
 ## Expressions and Statements
 
@@ -126,7 +128,7 @@ int x = someBoolCondition is true
 
 ### Boolean Extensions
 
-We can start to solve this problem by adding some FP to `bool`:
+We can resolve this problem by adding some FP to `bool`:
 
 You could create a True/False mapper like this:
 
@@ -135,7 +137,7 @@ public static T Map<T>(this bool value, Func<T> isTrue, Func<T> isFalse)
     => value ? isTrue() : isFalse();
 ```
 
-And used like this:
+And use it like this:
 
 ```csharp
 int x = someBoolCondition.Map(
@@ -152,7 +154,7 @@ int x = someBoolCondition.Map(
 );
 ```
 
-But in my FP world all functions return a result, so `Map` looks like this:
+However, in my FP world all functions return a result, so `Map` looks like this:
 
 ```csharp
     public static Result<T> Map<T>(this bool value, Func<Result<T>> isTrue, Func<Result<T>>? isFalse)
@@ -167,10 +169,15 @@ But in my FP world all functions return a result, so `Map` looks like this:
     }
 ```
 
+So we now have:
+
 ```csharp
-int x = someBoolCondition.Map((value) => value? 2 
+Result<int> x = someBoolCondition.Map((value) => value? 2 
 );
 ```
+
+This however, adds a new problem: how to *unwrap* `Result<int>`.  We solved this with an output method:
+
 
 
 
