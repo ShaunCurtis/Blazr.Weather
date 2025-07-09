@@ -14,7 +14,7 @@ public partial class EditWeatherForecastUIBroker
 {
     public EditState State => _entity.WeatherForecastRecord.State;
 
-    public Result LastResult { get; protected set; } = Result.Return();
+    public Result LastResult { get; protected set; } = Result.Success();
 
     public WeatherForecastEditContext EditMutator { get; protected set; } = new();
 
@@ -33,7 +33,7 @@ public partial class EditWeatherForecastUIBroker
             isTrue: LoadedErrorResult,
             isFalse: async () =>
             {
-                LastResult = Result.Return();
+                LastResult = Result.Success();
                 await this.GetEntityAsync(id);
             }
         );
@@ -47,7 +47,7 @@ public partial class EditWeatherForecastUIBroker
             isTrue: LoadedErrorResult,
             isFalse: () =>
             {
-                LastResult = Result.Return();
+                LastResult = Result.Success();
                 EditMutator.Reset();
 
                 // Create a new EditContext.
@@ -65,7 +65,7 @@ public partial class EditWeatherForecastUIBroker
             isFalse: NotLoadedErrorResult,
             isTrue: async () =>
             {
-                LastResult = Result.Return();
+                LastResult = Result.Success();
                 await this.UpdateRecordAsync(refreshOnNew);
             }
         );
@@ -79,7 +79,7 @@ public partial class EditWeatherForecastUIBroker
             isFalse: NotLoadedErrorResult,
             isTrue: async () =>
             {
-                LastResult = Result.Return();
+                LastResult = Result.Success();
                 await this.DeleteItemAsync();
             }
         );
@@ -97,16 +97,16 @@ public partial class EditWeatherForecastUIBroker
     private bool _isLoaded;
 
     private void NotLoadedErrorResult()
-        => LastResult = Result.ReturnException("The UIBroker has not been loaded. There is nothing to save.");
+        => LastResult = Result.Failure("The UIBroker has not been loaded. There is nothing to save.");
 
     private void LoadedErrorResult()
-        => LastResult = Result.ReturnException("The UIBroker has already been loaded. You can not reload it.");
+        => LastResult = Result.Failure("The UIBroker has already been loaded. You can not reload it.");
 
     private async Task<Result<WeatherForecastEntity>> GetEntityAsync(WeatherForecastId id)
     {
         var broker = this;
 
-        LastResult = Result.Return();
+        LastResult = Result.Success();
 
         return await id.IsDefault
             .MapAsync<WeatherForecastEntity>(
@@ -135,8 +135,8 @@ public partial class EditWeatherForecastUIBroker
             .Execute(_entity);
 
         LastResult = await _entityProvider.EntityCommand(_entity)
-            .AndThenAsync<WeatherForecastId, WeatherForecastEntity>(_entityProvider.EntityRequest)
-            .MapToResultAsync();
+            .MapAsync<WeatherForecastId, WeatherForecastEntity>(_entityProvider.EntityRequest)
+            .MapAsync();
     }
 
     private async ValueTask DeleteRecordAsync()
@@ -147,8 +147,8 @@ public partial class EditWeatherForecastUIBroker
             .Execute(_entity);
 
         LastResult = await _entityProvider.EntityCommand(_entity)
-            .AndThenAsync<WeatherForecastId, WeatherForecastEntity>(_entityProvider.EntityRequest)
-            .MapToResultAsync();
+            .MapAsync<WeatherForecastId, WeatherForecastEntity>(_entityProvider.EntityRequest)
+            .MapAsync();
     }
 
 }

@@ -29,7 +29,7 @@ public class GridUIBroker<TRecord, TKey>
 
     public Guid StateContextUid { get; private set; } = Guid.NewGuid();
     public GridState<TRecord> GridState { get; private set; } = new();
-    public Result LastResult { get; protected set; } = Result.Return();
+    public Result LastResult { get; protected set; } = Result.Success();
 
     public event EventHandler<EventArgs>? StateChanged;
 
@@ -70,7 +70,7 @@ public class GridUIBroker<TRecord, TKey>
 
         _gridStateStore.Dispatch(this.StateContextUid, this.GridState);
 
-        return Result.Return();
+        return Result.Success();
     }
 
     /// <summary>

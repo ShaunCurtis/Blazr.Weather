@@ -22,12 +22,12 @@ public sealed partial class WeatherForecastEntity
         public Result<WeatherForecastEntity> Execute(WeatherForecastEntity entity)
             =>  entity._weatherForecast
                 .Update(this.Item, this.TransactionId)
-                .AndThen(() => entity.ApplyRules(this.sender))
-                .Map(
+                .Map(() => entity.ApplyRules(this.sender))
+                .SideEffect(
                     success: () => entity.StateHasChanged?.Invoke(this.sender, this.Item.Id),
                     failure: ex => entity._weatherForecast.RollBackLastUpdate(this.TransactionId)
                 )
-                .MapSuccess<WeatherForecastEntity>(() => Result<WeatherForecastEntity>.Success(entity));
+                .Map<WeatherForecastEntity>(() => Result<WeatherForecastEntity>.Success(entity));
 
         public static UpdateWeatherForecastAction Create(DmoWeatherForecast item)
             => new() { Item = item, TransactionId = Guid.NewGuid() };

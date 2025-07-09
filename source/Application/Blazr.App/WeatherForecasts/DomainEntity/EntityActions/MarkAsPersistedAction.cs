@@ -24,6 +24,6 @@ public partial class WeatherForecastEntity
 
         public Result Dispatch(WeatherForecastEntity entity)
             => entity._weatherForecast.MarkAsPersisted()
-            .MapSuccess(() => entity.StateHasChanged?.Invoke(this.Sender, entity.Id));
+            .SideEffect(() => entity.StateHasChanged?.Invoke(this.Sender, entity.Id));
     }
 }

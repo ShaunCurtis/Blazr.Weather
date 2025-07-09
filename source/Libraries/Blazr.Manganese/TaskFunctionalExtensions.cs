@@ -14,7 +14,7 @@ public static class TaskFunctionalExtensions
         return await result.MapAsync(mapping);
     }
     
-    public static async Task OutputAsync<T>(this Task<Result<T>> task, Action<T> success, Action<Exception> failure)
+    public static async Task OutputAsync<T>(this Task<Result<T>> task, Action<T>? success = null, Action<Exception>? failure = null)
     {
         var result = await task.HandleTaskCompletionAsync();
 
@@ -28,23 +28,10 @@ public static class TaskFunctionalExtensions
         result.Output(success: success);
     }
 
-    public static async Task OutputAsync<T>(this Task<Result<T>> task, Action<Exception> failure)
-    {
-        var result = await task.HandleTaskCompletionAsync();
-
-        result.Output(failure: failure);
-    }
-
-    public static Task<Result<T>> SideEffectAsync<T>(this Task<Result<T>> task, Action<T> success, Action<Exception> failure)
+    public static Task<Result<T>> SideEffectAsync<T>(this Task<Result<T>> task, Action<T>? success = null, Action<Exception>? failure = null)
         => task.HandleTaskCompletionAsync().ContinueWith((t) => t.Result.SideEffect(success, failure));
 
-    public static Task<Result<T>> SideEffectAsync<T>(this Task<Result<T>> task, Action<T> success)
-        => task.HandleTaskCompletionAsync().ContinueWith((t) => t.Result.SideEffect(success: success));
-
-    public static Task<Result<T>> SideEffectAsync<T>(this Task<Result<T>> task, Action<Exception> failure)
-        => task.HandleTaskCompletionAsync().ContinueWith((t) => t.Result.SideEffect(failure: failure));
-
-    public static Task<Result> MapToResultAsync<T>(this Task<Result<T>> task)
+    public static Task<Result> MapAsync<T>(this Task<Result<T>> task)
         => task.HandleTaskCompletionAsync().ContinueWith((t) => t.Result.Map());
 
     private static Task<Result<T>> HandleTaskCompletionAsync<T>(this Task<Result<T>> task)

@@ -19,7 +19,7 @@ public class ReadUIBroker<TRecord, TKey> : IReadUIBroker<TRecord, TKey>, IDispos
 
     public TRecord Item { get; protected set; } = new TRecord();
     public event EventHandler? RecordChanged;
-    public Result LastResult { get; protected set; } = Result.Return();
+    public Result LastResult { get; protected set; } = Result.Success();
 
     public ReadUIBroker(IEntityProvider<TRecord, TKey> entityProvider, IMessageBus messageBus)
     {
@@ -41,7 +41,7 @@ public class ReadUIBroker<TRecord, TKey> : IReadUIBroker<TRecord, TKey>, IDispos
             .SideEffectAsync(
                 success:(record) => this.Item = record ?? _entityProvider.NewRecord
              )
-            .MapToResultAsync();
+            .MapAsync();
     }
 
     private async void OnRecordChanged(object? obj)

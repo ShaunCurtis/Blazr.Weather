@@ -14,51 +14,37 @@ public record Maybe<T> where T : class
         _value = value;
     }
 
-    public Maybe<TO> Bind<TO>(Func<T, Maybe<TO>> func) where TO : class
-        => _value is null ? Maybe<TO>.None() : func(_value);
+    public Maybe<TOut> Map<TOut>(Func<T, Maybe<TOut>> func) where TOut : class
+        => _value is null ? Maybe<TOut>.None() : func(_value);
 
-    public Maybe<TO> Map<TO>(Func<T, TO> func) where TO : class
+    public Maybe<TOut> Map<TOut>(Func<T, TOut> func) where TOut : class
     {
         if (_value is null)
-            return Maybe<TO>.None();
+            return Maybe<TOut>.None();
 
         var result = func(_value);
         
         return result is null 
-            ? Maybe<TO>.None() 
-            : new Maybe<TO>(result);
+            ? Maybe<TOut>.None() 
+            : new Maybe<TOut>(result);
     }
 
-    public Maybe<T> Match(Action<T> Yes, Action No)
+    public Maybe<T> Output(Action<T>? Yes = null, Action? No = null)
     {
-        if (_value is null)
-        {
-            No();
-            return this;
-        }
+        if (_value is not null && Yes != null)
+            Yes(_value);
 
-        Yes(_value);
-        return this;
-    }
-
-    public Maybe<T> MatchYes(Action<T> Yes)
-    {
-        if (_value is not null)
-        Yes(_value);
-
-        return this;
-    }
-
-    public Maybe<T> MatchNo(Action No)
-    {
-        if (_value is null)
+        if (_value is null && No != null)
             No();
 
         return this;
     }
+
+    public static Maybe<T> Create(T? value)
+        => value is null ? Maybe<T>.None() : Maybe<T>.Some(value);
 
     public static Maybe<T> None() => new Maybe<T>();
 
-    public static Maybe<T> Return(T value)
+    public static Maybe<T> Some(T value)
         => new Maybe<T>(value);
 }

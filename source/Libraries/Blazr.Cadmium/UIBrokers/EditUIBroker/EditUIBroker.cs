@@ -21,7 +21,7 @@ public class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBroker<TRe
     private bool _isLoaded;
     public EditState State { get; private set; } = EditState.Clean;
 
-    public Result LastResult { get; protected set; } = Result.Return();
+    public Result LastResult { get; protected set; } = Result.Success();
 
     public TRecordEditContext EditMutator { get; protected set; } = new();
 
@@ -38,7 +38,7 @@ public class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBroker<TRe
     {
         if (_isLoaded)
         {
-            LastResult = Result.ReturnException("The UIBroker has already been loaded. You cannot reload the UIBroker.");
+            LastResult = Result.Failure("The UIBroker has already been loaded. You cannot reload the UIBroker.");
             return;
         }
 
@@ -85,7 +85,7 @@ public class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBroker<TRe
 
     private ValueTask GetNewItemAsync()
     {
-        this.LastResult = Result.Return();
+        this.LastResult = Result.Success();
 
         var record = _entityProvider.NewRecord;
 
@@ -102,7 +102,7 @@ public class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBroker<TRe
 
     private async ValueTask GetRecordItemAsync()
     {
-        this.LastResult = Result.Return();
+        this.LastResult = Result.Success();
 
         var asyncResult = await _entityProvider.RecordRequest.Invoke(this.EntityId);
 
@@ -122,7 +122,7 @@ public class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBroker<TRe
 
     private async ValueTask UpdateRecordAsync(bool refreshOnNew = true)
     {
-        LastResult = Result.ReturnException("Nothing to Do");
+        LastResult = Result.Failure("Nothing to Do");
 
         // Update the command state for an update operation
         if (this.State == EditState.Clean)

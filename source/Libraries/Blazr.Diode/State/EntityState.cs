@@ -33,7 +33,7 @@ public sealed class EntityState<T>
         this.Record = stateRecord.Record;
         this.State = stateRecord.State;
         _lastState = null;
-        return Result.Return();
+        return Result.Success();
     }
 
     public Result Update(T record, Guid transactionId)
@@ -42,7 +42,7 @@ public sealed class EntityState<T>
 
         this.Record = record;
         this.State = this.State.AsDirty;
-        return Result.Return();
+        return Result.Success();
     }
 
     public Result MarkAsDeleted(Guid transactionId)
@@ -50,13 +50,13 @@ public sealed class EntityState<T>
         this.SaveState(transactionId);
 
         this.State = EditState.Deleted;
-        return Result.Return();
+        return Result.Success();
     }
 
     public Result MarkAsPersisted()
     {
         this.State = EditState.Clean;
-        return Result.Return();
+        return Result.Success();
     }
 
     private void SaveState(Guid? transactionId = null)
@@ -65,17 +65,17 @@ public sealed class EntityState<T>
     public Result RollBackLastUpdate(Guid transactionId)
     {
         if (this._lastState is null)
-            return Result.ReturnException("No rollback state available.");
+            return Result.Failure("No rollback state available.");
 
         if (_lastState?.TransactionId != transactionId)
-            return Result.ReturnException("There is no rollback data for the transaction.");
+            return Result.Failure("There is no rollback data for the transaction.");
 
 
         this.Record = _lastState.Record;
         this.State = _lastState.State;
         _lastState = null;
 
-        return Result.Return();
+        return Result.Success();
     }
 }
 

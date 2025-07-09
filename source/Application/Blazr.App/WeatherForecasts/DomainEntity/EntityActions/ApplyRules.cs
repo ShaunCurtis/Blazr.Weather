@@ -11,8 +11,8 @@ public sealed partial class WeatherForecastEntity
 
     private Result ApplyRules(object? sender)
         => SetProcessing()
-            .Bind(RunRules)
-            .MapSuccess(() => this.StateHasChanged?.Invoke(sender ?? this, this.Id)
+            .Map(RunRules)
+            .SideEffect(() => this.StateHasChanged?.Invoke(sender ?? this, this.Id)
         );
 
     private Result RunRules()
@@ -26,8 +26,8 @@ public sealed partial class WeatherForecastEntity
     private Result SetProcessing()
     {
         var result = _processing
-            ? Result.ReturnException("Rules already running.")
-            : Result.Return();
+            ? Result.Failure("Rules already running.")
+            : Result.Success();
 
         _processing = true;
         return result;
@@ -35,6 +35,6 @@ public sealed partial class WeatherForecastEntity
 
     private Result NewDateNotInTheFutureRule()
         => (_weatherForecast.State == EditState.New && _weatherForecast.Record.Date.Value > DateOnly.FromDateTime(DateTime.Now))
-            ? Result.Return(new ValidationException("A new weather forecast must have a future date."))
-            : Result.Return();
+            ? Result.Failure(new ValidationException("A new weather forecast must have a future date."))
+            : Result.Success();
 }

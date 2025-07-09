@@ -9,7 +9,7 @@ public class TripSwitch
 {
     private bool _tripped;
 
-    private TripSwitch() {}
+    private TripSwitch() { }
 
     public void Trip()
         => _tripped = true;
@@ -17,37 +17,20 @@ public class TripSwitch
     public void Reset()
         => _tripped = false;
 
-    public TripSwitch Map(Func<bool> func)
+    public TripSwitch Map(Func<bool> TripTest)
     {
-        if (func())
+        if (TripTest())
             Trip();
         return this;
     }
 
-    public TripSwitch Match(Action Tripped, Action NotTripped)
+    public TripSwitch Output(Action? Tripped = null, Action? NotTripped = null)
     {
-        if (_tripped)
-        {
+        if (_tripped && Tripped != null)
             Tripped();
-            return this;
-        }
 
-        NotTripped();
-        return this;
-    }
-
-    public TripSwitch MatchYes(Action action)
-    {
-        if (_tripped)
-            action();
-
-        return this;
-    }
-
-    public TripSwitch MatchNo(Action action)
-    {
-        if (!_tripped)
-            action();
+        if (!_tripped && NotTripped != null)
+            NotTripped();
 
         return this;
     }

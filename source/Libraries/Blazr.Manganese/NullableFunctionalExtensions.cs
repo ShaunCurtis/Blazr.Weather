@@ -7,12 +7,13 @@ namespace Blazr.Manganese;
 
 public static class NullableFunctionalExtensions
 {
-    public static Nullable<T> Match<T>(this Nullable<T> value, Action<T> IsNotNull, Action IsNull)
+    public static Nullable<T> SideEffect<T>(this Nullable<T> value, Action<T>? IsNotNull = null, Action? IsNull = null)
         where T : struct
     {
-        if (value.HasValue)
+        if (value.HasValue && IsNotNull != null)
             IsNotNull(value.Value);
-        else
+
+        if (!value.HasValue && IsNull != null)
             IsNull();
 
         return value;
