@@ -18,7 +18,7 @@ public class WeatherForecastEntityProvider
     private readonly IMediatorBroker _mediator;
     private readonly IServiceProvider _serviceProvider;
 
-    public async ValueTask<Result<GridItemsProviderResult<DmoWeatherForecast>>> GetItemsAsync(GridState<DmoWeatherForecast> state)
+    public async Task<Result<GridItemsProviderResult<DmoWeatherForecast>>> GetItemsAsync(GridState<DmoWeatherForecast> state)
     {
         var asyncResult = await _mediator.Send(new WeatherForecastListRequest()
         {
@@ -28,7 +28,7 @@ public class WeatherForecastEntityProvider
             SortDescending = state.SortDescending
         });
 
-        return asyncResult.MapOut<GridItemsProviderResult<DmoWeatherForecast>>(FromListItemsProvider);
+        return asyncResult.Map<GridItemsProviderResult<DmoWeatherForecast>>(FromListItemsProvider);
     }
 
     public Func<WeatherForecastId, Task<Result<WeatherForecastEntity>>> EntityRequest
@@ -64,7 +64,7 @@ public class WeatherForecastEntityProvider
     public async ValueTask<Result<WeatherForecastEntity>> GetEntityAsync(WeatherForecastId id)
     {
         var result = (await _mediator.Send(new WeatherForecastRecordRequest(id)))
-            .MapOut<WeatherForecastEntity>((record) =>
+            .Map<WeatherForecastEntity>((record) =>
             {
                 new WeatherForecastEntity(record);
                 return Result<WeatherForecastEntity>.Failure($"No entity exists for Id{id}.  Created default entity.");

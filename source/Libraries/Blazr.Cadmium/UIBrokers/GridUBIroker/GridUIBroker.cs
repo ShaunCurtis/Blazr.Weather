@@ -83,7 +83,7 @@ public class GridUIBroker<TRecord, TKey>
 
         var asyncResult = await _entityProvider.GetItemsAsync(this.GridState);
  
-        LastResult = asyncResult.MapToResult();
+        LastResult = asyncResult.Map();
 
         asyncResult.Output(success: (provider) => result = provider);
 

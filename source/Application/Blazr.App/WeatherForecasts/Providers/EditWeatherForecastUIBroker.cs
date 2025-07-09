@@ -29,7 +29,7 @@ public partial class EditWeatherForecastUIBroker
 
     public ValueTask LoadAsync(WeatherForecastId id)
     {
-        _isLoaded.Match(
+        _isLoaded.Output(
             isTrue: LoadedErrorResult,
             isFalse: async () =>
             {
@@ -43,7 +43,7 @@ public partial class EditWeatherForecastUIBroker
 
     public ValueTask ResetItemAsync()
     {
-        _isLoaded.Match(
+        _isLoaded.Output(
             isTrue: LoadedErrorResult,
             isFalse: () =>
             {
@@ -61,7 +61,7 @@ public partial class EditWeatherForecastUIBroker
 
     public ValueTask SaveItemAsync(bool refreshOnNew = true)
     {
-        _isLoaded.Match(
+        _isLoaded.Output(
             isFalse: NotLoadedErrorResult,
             isTrue: async () =>
             {
@@ -75,7 +75,7 @@ public partial class EditWeatherForecastUIBroker
 
     public ValueTask DeleteItemAsync()
     {
-        _isLoaded.Match(
+        _isLoaded.Output(
             isFalse: NotLoadedErrorResult,
             isTrue: async () =>
             {

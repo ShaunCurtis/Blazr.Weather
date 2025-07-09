@@ -45,7 +45,7 @@ public static class TaskFunctionalExtensions
         => task.HandleTaskCompletionAsync().ContinueWith((t) => t.Result.SideEffect(failure));
 
     public static Task<Result> MapToResultAsync<T>(this Task<Result<T>> task)
-        => task.HandleTaskCompletionAsync().ContinueWith((t) => t.Result.MapToResult());
+        => task.HandleTaskCompletionAsync().ContinueWith((t) => t.Result.Map());
 
     private static Task<Result<T>> HandleTaskCompletionAsync<T>(this Task<Result<T>> task)
     {

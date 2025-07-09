@@ -1,3 +1,2 @@
-Argument 1: cannot convert from 
-'System.Func<Blazr.App.Core.WeatherForecastListRequest, System.Threading.Tasks.Task<Blazr.Manganese.Result<Blazr.Diode.ListItemsProvider<Blazr.App.Core.DmoWeatherForecast>>>>'
-'System.Func<Blazr.App.Core.WeatherForecastListRequest, System.Threading.Tasks.Task<Blazr.Manganese.Result<System.Threading.Tasks.Task<Blazr.Manganese.Result<Blazr.Diode.ListItemsProvider<Blazr.App.Core.DmoWeatherForecast>>>>>>'
+'WeatherForecastEntityProvider' does not implement interface member 
+'IEntityProvider<DmoWeatherForecast, WeatherForecastId>.GetItemsAsync(GridState<DmoWeatherForecast>)'. 'WeatherForecastEntityProvider.GetItemsAsync(GridState<DmoWeatherForecast>)' cannot implement 'IEntityProvider<DmoWeatherForecast, WeatherForecastId>.GetItemsAsync(GridState<DmoWeatherForecast>)' because it does not have the matching return type of 'Task<Result<GridItemsProviderResult<DmoWeatherForecast>>>'.

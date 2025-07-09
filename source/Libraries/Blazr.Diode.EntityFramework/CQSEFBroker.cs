@@ -17,7 +17,7 @@ public static class CQSEFBroker<TDbContext>
         where TRecord : class
     {
         if ((request.Item is not ICommandEntity))
-            return Result<TRecord>.ReturnException($"{request.Item.GetType().Name} Does not implement ICommandEntity and therefore you can't Update/Add/Delete it directly.");
+            return Result<TRecord>.Failure($"{request.Item.GetType().Name} Does not implement ICommandEntity and therefore you can't Update/Add/Delete it directly.");
 
         var stateRecord = request.Item;
         var result = 0;
@@ -28,27 +28,27 @@ public static class CQSEFBroker<TDbContext>
                 result = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(ConfigureAwaitOptions.None);
 
                 return result == 1
-                    ? Result<TRecord>.Return(request.Item)
-                    : Result<TRecord>.ReturnException("Error adding Record");
+                    ? Result<TRecord>.Success(request.Item)
+                    : Result<TRecord>.Failure("Error adding Record");
 
             case EditState.StateDeletedIndex:
                 dbContext.Remove<TRecord>(request.Item);
                 result = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(ConfigureAwaitOptions.None);
 
                 return result == 1
-                    ? Result<TRecord>.Return(request.Item)
-                    : Result<TRecord>.ReturnException("Error deleting Record");
+                    ? Result<TRecord>.Success(request.Item)
+                    : Result<TRecord>.Failure("Error deleting Record");
 
             case EditState.StateDirtyIndex:
                 dbContext.Update<TRecord>(request.Item);
                 result = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(ConfigureAwaitOptions.None);
 
                 return result == 1
-                    ? Result<TRecord>.Return(request.Item)
-                    : Result<TRecord>.ReturnException("Error saving Record");
+                    ? Result<TRecord>.Success(request.Item)
+                    : Result<TRecord>.Failure("Error saving Record");
 
             default:
-                return Result<TRecord>.ReturnException("Nothing executed.  Unrecognised State.");
+                return Result<TRecord>.Failure("Nothing executed.  Unrecognised State.");
         }
     }
 
@@ -91,7 +91,7 @@ public static class CQSEFBroker<TDbContext>
             ? await query.ToListAsync().ConfigureAwait(ConfigureAwaitOptions.None)
             : query.ToList();
 
-        return Result<ListItemsProvider<TRecord>>.Return(new ListItemsProvider<TRecord>(list, totalRecordCount));
+        return Result<ListItemsProvider<TRecord>>.Success(new ListItemsProvider<TRecord>(list, totalRecordCount));
     }
 
     public static async ValueTask<Result<TRecord>> GetRecordAsync<TRecord>(TDbContext dbContext, RecordQueryRequest<TRecord> request)
@@ -104,8 +104,8 @@ public static class CQSEFBroker<TDbContext>
             .ConfigureAwait(ConfigureAwaitOptions.None);
 
         if (record is null)
-            return Result<TRecord>.ReturnException($"No record retrieved with the Key provided");
+            return Result<TRecord>.Failure($"No record retrieved with the Key provided");
 
-        return Result<TRecord>.Return(record);
+        return Result<TRecord>.Success(record);
     }
 }

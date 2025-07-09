@@ -157,45 +157,96 @@ int x = someBoolCondition.Map(
 However, in my FP world all functions return a result, so `Map` looks like this:
 
 ```csharp
-    public static Result<T> Map<T>(this bool value, Func<Result<T>> isTrue, Func<Result<T>>? isFalse)
-    {
-        if (value)
-            return isTrue();
-
-        if(!value && isFalse != null)
-            return isFalse();
-
-        return Result<T>.ReturnException("The bound bool was false");
-    }
+public static Result<T> Map<T>(this bool value, Func<bool, Result<T>> mapping)
+    => mapping(value);
 ```
 
-So we now have:
+Which is used like this:
 
 ```csharp
-Result<int> x = someBoolCondition.Map((value) => value? 2 
-);
+Result<int> x = someBoolCondition.Map((value) => value? 1 : 0);
 ```
 
-This however, adds a new problem: how to *unwrap* `Result<int>`.  We solved this with an output method:
-
-
-
-
+We can also provide a second map:
 
 ```csharp
-public static void Match(this bool value, Action? isTrue = null, Action? isFalse = null)
+public static Result<T> Map<T>(this bool value, Func<Result<T>> isTrue, Func<Result<T>>? isFalse)
 {
-    if (value && isTrue != null)
-    {
-        isTrue();
-        return;
-    }
+    if (value)
+        return isTrue();
 
-    if (!value && isFalse != null)
+    if(!value && isFalse != null)
+        return isFalse();
+
+    return Result<T>.ReturnException("The bound bool was false");
+}
+```
+
+Which is used in a variety of ways.  Examples:
+
+```csharp
+Result<int> x = someBoolCondition.Map(isTrue: 1);
+
+Result<int> x = someBoolCondition.Map(isTrue: 1, isFalse 0);
+```
+
+## Result Mapping
+
+Mapping is the process of applying a transform to the value of a Result.
+
+There are four basic transforms we can apply:
+
+ - Map a `Result<T>`to a new `Result<T>`, where `T` is the same type on both.  We can express this as `T -> result<T>`.
+ - Map a `Result<T>` to a `Result<TOut>`, where `TOut` is a different type to `T`.  We can express this as `T -> Result<TOut>`.  
+  - Map a `Result<T>` to a `Result`.  We can express this as `T -> Result`. 
+  - Map a `T => TOut` to a `Result<TOut>`. 
+
+The following `Map` function covers the first two transforms.
+
+
+```csharp
+    public Result<TOut> Map<TOut>(Func<T, Result<TOut>> success, Func<Exception, Result<TOut>>? failure = null)
     {
-        isFalse();
-        return;
+        if (_exception is null)
+            return success(_value!);
+
+        if (_exception is not null && failure != null)
+            return failure(_exception!);
+
+        return Result<TOut>.Failure(_exception!);
     }
-    return;
+```
+
+And this the third:
+
+```csharp
+public Result Map(Func<T, Result>? mapping = null)
+{
+    if (_value is not null && mapping != null)
+        return mapping(_value!);
+
+    if (_value is not null)
+        return Result.Success();
+
+    return Result.Failure(_exception ?? _defaultException);
+}
+```
+
+And finally the fourth:
+
+```csharp
+public Result<U> Map<U>(Func<T, U> mapping)
+{
+    if (_exception is not null)
+        return Result<U>.Failure(_exception!);
+
+    try
+    {
+        return Result<U>.Create(mapping(_value!));
+    }
+    catch (Exception ex)
+    {
+        return Result<U>.Failure(ex);
+    }
 }
 ```

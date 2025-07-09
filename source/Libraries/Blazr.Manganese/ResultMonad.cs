@@ -168,7 +168,7 @@ public partial record Result
     public Result<T> MapSuccess<T>(Func<Result<T>> success)
         => _exception is null
             ? success()
-            : Result<T>.Return(_exception!);
+            : Result<T>.Failure(_exception!);
 
     /// <summary>
     /// Maps a failure to the provided function

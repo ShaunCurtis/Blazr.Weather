@@ -57,7 +57,7 @@ public partial record Result<T>
         return this;
     }
 
-    public Result<TOut> MapOut<TOut>(Func<T, Result<TOut>> success, Func<Exception, Result<TOut>>? failure = null)
+    public Result<TOut> Map<TOut>(Func<T, Result<TOut>> success, Func<Exception, Result<TOut>>? failure = null)
     {
         if (_exception is null)
             return success(_value!);
@@ -68,30 +68,30 @@ public partial record Result<T>
         return Result<TOut>.Failure(_exception!);
     }
 
-    public Result<T> Map(Func<T, Result<T>>? success = null, Func<Exception, Result<T>>? failure = null)
-    {
-        if (_exception is null && success != null)
-            return success(_value!);
-
-        if (_exception is not null && failure != null)
-            return failure(_exception!);
-
-        return this;
-    }
-
-    public Result<U> Map<U>(Func<T, U> func)
+    public Result<U> Map<U>(Func<T, U> mapping)
     {
         if (_exception is not null)
             return Result<U>.Failure(_exception!);
 
         try
         {
-            return Result<U>.Create(func(_value!));
+            return Result<U>.Create(mapping(_value!));
         }
         catch (Exception ex)
         {
             return Result<U>.Failure(ex);
         }
+    }
+
+    public Result Map(Func<T, Result>? mapping = null)
+    {
+        if (_value is not null && mapping != null)
+            return mapping(_value!);
+
+        if (_value is not null)
+            return Result.Success();
+
+        return Result.Failure(_exception ?? _defaultException);
     }
 
     public async Task<Result<TOut>> MapAsync<TOut>(Func<T, Task<Result<TOut>>> success, Func<Exception, Task<Result<TOut>>>? failure = null)
@@ -102,31 +102,7 @@ public partial record Result<T>
         if(_exception is not null && failure != null)
             return await failure(_exception!);
 
-        return Result<TOut>.Failure(_exception!);
-    }
-
-    public Result MapToResult()
-    {
-        if (_exception is null)
-            return Result.Success();
-
-        return Result.Failure(_exception!);
-    }
-
-    public Result<T> MapOnSuccess<TOut>(Func<T, Result<TOut>> success)
-    {
-        if (_exception is null)
-            success(_value!);
-
-        return this;
-    }
-
-    public Result<T> MapOnFailure(Func<Exception, Result<T>> failure)
-    {
-        if (_exception is not null)
-            return failure(_exception!);
-
-        return this;
+        return Result<TOut>.Failure(_exception ?? _defaultException);
     }
 
     public void Output(Action<T>? success = null, Action<Exception>? failure = null)

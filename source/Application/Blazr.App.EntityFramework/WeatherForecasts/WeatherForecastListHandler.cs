@@ -33,7 +33,7 @@ public sealed class WeatherForecastListHandler : IRequestHandler<WeatherForecast
                 }
             );
 
-        return result.MapOut<ListItemsProvider<DmoWeatherForecast>>(
+        return result.Map<ListItemsProvider<DmoWeatherForecast>>(
             success: items =>
             {
                 var mappedItems = items.Items.Select(item => WeatherForecastMap.Map(item));
