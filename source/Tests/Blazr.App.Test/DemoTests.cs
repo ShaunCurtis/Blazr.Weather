@@ -1,11 +1,10 @@
-
-using Blazr.Manganese;
-
 /// ============================================================
 /// Author: Shaun Curtis, Cold Elm Coders
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
+using Blazr.Manganese;
+
 namespace Blazr.Test;
 
 public class DemoTests
@@ -53,10 +52,24 @@ public class DemoTests
                 success: (v) => Console.WriteLine($"Success: {v}"),
                 failure: (ex) => Console.WriteLine($"Failure: {ex.Message}")
             );
+
+        var result = Result<string>.Create(value)
+          .Map(ToUpper)
+          .Map();
+
+        DisplayResult(result);
+
     }
 
     private Result<string> ToUpper(string value)
         => string.IsNullOrEmpty(value)
             ? Result<string>.Failure("Value cannot be null or empty")
             : Result<string>.Create(value.ToUpper());
+
+    private void DisplayResult(Result result)
+    {
+        result.Output(
+            failure: (ex) => Console.WriteLine($"Failure: {ex.Message}")
+        );
+    }
 }

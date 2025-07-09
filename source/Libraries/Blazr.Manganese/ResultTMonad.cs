@@ -1,4 +1,6 @@
-﻿/// ============================================================
+﻿using System.Diagnostics;
+
+/// ============================================================
 /// Author: Shaun Curtis, Cold Elm Coders
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
@@ -11,16 +13,16 @@ public partial record Result<T>
     private readonly T? _value;
     private ResultException _defaultException => new ResultException("An error occurred. No specific exception provided.");
 
-    private Result(T? value) 
+    private Result(T? value)
         => _value = value;
 
-    private Result(Exception? exception) 
+    private Result(Exception? exception)
         => _exception = exception ?? _defaultException;
 
-    private Result() 
+    private Result()
         => _exception = _defaultException;
 
-    public static Result<T> Create(T? value) => 
+    public static Result<T> Create(T? value) =>
         value is null
             ? new(new ResultException("T was null."))
             : new(value);
@@ -31,27 +33,12 @@ public partial record Result<T>
 
     public static Result<T> Failure(string message) => new(new ResultException(message));
 
-    public Result<T> SideEffect(Action<T> success, Action<Exception> failure)
+    public Result<T> SideEffect(Action<T>? success = null, Action<Exception>? failure = null)
     {
-        if (_exception is null)
-            success(_value!);
-        else
-            failure(_exception!);
-
-        return this;
-    }
-
-    public Result<T> SideEffect(Action<T> success)
-    {
-        if (_exception is null)
+        if (_value is not null && success != null)
             success(_value!);
 
-        return this;
-    }
-
-    public Result<T> SideEffect(Action<Exception> failure)
-    {
-        if (_exception is not null)
+        if (_exception is not null && failure != null)
             failure(_exception!);
 
         return this;
@@ -68,18 +55,22 @@ public partial record Result<T>
         return Result<TOut>.Failure(_exception!);
     }
 
-    public Result<U> Map<U>(Func<T, U> mapping)
+    public Result<TOut> Map<TOut>(Func<T, TOut> mapping)
     {
         if (_exception is not null)
-            return Result<U>.Failure(_exception!);
+            return Result<TOut>.Failure(_exception!);
 
         try
         {
-            return Result<U>.Create(mapping(_value!));
+            var result = mapping.Invoke(_value!);
+            if (result is null)
+                return Result<TOut>.Failure(new ResultException("The mapping function returned a null value."));
+
+            return Result<TOut>.Create(mapping(_value!));
         }
         catch (Exception ex)
         {
-            return Result<U>.Failure(ex);
+            return Result<TOut>.Failure(ex);
         }
     }
 
@@ -96,10 +87,10 @@ public partial record Result<T>
 
     public async Task<Result<TOut>> MapAsync<TOut>(Func<T, Task<Result<TOut>>> success, Func<Exception, Task<Result<TOut>>>? failure = null)
     {
-        if (_exception is null)
+        if (_value is not null && success != null)
             return await success(_value!);
 
-        if(_exception is not null && failure != null)
+        if (_exception is not null && failure != null)
             return await failure(_exception!);
 
         return Result<TOut>.Failure(_exception ?? _defaultException);

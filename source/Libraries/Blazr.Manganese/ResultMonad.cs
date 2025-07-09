@@ -34,6 +34,16 @@ public partial record Result
         => _exception is null
         ? success()
         : Result<TOut>.Failure(_exception);
+
+    public void Output(Action? success = null, Action<Exception>? failure = null)
+    {
+        if (_exception is null && success != null)
+            success();
+
+        if (_exception is not null && failure != null)
+            failure(_exception!);
+    }
+
 }
 
 

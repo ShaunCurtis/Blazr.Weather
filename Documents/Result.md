@@ -8,6 +8,8 @@ A result has two possible states:
 - **Success**: The operation completed successfully
 - **Failure**: The operation failed, and the result contains an error message. 
 
+Result implements *Railway-Orientated Programming*.  Any error/exception flows up the chain bypassing executing any of steps beyond the exception/error source.
+
 ## `Result<T>`
 
 We can define a result as follows:
@@ -96,6 +98,8 @@ Result<string>.Create(value)
 
 Mapping is the process of applying a transform to the value of a `Result<T>`.
 
+It's important to note that mappings only execute the provided function if the source result state is success i.e. it has a valid `T` value.  If the source result is in failure state, it either passes the source result as the output result, or passes a new result (with the source exception) in failure state. 
+
 There are three basic transforms we can apply.
 
 #### Map a `Result<T>`to a `Result<TOut>` 
@@ -140,7 +144,7 @@ Result<string>.Create(value)
     );
 ```
 
-Or this:
+Or this where we use a function:
 
 ```csharp
 private Result<string> ToUpper(string value)
@@ -158,25 +162,34 @@ Result<string>.Create(value)
 
 #### Map a `T => TOut` function to a `Result<TOut>`
 
-#### Map a `Result<T>` to a `Result` 
-
-The following `Map` function covers the first two transforms.
-
+Here the passed in function only returns a `TOut`, not a `Result<T>`.  We therefore need to check the validity of the output, catch any exceptions, and where necessary return a failure.
 
 ```csharp
-    public Result<TOut> Map<TOut>(Func<T, Result<TOut>> success, Func<Exception, Result<TOut>>? failure = null)
+    public Result<TOut> Map<TOut>(Func<T, TOut> mapping)
     {
-        if (_exception is null)
-            return success(_value!);
+        if (_exception is not null)
+            return Result<TOut>.Failure(_exception!);
 
-        if (_exception is not null && failure != null)
-            return failure(_exception!);
-
-        return Result<TOut>.Failure(_exception!);
+        try
+        {
+            var result = mapping.Invoke(_value!);
+            if (result is null)
+                return Result<TOut>.Failure(new ResultException("The mapping function returned a null value."));
+            
+            return Result<TOut>.Create(mapping(_value!));
+        }
+        catch (Exception ex)
+        {
+            return Result<TOut>.Failure(ex);
+        }
     }
 ```
 
-And this the third:
+#### Map a `Result<T>` to a `Result` 
+
+In certain situations, such as surfacing an error in UI components, all your interesting in is whether you need to display a warning/error message - a `Result` rather than a `Result<T>`.
+
+The following code does just that.
 
 ```csharp
 public Result Map(Func<T, Result>? mapping = null)
@@ -191,25 +204,58 @@ public Result Map(Func<T, Result>? mapping = null)
 }
 ```
 
-And finally the fourth:
+An exampke of it's usage.
 
 ```csharp
-public Result<U> Map<U>(Func<T, U> mapping)
-{
-    if (_exception is not null)
-        return Result<U>.Failure(_exception!);
+string? value = null;
 
-    try
-    {
-        return Result<U>.Create(mapping(_value!));
-    }
-    catch (Exception ex)
-    {
-        return Result<U>.Failure(ex);
-    }
+var result = Result<string>.Create(value)
+  .Map(ToUpper)
+  .Map();
+
+DisplayError(result);
+
+void DisplayError(Result result)
+{
+    result.Output(
+        failure: (ex) => Console.WriteLine($"Failure: {ex.Message}")
+    );
 }
 ```
 
+### Async Mapping
+
+The following method handles async mapping operations:
+
+```csharp
+public async Task<Result<TOut>> MapAsync<TOut>(Func<T, Task<Result<TOut>>> success, Func<Exception, Task<Result<TOut>>>? failure = null)
+{
+    if (_value is not null && success != null)
+        return await success(_value!);
+
+    if (_exception is not null && failure != null)
+        return await failure(_exception!);
+
+    return Result<TOut>.Failure(_exception ?? _defaultException);
+}
+```
+
+### Side Effects
+
+Side Effects provide a mechanism to effect mutate data within edit and aggregate objects.
+
+```csharp
+public Result<T> SideEffect(Action<T>? success = null, Action<Exception>? failure = null)
+{
+    if (_value is not null && success != null)
+        success(_value!);
+
+    if (_exception is not null && failure != null)
+        failure(_exception!);
+
+    return this;
+}
+```
 
 
 ### `Result<T>` in Action

@@ -79,7 +79,7 @@ public partial class WeatherForecastTests
         await GridState<DmoWeatherForecast>
             .Create(pageSize: pageSize, startIndex: startIndex)
             .MapToResultAsync(entityProvider.ListRequest)
-            .MatchAsync(
+            .OutputAsync(
                 success: (provider) =>
                 {
                     listItemsProvider = provider;
@@ -125,7 +125,7 @@ public partial class WeatherForecastTests
                 Summary = testSummary
             })
             .MapAsync<ListItemsProvider<DmoWeatherForecast>>(entityProvider.WeatherListRequest)
-            .MatchAsync(success: (provider) =>
+            .OutputAsync(success: (provider) =>
             {
                 listItemsProvider = provider;
                 result = true;
@@ -171,7 +171,7 @@ public partial class WeatherForecastTests
                 SortDescending = true
             })
             .MapAsync<ListItemsProvider<DmoWeatherForecast>>(entityProvider.WeatherListRequest)
-            .MatchAsync(success: (provider) =>
+            .OutputAsync(success: (provider) =>
             {
                 listItemsProvider = provider;
                 result = true;
@@ -224,7 +224,7 @@ public partial class WeatherForecastTests
             .AddSender(this)
             .Execute(entity)
             .MapAsync(entityProvider.EntityCommand)
-            .MatchAsync(success: (id) =>
+            .OutputAsync(success: (id) =>
             {
                 result = true;
                 updatedId = id;
@@ -238,7 +238,7 @@ public partial class WeatherForecastTests
         DmoWeatherForecast? dbRecord = null;
 
         await entityProvider.RecordRequest(updatedId)
-            .MatchAsync(
+            .OutputAsync(
             success: (record) =>
             {
                 dbRecord = record;
@@ -289,7 +289,7 @@ public partial class WeatherForecastTests
             .AddSender(this)
             .Execute(entity)
             .MapAsync(entityProvider.EntityCommand)
-            .MatchAsync(success: (id) =>
+            .OutputAsync(success: (id) =>
             {
                 result = true;
                 updatedId = id;
@@ -303,7 +303,7 @@ public partial class WeatherForecastTests
         Exception? exception = null;
 
         await entityProvider.RecordRequest(updatedId)
-            .MatchAsync(
+            .OutputAsync(
             failure: (ex) =>
             {
                 exception = ex;
@@ -314,32 +314,6 @@ public partial class WeatherForecastTests
         Assert.True(result);
         // check it matches the update record
         Assert.NotNull(exception);
-
-
-        //    // Get a fully stocked DI container
-        //    var provider = GetServiceProvider();
-        //    var broker = provider.GetService<IDataBroker>()!;
-
-        //    // get the test record
-        //    var testItem = _testDataProvider.WeatherForecasts.First();
-        //    var testUid = testItem.WeatherForecastUid;
-        //    var testCount = _testDataProvider.WeatherForecasts.Count() - 1;
-
-        //    // build a command and execute it against the database
-        //    var command = new CommandRequest<WeatherForecast>(testItem, CommandState.Delete);
-        //    var commandResult = await broker.ExecuteCommandAsync<WeatherForecast>(command);
-        //    Assert.True(commandResult.Successful);
-
-        //    // build a item request and ensure the record no longwer exists
-        //    var request = ItemQueryRequest.Create(testUid);
-        //    var loadResult = await broker.ExecuteQueryAsync<WeatherForecast>(request);
-        //    Assert.False(loadResult.Successful);
-
-        //    // build a list query and check we have one less rcord 
-        //    var queryRequest = new ListQueryRequest { PageSize = 10, StartIndex = 0 };
-        //    var queryResult = await broker.ExecuteQueryAsync<WeatherForecast>(queryRequest);
-        //    Assert.True(queryResult.Successful);
-        //    Assert.Equal(testCount, queryResult.TotalCount);
     }
 
     //[Fact]
