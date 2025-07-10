@@ -14,7 +14,7 @@ public sealed partial class WeatherForecastEntity
 {
     private readonly EntityState<DmoWeatherForecast> _weatherForecast;
 
-    // The initial records so we can reset 
+    // The initial record so we can reset 
     private readonly StateRecord<DmoWeatherForecast> _baseWeatherForecast;
 
     public DmoWeatherForecast WeatherForecast => _weatherForecast.Record;
@@ -27,14 +27,15 @@ public sealed partial class WeatherForecastEntity
 
     public WeatherForecastId Id => _weatherForecast.Record.Id;
 
-    public WeatherForecastEntity(DmoWeatherForecast weatherForecast)
+    public WeatherForecastEntity(DmoWeatherForecast weatherForecast, bool? isNew = null)
     {
-        var isNew = weatherForecast.Id.IsDefault;
-
-        _weatherForecast = new(weatherForecast, isNew);
+        _weatherForecast = new(weatherForecast, isNew ?? weatherForecast.Id.IsDefault);
         _baseWeatherForecast = _weatherForecast.AsRecord;
     }
 
     public static WeatherForecastEntity Create(DmoWeatherForecast weatherForecast)
+            => new WeatherForecastEntity(weatherForecast, true);
+
+    public static WeatherForecastEntity Load(DmoWeatherForecast weatherForecast)
             => new WeatherForecastEntity(weatherForecast);
 }

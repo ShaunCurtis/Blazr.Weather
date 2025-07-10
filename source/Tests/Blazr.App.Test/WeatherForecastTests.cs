@@ -352,14 +352,14 @@ public partial class WeatherForecastTests
         Assert.True(result);
 
         result = false;
-        Exception? exception = null;
+        DmoWeatherForecast? dbRecord = null;
 
         // Now we try to get the record we just added
         await entityProvider.RecordRequest(newId)
             .OutputAsync(
-            failure: (ex) =>
+            success: (record) =>
             {
-                exception = ex;
+                dbRecord = record;
                 result = true;
             });
 

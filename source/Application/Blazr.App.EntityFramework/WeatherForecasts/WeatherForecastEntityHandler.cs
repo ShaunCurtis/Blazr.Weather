@@ -24,6 +24,6 @@ public sealed class WeatherForecastEntityHandler : IRequestHandler<WeatherForeca
 
         return asyncResult
             .Map<DmoWeatherForecast>(WeatherForecastMap.Map)
-            .Map(WeatherForecastEntity.Create);
+            .Map(WeatherForecastEntity.Load);
     }
 }

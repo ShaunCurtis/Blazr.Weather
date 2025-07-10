@@ -1,10 +1,10 @@
-﻿using Blazr.Diode;
-
-/// ============================================================
+﻿/// ============================================================
 /// Author: Shaun Curtis, Cold Elm Coders
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
+using Blazr.Diode;
+
 namespace Blazr.Cadmium.QuickGrid;
 
 public record GridState<TRecord> : IGridState<TRecord>
