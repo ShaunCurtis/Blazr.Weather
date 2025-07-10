@@ -316,35 +316,72 @@ public partial class WeatherForecastTests
         Assert.NotNull(exception);
     }
 
-    //[Fact]
-    //public async void AddAForecast()
-    //{
-    //    // Get a fully stocked DI container
-    //    var provider = GetServiceProvider();
-    //    var broker = provider.GetService<IDataBroker>()!;
+    [Fact]
+    public async Task AddAForecast()
+    {
+        var provider = GetServiceProvider();
 
-    //    var testCount = _testDataProvider.WeatherForecasts.Count() + 1;
+        //Get the Entity Provider
+        var _entityProvider = provider.GetService<IEntityProvider<DmoWeatherForecast, WeatherForecastId>>()!;
+        var entityProvider = (WeatherForecastEntityProvider)_entityProvider;
 
-    //    // Create a new record
-    //    var newItem = new WeatherForecast { WeatherForecastUid = Guid.NewGuid(), Date = DateOnly.FromDateTime(DateTime.Now), Summary = "Testing", TemperatureC = 30 };
+        // Get the current record count
+        var CurrentItemCount = _testDataProvider.WeatherForecasts.Count();
 
-    //    // Create a command and execute it against the broker
-    //    var command = new CommandRequest<WeatherForecast>(newItem, CommandState.Add);
-    //    var commandResult = await broker.ExecuteCommandAsync<WeatherForecast>(command);
-    //    Assert.True(commandResult.Successful);
+        // Create a new WeatherForecastEntity with a new DmoWeatherForecast
+        var entity = WeatherForecastEntity.Create(new DmoWeatherForecast
+        {
+            Id = new(Guid.CreateVersion7()),
+            Date = new(DateTime.Now),
+            Summary = "Test Add",
+            Temperature = new(30)
+        });
 
-    //    // Create a item query, execute it against the broker and check the new record exists
-    //    var request = ItemQueryRequest.Create(newItem.WeatherForecastUid);
-    //    var loadResult = await broker.ExecuteQueryAsync<WeatherForecast>(request);
-    //    Assert.True(loadResult.Successful);
+        bool result = false;
+        WeatherForecastId newId = default!;
 
-    //    var dbNewItem = loadResult.Item!;
-    //    Assert.Equal(newItem, dbNewItem);
+        // Execute the entity command to add the new record
+        await entityProvider.EntityCommand.Invoke(entity)
+            .OutputAsync(success: (id) =>
+            {
+                result = true;
+                newId = id;
+            });
 
-    //    // create a list query and check thr total count has increased by 1 
-    //    var queryRequest = new ListQueryRequest { PageSize = 10, StartIndex = 0 };
-    //    var queryResult = await broker.ExecuteQueryAsync<WeatherForecast>(queryRequest);
-    //    Assert.True(queryResult.Successful);
-    //    Assert.Equal(testCount, queryResult.TotalCount);
-    //}
+        // check the update was successful
+        Assert.True(result);
+
+        result = false;
+        Exception? exception = null;
+
+        // Now we try to get the record we just added
+        await entityProvider.RecordRequest(newId)
+            .OutputAsync(
+            failure: (ex) =>
+            {
+                exception = ex;
+                result = true;
+            });
+
+        // check the query was successful
+        Assert.True(result);
+
+        // Finally we get a record count and check it has increased by 1
+        ListItemsProvider<DmoWeatherForecast> listItemsProvider = default!;
+
+        await GridState<DmoWeatherForecast>
+            .Create(pageSize: 2, startIndex: 0)
+            .MapToResultAsync(entityProvider.ListRequest)
+            .OutputAsync(
+                success: (provider) =>
+                {
+                    listItemsProvider = provider;
+                    result = true;
+                });
+
+
+        // check the query was successful
+        Assert.True(result);
+        Assert.Equal(CurrentItemCount + 1, listItemsProvider.TotalCount);
+    }
 }
