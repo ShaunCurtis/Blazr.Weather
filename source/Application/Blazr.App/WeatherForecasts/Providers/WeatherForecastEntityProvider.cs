@@ -28,7 +28,7 @@ public class WeatherForecastEntityProvider
             SortDescending = state.SortDescending
         });
 
-        return asyncResult.Map<GridItemsProviderResult<DmoWeatherForecast>>(FromListItemsProvider);
+        return asyncResult.MapResult<GridItemsProviderResult<DmoWeatherForecast>>(FromListItemsProvider);
     }
 
     public Func<WeatherForecastId, Task<Result<WeatherForecastEntity>>> EntityRequest
@@ -43,7 +43,7 @@ public class WeatherForecastEntityProvider
     public Func<DmoWeatherForecast, EditState, Task<Result<WeatherForecastId>>> RecordCommand
         => (record, state) => _mediator.Send(new WeatherForecastCommandRequest(record, state));
 
-    public Func<GridState<DmoWeatherForecast>, Task<Result<ListItemsProvider<DmoWeatherForecast>>>> ListRequest
+    public Func<GridState<DmoWeatherForecast>, Task<Result<ListItemsProvider<DmoWeatherForecast>>>> GridItemsRequest
         => (state) => _mediator.Send(new WeatherForecastListRequest()
         {
             PageSize = state.PageSize,
@@ -52,7 +52,7 @@ public class WeatherForecastEntityProvider
             SortDescending = state.SortDescending
         });
 
-    public Func<WeatherForecastListRequest, Task<Result<ListItemsProvider<DmoWeatherForecast>>>> WeatherListRequest
+    public Func<WeatherForecastListRequest, Task<Result<ListItemsProvider<DmoWeatherForecast>>>> ListItemsRequest
         => (request) => _mediator.Send(request);
 
     public WeatherForecastEntityProvider(IMediatorBroker mediator, IServiceProvider serviceProvider)
@@ -64,7 +64,7 @@ public class WeatherForecastEntityProvider
     public async ValueTask<Result<WeatherForecastEntity>> GetEntityAsync(WeatherForecastId id)
     {
         var result = (await _mediator.Send(new WeatherForecastRecordRequest(id)))
-            .Map<WeatherForecastEntity>((record) =>
+            .MapResult<WeatherForecastEntity>((record) =>
             {
                 new WeatherForecastEntity(record);
                 return Result<WeatherForecastEntity>.Failure($"No entity exists for Id{id}.  Created default entity.");
@@ -73,22 +73,14 @@ public class WeatherForecastEntityProvider
         return result;
     }
 
-    public WeatherForecastId GetKey(object obj)
-    {
-        return obj switch
+    public Result<WeatherForecastId> GetKey(object? obj)
+        => obj switch
         {
-            WeatherForecastId id => id,
-            DmoWeatherForecast record => record.Id,
-            Guid guid => new WeatherForecastId(guid),
-            _ => WeatherForecastId.Default
+            WeatherForecastId id => Result<WeatherForecastId>.Create(id),
+            DmoWeatherForecast record => Result<WeatherForecastId>.Create(record.Id),
+            Guid guid => Result<WeatherForecastId>.Create(new(guid)),
+            _ => Result<WeatherForecastId>.Failure($"Could not convert the provided key - {obj?.ToString()}")
         };
-    }
-
-    public bool TryGetKey(object obj, out WeatherForecastId key)
-    {
-        key = GetKey(obj);
-        return key != WeatherForecastId.Default;
-    }
 
     public DmoWeatherForecast NewRecord
         => new DmoWeatherForecast { Id = WeatherForecastId.Default };

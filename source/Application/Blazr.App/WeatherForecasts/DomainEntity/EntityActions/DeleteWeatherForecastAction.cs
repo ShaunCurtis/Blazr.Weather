@@ -17,7 +17,7 @@ public sealed partial class WeatherForecastEntity
 
         private DeleteWeatherForecastAction() { }
 
-        public Result<WeatherForecastEntity> Execute(WeatherForecastEntity entity)
+        public Result<WeatherForecastEntity> ExecuteAction(WeatherForecastEntity entity)
             =>  entity._weatherForecast
                 .MarkAsDeleted(this.TransactionId)
                 .SideEffect(
@@ -26,7 +26,7 @@ public sealed partial class WeatherForecastEntity
                 )
                 .Map<WeatherForecastEntity>(() => Result<WeatherForecastEntity>.Success(entity));
 
-        public static DeleteWeatherForecastAction Create()
+        public static DeleteWeatherForecastAction CreateAction()
             => new() { TransactionId = Guid.NewGuid() };
 
         public DeleteWeatherForecastAction AddSender(object? sender)

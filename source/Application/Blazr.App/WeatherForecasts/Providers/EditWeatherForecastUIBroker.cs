@@ -112,7 +112,7 @@ public partial class EditWeatherForecastUIBroker
             .MapAsync<WeatherForecastEntity>(
                 isTrue: () => _entityProvider.NewEntityAsync,
                 isFalse: () => _entityProvider.EntityRequest(id))
-            .SideEffectAsync(
+            .TaskSideEffectAsync(
                 success: (entity) =>
                 {
                     _entity = entity;
@@ -127,28 +127,25 @@ public partial class EditWeatherForecastUIBroker
 
     private async ValueTask UpdateRecordAsync(bool refreshOnNew = true)
     {
-        var mutatedRecord = EditMutator.AsRecord;
-
-        var entityResult = WeatherForecastEntity.UpdateWeatherForecastAction
-            .Create(mutatedRecord)
+        LastResult = await WeatherForecastEntity.UpdateWeatherForecastAction
+            .CreateAction(EditMutator.AsRecord)
             .AddSender(this)
-            .Execute(_entity);
-
-        LastResult = await _entityProvider.EntityCommand(_entity)
-            .MapAsync<WeatherForecastId, WeatherForecastEntity>(_entityProvider.EntityRequest)
-            .MapAsync();
+            .ExecuteAction(_entity)
+            .MapResultAsync(_entityProvider.EntityCommand)
+            .MapTaskAsync<WeatherForecastId, WeatherForecastEntity>(_entityProvider.EntityRequest)
+            .MapTaskAsync();
     }
 
     private async ValueTask DeleteRecordAsync()
     {
         var entityResult = WeatherForecastEntity.DeleteWeatherForecastAction
-            .Create()
+            .CreateAction()
             .AddSender(this)
-            .Execute(_entity);
+            .ExecuteAction(_entity);
 
         LastResult = await _entityProvider.EntityCommand(_entity)
-            .MapAsync<WeatherForecastId, WeatherForecastEntity>(_entityProvider.EntityRequest)
-            .MapAsync();
+            .MapTaskAsync<WeatherForecastId, WeatherForecastEntity>(_entityProvider.EntityRequest)
+            .MapTaskAsync();
     }
 
 }
