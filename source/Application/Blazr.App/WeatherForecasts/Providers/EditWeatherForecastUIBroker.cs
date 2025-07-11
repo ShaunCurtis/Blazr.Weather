@@ -131,8 +131,8 @@ public partial class EditWeatherForecastUIBroker
             .CreateAction(EditMutator.AsRecord)
             .AddSender(this)
             .ExecuteAction(_entity)
-            .MapResultAsync(_entityProvider.EntityCommand)
-            .MapTaskAsync<WeatherForecastId, WeatherForecastEntity>(_entityProvider.EntityRequest)
+            .MapResultAsync(_entityProvider.EntityCommandAsync)
+            .MapTaskAsync<WeatherForecastId, WeatherForecastEntity>(_entityProvider.EntityRequestAsync)
             .MapTaskAsync();
     }
 
@@ -143,8 +143,8 @@ public partial class EditWeatherForecastUIBroker
             .AddSender(this)
             .ExecuteAction(_entity);
 
-        LastResult = await _entityProvider.EntityCommand(_entity)
-            .MapTaskAsync<WeatherForecastId, WeatherForecastEntity>(_entityProvider.EntityRequest)
+        LastResult = await _entityProvider.EntityCommandAsync(_entity)
+            .MapTaskAsync<WeatherForecastId, WeatherForecastEntity>(_entityProvider.EntityRequestAsync)
             .MapTaskAsync();
     }
 

@@ -9,6 +9,5 @@ using Blazr.Diode.Mediator;
 namespace Blazr.App.Core;
 
 public readonly record struct WeatherForecastCommandRequest(
-        DmoWeatherForecast Item,
-        EditState State)
+        StateRecord< DmoWeatherForecast> Item)
     : IRequest<Result<WeatherForecastId>>;

@@ -141,6 +141,24 @@ public partial record Result<T>
         return test? await isTrue(_value!): await isFalse(_value!);
     }
 
+    public async Task<Result> MapResultAsync(bool test, Func<T, Task<Result>> isTrue)
+    {
+        if (_exception is not null)
+            return Result.Failure(_exception!);
+        if (test)
+            return await isTrue(_value!);
+
+        return Result.Success();
+    }
+
+    public async Task<Result> MapResultAsync(bool test, Func<T, Task<Result>> isTrue, Func<T, Task<Result>> isFalse)
+    {
+        if (_exception is not null)
+            return Result.Failure(_exception!);
+
+        return test ? await isTrue(_value!) : await isFalse(_value!);
+    }
+
     public void OutputResult(Action<T>? success = null, Action<Exception>? failure = null)
     {
         if (_exception is null && success != null)

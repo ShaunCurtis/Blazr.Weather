@@ -40,8 +40,8 @@ public class WeatherForecastEntityProvider
     public Func<WeatherForecastId, Task<Result<DmoWeatherForecast>>> RecordRequestAsync
         => (id) => id.IsDefault ? NewRecordRequestAsync(id) : ExistingRecordRequestAsync(id);
 
-    public Func<DmoWeatherForecast, EditState, Task<Result<WeatherForecastId>>> RecordCommandAsync
-        => (record, state) => _mediator.Send(new WeatherForecastCommandRequest(record, state));
+    public Func<StateRecord<DmoWeatherForecast>, Task<Result<WeatherForecastId>>> RecordCommandAsync
+        => (record) => _mediator.Send(new WeatherForecastCommandRequest(record));
 
     public Func<GridState<DmoWeatherForecast>, Task<Result<ListItemsProvider<DmoWeatherForecast>>>> GridItemsRequestAsync
         => (state) => _mediator.Send(new WeatherForecastListRequest()

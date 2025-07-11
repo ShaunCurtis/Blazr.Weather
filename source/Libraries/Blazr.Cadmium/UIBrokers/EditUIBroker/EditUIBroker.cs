@@ -34,28 +34,9 @@ public class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBroker<TRe
         this.EditContext = new EditContext(EditMutator);
     }
 
-    //public async ValueTask LoadAsync(TKey recordId)
-    //{
-    //    var result = await Result<TKey>.Create(recordId)
-    //        // Set the broker state
-    //        .ResultSideEffect(recordId.IsDefault, (id) => this.State = EditState.New, (id) => this.State = EditState.Clean)
-    //        // Check if the broker has already been loaded
-    //        .MapResult<TKey>(id => _isLoaded ? Result<TKey>.Failure("The UIBroker has already been loaded.") : Result<TKey>.Create(id))
-    //        // Get the record item.  This will return a new record if the id is default
-    //        .MapResultAsync<TRecord>(_entityProvider.RecordRequestAsync)
-    //        // Set up the EditMutator and EditContext
-    //        .TaskSideEffectAsync<TRecord>(success: record =>
-    //        {
-    //            this.EditMutator = new();
-    //            this.EditMutator.Load(record!);
-    //            this.EditContext = new EditContext(EditMutator);
-    //            _isLoaded = true;
-    //        });
-    //}
-
     public async ValueTask<Result> LoadAsync(TKey recordId)
     {
-        return await Result<TKey>.Create(recordId)
+        this.LastResult = await Result<TKey>.Create(recordId)
             // Set the broker state
             .ResultSideEffect(recordId.IsDefault, (id) => this.State = EditState.New, (id) => this.State = EditState.Clean)
             // Check if the broker has already been loaded
@@ -71,45 +52,53 @@ public class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBroker<TRe
                 _isLoaded = true;
             })
             .MapTaskAsync();
+
+        return this.LastResult;
     }
 
     public ValueTask ResetItemAsync()
     {
-        _isLoaded.SideEffect(
+        var result = _isLoaded.SideEffect(
             isTrue: () =>
             {
                 EditMutator.Reset();
                 // Create a new EditContext - will reset and rebuild the whole Edit Form
                 this.EditContext = new EditContext(EditMutator);
-            };
+            });
 
         return ValueTask.CompletedTask;
     }
 
-    public ValueTask SaveItemAsync(bool refreshOnNew = true)
+    public async ValueTask SaveItemAsync(bool refreshOnNew = true)
     {
-        Debug.Assert(_isLoaded);
-
-        return this.UpdateRecordAsync(refreshOnNew);
+        this.LastResult = await this.UpdateRecordAsync(refreshOnNew);
     }
 
-    public async ValueTask DeleteItemAsync()
+    public ValueTask DeleteItemAsync()
     {
-        Debug.Assert(_isLoaded);
+        var result = _isLoaded.SideEffect(
+          isTrue: async () =>
+          {
+              this.State = EditState.Deleted;
+              this.LastResult = await this.UpdateRecordAsync();
+          });
 
-        this.State = EditState.Deleted;
-        await this.UpdateRecordAsync();
+        return ValueTask.CompletedTask;
     }
 
     private async Task<Result> UpdateRecordAsync(bool refreshOnNew = true)
-        => await EditMutator.ToRecord
+    {
+        var result = await EditMutator.ToRecord
              // Set the broker state to dirty
              .ResultSideEffect((value) => this.State = this.State.AsDirty)
              // Save the record item to the datastore
              .MapResultAsync<TKey>((record) => _entityProvider.RecordCommandAsync(StateRecord<TRecord>.Create(record, this.State)))
              // Set the broker state to clean
-             .TaskSideEffectAsync((id) => _isLoaded = false)
+             .TaskSideEffectAsync((id) => _isLoaded = false);
+
              // If the record is new, we want to refresh the broker with the new record
-             .MapTaskAsync(refreshOnNew,  async (id) => await LoadAsync(id));
+        return await result.MapResultAsync(     
+            test: refreshOnNew,
+            isTrue: async (id) => await LoadAsync(id));
     }
 }
