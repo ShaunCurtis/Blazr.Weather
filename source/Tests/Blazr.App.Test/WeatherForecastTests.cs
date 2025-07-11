@@ -6,15 +6,11 @@
 
 using Blazr.App.Core;
 using Blazr.App.Presentation;
-using Blazr.Cadmium;
 using Blazr.Cadmium.Core;
 using Blazr.Cadmium.QuickGrid;
 using Blazr.Diode;
-using Blazr.Diode.Mediator;
-using Blazr.Gallium;
 using Blazr.Manganese;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit;
 
 namespace Blazr.Test;
 
@@ -298,7 +294,7 @@ public partial class WeatherForecastTests
         // check the update was successful
         Assert.True(result);
 
-        
+
         result = false;
         Exception? exception = null;
 
