@@ -35,6 +35,19 @@ public partial record Result<T>
 
     public static Result<T> Failure(string message) => new(new ResultException(message));
 
+    public Result<T> ResultSideEffect(bool test, Action<T> isTrue, Action<T> isFalse)
+    {
+        if (_value is null)
+            return this;
+        
+        if (test)
+            isTrue(_value!);
+        else
+            isFalse(_value!);
+
+        return this;
+    }
+
     public Result<T> ResultSideEffect(Action<T>? success = null, Action<Exception>? failure = null)
     {
         if (_value is not null && success != null)
@@ -55,6 +68,17 @@ public partial record Result<T>
             return failure(_exception!);
 
         return Result<TOut>.Failure(_exception!);
+    }
+
+    public Result<TOut> MapResult<TOut>(bool test, Func<T, Result<TOut>> isTrue, Func<T, Result<TOut>> isFalse)
+    {
+        if (_exception is not null)
+            return Result<TOut>.Failure(_exception!);
+
+         return test.Map<TOut>(
+            isTrue: () => isTrue(_value!),
+            isFalse: () => isFalse(_value!)
+        );
     }
 
     public Result<TOut> MapResult<TOut>(Func<T, TOut> mapping)
@@ -87,6 +111,17 @@ public partial record Result<T>
         return Result.Failure(_exception ?? _defaultException);
     }
 
+    public async Task<Result> MapResultAsync(Func<T, Task<Result>> success, Func<Exception, Task<Result>>? failure = null)
+    {
+        if (_value is not null && success != null)
+            return await success(_value!);
+
+        if (_exception is not null && failure != null)
+            return await failure(_exception!);
+
+        return Result.Failure(_exception ?? _defaultException);
+    }
+
     public async Task<Result<TOut>> MapResultAsync<TOut>(Func<T, Task<Result<TOut>>> success, Func<Exception, Task<Result<TOut>>>? failure = null)
     {
         if (_value is not null && success != null)
@@ -96,6 +131,14 @@ public partial record Result<T>
             return await failure(_exception!);
 
         return Result<TOut>.Failure(_exception ?? _defaultException);
+    }
+
+    public async Task<Result<TOut>> MapResultAsync<TOut>(bool test, Func<T, Task<Result<TOut>>> isTrue, Func<T, Task<Result<TOut>>> isFalse)
+    {
+        if (_exception is not null)
+            return Result<TOut>.Failure(_exception!);
+
+        return test? await isTrue(_value!): await isFalse(_value!);
     }
 
     public void OutputResult(Action<T>? success = null, Action<Exception>? failure = null)

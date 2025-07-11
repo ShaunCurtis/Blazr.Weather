@@ -3,8 +3,6 @@
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
-using Blazr.Diode;
-
 namespace Blazr.Cadmium.Core;
 
 public interface IRecordEditContext<TRecord>
@@ -12,6 +10,8 @@ public interface IRecordEditContext<TRecord>
 {
     public TRecord BaseRecord { get; }
     public TRecord AsRecord { get; }
+    public Result<TRecord> ToRecord { get; }
+
     public bool IsDirty { get; }
 
     public Result Load(TRecord record);

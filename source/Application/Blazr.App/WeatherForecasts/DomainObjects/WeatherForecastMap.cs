@@ -26,4 +26,10 @@ public sealed class WeatherForecastMap
             Temperature = item.Temperature.TemperatureC,
             Summary = item.Summary
         };
+
+    public static Result<DmoWeatherForecast> MapToResult(DvoWeatherForecast item)
+        => Result<DmoWeatherForecast>.Create(Map(item));
+
+    public static Result<DboWeatherForecast> MapResult(DmoWeatherForecast item)
+        => Result<DboWeatherForecast>.Create(Map(item));
 }

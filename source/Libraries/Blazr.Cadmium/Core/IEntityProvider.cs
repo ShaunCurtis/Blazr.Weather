@@ -15,13 +15,14 @@ public interface IEntityProvider<TRecord, TKey>
 {
     public Task<Result<GridItemsProviderResult<TRecord>>> GetItemsAsync(GridState<TRecord> state);
 
-    public Func<TKey, Task<Result<TRecord>>> RecordRequest { get; }
+    public Func<TKey, Task<Result<TRecord>>> RecordRequestAsync { get; }
 
-    public Func<TRecord, EditState, Task<Result<TKey>>> RecordCommand { get; }
+    public Func<StateRecord<TRecord>, Task<Result<TKey>>> RecordCommandAsync { get; }
 
-    public Func<GridState<TRecord>, Task<Result<ListItemsProvider<TRecord>>>> GridItemsRequest { get; }
+    public Func<GridState<TRecord>, Task<Result<ListItemsProvider<TRecord>>>> GridItemsRequestAsync { get; }
 
     public Result<TKey> GetKey(object? obj);
 
     public TRecord NewRecord { get; }
+
 }

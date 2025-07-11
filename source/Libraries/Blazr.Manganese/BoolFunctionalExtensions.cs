@@ -39,7 +39,7 @@ public static class BoolFunctionalExtensions
         return value;
     }
 
-    public static Result<T> Map<T>(this bool value, Func<Result<T>> isTrue, Func<Result<T>>? isFalse)
+    public static Result<T> Map<T>(this bool value, Func<Result<T>> isTrue, Func<Result<T>>? isFalse = null)
     {
         if (value)
             return isTrue();
@@ -50,10 +50,21 @@ public static class BoolFunctionalExtensions
         return Result<T>.Failure("The bound bool was false");
     }
 
+    public static Result Map(this bool value, Func<Result> isTrue, Func<Result>? isFalse = null)
+    {
+        if (value)
+            return isTrue();
+
+        if (!value && isFalse != null)
+            return isFalse();
+
+        return Result.Failure("The bound bool was false");
+    }
+
     public static Result<T> Map<T>(this bool value, Func<bool, Result<T>> mapping)
         => mapping(value);
 
-    public static async Task<Result<T>> MapAsync<T>(this bool value, Func<Task<Result<T>>> isTrue, Func<Task<Result<T>>> isFalse)
+    public static async Task<Result<T>> MapAsync<T>(this bool value, Func<Task<Result<T>>> isTrue, Func<Task<Result<T>>>? isFalse = null)
     {
         if (value)
         {
@@ -61,7 +72,9 @@ public static class BoolFunctionalExtensions
             return resultTrue;
         }
 
-        var resultFalse = await isFalse();
-        return resultFalse;
+        if (!value && isFalse != null)
+        return await isFalse();
+
+        return Result<T>.Failure("The bound bool was false");
     }
 }

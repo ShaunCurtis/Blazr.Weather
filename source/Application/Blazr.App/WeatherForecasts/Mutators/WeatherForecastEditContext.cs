@@ -24,6 +24,13 @@ public sealed class WeatherForecastEditContext : BaseRecordEditContext<DmoWeathe
         Summary = this.Summary ?? string.Empty,
         Temperature = new(this.Temperature)
     };
+    public override Result<DmoWeatherForecast> ToRecord 
+        => Result<DmoWeatherForecast>.Create(this.BaseRecord with
+            {
+                Date = new(this.Date ?? DateTime.MinValue),
+                Summary = this.Summary ?? string.Empty,
+                Temperature = new(this.Temperature)
+            });
 
     public override Result Load(DmoWeatherForecast record)
     {

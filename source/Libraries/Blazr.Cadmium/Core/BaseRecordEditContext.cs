@@ -3,8 +3,6 @@
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
-using Blazr.Diode;
-
 namespace Blazr.Cadmium.Core;
 
 /// <summary>
@@ -15,10 +13,12 @@ namespace Blazr.Cadmium.Core;
 public abstract class BaseRecordEditContext<TRecord, TKey>
     where TRecord : class, new()
 {
-    public TRecord BaseRecord { get; protected set; } 
+    public TRecord BaseRecord { get; protected set; }
         = new();
 
     public abstract TRecord AsRecord { get; }
+
+    public abstract Result<TRecord> ToRecord { get; }
 
     public BaseRecordEditContext()
     {
@@ -30,7 +30,7 @@ public abstract class BaseRecordEditContext<TRecord, TKey>
         this.Load(record);
     }
 
-    public bool IsDirty 
+    public bool IsDirty
         => this.BaseRecord != this.AsRecord;
 
     public abstract Result Load(TRecord record);

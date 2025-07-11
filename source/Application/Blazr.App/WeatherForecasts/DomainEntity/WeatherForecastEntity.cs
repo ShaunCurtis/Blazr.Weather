@@ -12,20 +12,13 @@ namespace Blazr.App.Core;
 /// </summary>
 public sealed partial class WeatherForecastEntity
 {
-    private readonly EntityState<DmoWeatherForecast> _weatherForecast;
-
-    // The initial record so we can reset 
-    private readonly StateRecord<DmoWeatherForecast> _baseWeatherForecast;
-
-    public DmoWeatherForecast WeatherForecast => _weatherForecast.Record;
-    public StateRecord<DmoWeatherForecast> WeatherForecastRecord => _weatherForecast.AsRecord;
-
-    public bool IsDirty
-        => _weatherForecast.IsDirty;
-
     public event EventHandler<WeatherForecastId>? StateHasChanged;
 
     public WeatherForecastId Id => _weatherForecast.Record.Id;
+
+    public DmoWeatherForecast WeatherForecast => _weatherForecast.Record;
+    public StateRecord<DmoWeatherForecast> WeatherForecastRecord => _weatherForecast.AsRecord;
+    public bool IsDirty => _weatherForecast.IsDirty;
 
     public WeatherForecastEntity(DmoWeatherForecast weatherForecast, bool? isNew = null)
     {
@@ -38,4 +31,10 @@ public sealed partial class WeatherForecastEntity
 
     public static WeatherForecastEntity Load(DmoWeatherForecast weatherForecast)
             => new WeatherForecastEntity(weatherForecast);
+}
+
+public sealed partial class WeatherForecastEntity
+{
+    private readonly EntityState<DmoWeatherForecast> _weatherForecast;
+    private readonly StateRecord<DmoWeatherForecast> _baseWeatherForecast;
 }
