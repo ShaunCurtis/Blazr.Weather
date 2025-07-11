@@ -38,8 +38,8 @@ string? value = "Hello Result";
 value = null;
 
 var result = Result<string>.Create(value)
-  .Map(ToUpper)
-  .Map();
+  .MapResult(ToUpper)
+  .MapResult();
 
 DisplayError(result);
 

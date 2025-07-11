@@ -5,19 +5,26 @@
 /// ============================================================
 namespace Blazr.Manganese;
 
-public record Maybe<T> where T : class
+public record Maybe<T>
 {
-    private readonly T? _value;
-
-    private Maybe(T? value = null)
+    private readonly T? _value = default;
+    private bool _hasValue;
+    
+    private Maybe(T value)
     {
         _value = value;
+        _hasValue = true;
     }
 
-    public Maybe<TOut> Map<TOut>(Func<T, Maybe<TOut>> func) where TOut : class
-        => _value is null ? Maybe<TOut>.None() : func(_value);
+    private Maybe()
+    {
+        _hasValue = false;
+    }
 
-    public Maybe<TOut> Map<TOut>(Func<T, TOut> func) where TOut : class
+    public Maybe<TOut> Map<TOut>(Func<T, Maybe<TOut>> func)
+        => _hasValue ? func(_value!) : Maybe<TOut>.None();
+
+    public Maybe<TOut> Map<TOut>(Func<T, TOut> func)
     {
         if (_value is null)
             return Maybe<TOut>.None();
@@ -29,13 +36,13 @@ public record Maybe<T> where T : class
             : new Maybe<TOut>(result);
     }
 
-    public Maybe<T> Output(Action<T>? Yes = null, Action? No = null)
+    public Maybe<T> Output(Action<T>? some = null, Action? none = null)
     {
-        if (_value is not null && Yes != null)
-            Yes(_value);
+        if (_value is not null && some != null)
+            some(_value);
 
-        if (_value is null && No != null)
-            No();
+        if (_value is null && none != null)
+            none();
 
         return this;
     }

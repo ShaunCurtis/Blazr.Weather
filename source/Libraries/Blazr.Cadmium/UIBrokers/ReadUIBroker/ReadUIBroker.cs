@@ -34,29 +34,30 @@ public class ReadUIBroker<TRecord, TKey> : IReadUIBroker<TRecord, TKey>, IDispos
 
     private async ValueTask GetRecordItemAsync(TKey id)
     {
-        _key = id;
-
-        // Call the RecordRequest on the record specific EntityProvider to get the record
-        LastResult = await _entityProvider.RecordRequest.Invoke(id)
-            .SideEffectAsync(
-                success:(record) => this.Item = record ?? _entityProvider.NewRecord
-             )
-            .MapAsync();
+        await GetRecordItemAsync(Result<TKey>.Create(id));
     }
 
-    private async void OnRecordChanged(object? obj)
+    private async ValueTask GetRecordItemAsync(Result<TKey> id)
+    {
+        LastResult = await id
+            .ResultSideEffect((recordId) => _key = recordId)
+            .MapResultAsync(_entityProvider.RecordRequest)
+            .TaskSideEffectAsync(success: (record) => this.Item = record ?? _entityProvider.NewRecord)
+            .MapTaskAsync();
+    }
+
+    private void OnRecordChanged(object? obj)
     {
         // test to see if we have a key of the same type
-        // if so and it doesn't match the current key, we dont need to do anything
-        if ( _entityProvider.TryGetKey(obj ?? new(), out TKey key) && !key.Equals(_key))
-                return;
-
-        // We either have a matching  key or don't know so load the record just in case
-        await this.GetRecordItemAsync(_key);
-
-        this.RecordChanged?.Invoke(this, EventArgs.Empty);
-
-        return;
+        // if so and it doesn't match the current key, we invoke the RecordChanged event
+        var result = _entityProvider.GetKey(obj)
+            .MapResult<TKey>(key => _key.Equals(key) ? Result<TKey>.NoValueFailure() : Result<TKey>.Success(key))
+            .ResultSideEffect(
+                success: async (key) =>
+                {
+                    await this.GetRecordItemAsync(key);
+                    this.RecordChanged?.Invoke(this, EventArgs.Empty);
+                });
     }
 
     public void Dispose()

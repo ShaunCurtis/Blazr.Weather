@@ -19,7 +19,7 @@ public sealed partial class WeatherForecastEntity
 
         private UpdateWeatherForecastAction() { }
 
-        public Result<WeatherForecastEntity> Execute(WeatherForecastEntity entity)
+        public Result<WeatherForecastEntity> ExecuteAction(WeatherForecastEntity entity)
             =>  entity._weatherForecast
                 .Update(this.Item, this.TransactionId)
                 .Map(() => entity.ApplyRules(this.sender))
@@ -29,7 +29,7 @@ public sealed partial class WeatherForecastEntity
                 )
                 .Map<WeatherForecastEntity>(() => Result<WeatherForecastEntity>.Success(entity));
 
-        public static UpdateWeatherForecastAction Create(DmoWeatherForecast item)
+        public static UpdateWeatherForecastAction CreateAction(DmoWeatherForecast item)
             => new() { Item = item, TransactionId = Guid.NewGuid() };
 
         public UpdateWeatherForecastAction AddSender(object? sender)

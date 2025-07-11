@@ -19,11 +19,9 @@ public interface IEntityProvider<TRecord, TKey>
 
     public Func<TRecord, EditState, Task<Result<TKey>>> RecordCommand { get; }
 
-    public Func<GridState<TRecord>, Task<Result<ListItemsProvider<TRecord>>>> ListRequest { get; }
+    public Func<GridState<TRecord>, Task<Result<ListItemsProvider<TRecord>>>> GridItemsRequest { get; }
 
-    public TKey GetKey(object obj);
-
-    public bool TryGetKey(object obj, out TKey key);
+    public Result<TKey> GetKey(object? obj);
 
     public TRecord NewRecord { get; }
 }

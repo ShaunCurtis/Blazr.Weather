@@ -7,7 +7,6 @@
 using Blazr.App.Core;
 using Blazr.App.Presentation;
 using Blazr.Cadmium.Core;
-using Blazr.Cadmium.QuickGrid;
 using Blazr.Diode;
 using Blazr.Manganese;
 using Microsoft.Extensions.DependencyInjection;
@@ -60,7 +59,8 @@ public partial class WeatherForecastTests
         var provider = GetServiceProvider();
 
         //Injects the data broker
-        var entityProvider = provider.GetService<IEntityProvider<DmoWeatherForecast, WeatherForecastId>>()!;
+        var _entityProvider = provider.GetService<IEntityProvider<DmoWeatherForecast, WeatherForecastId>>()!;
+        var entityProvider = (WeatherForecastEntityProvider)_entityProvider;
 
         // Get the total expected count and the first record of the page
         var testCount = _testDataProvider.WeatherForecasts.Count();
@@ -72,15 +72,10 @@ public partial class WeatherForecastTests
         bool result = false;
         ListItemsProvider<DmoWeatherForecast> listItemsProvider = default!;
 
-        await GridState<DmoWeatherForecast>
-            .Create(pageSize: pageSize, startIndex: startIndex)
-            .MapToResultAsync(entityProvider.ListRequest)
-            .OutputAsync(
-                success: (provider) =>
-                {
-                    listItemsProvider = provider;
-                    result = true;
-                });
+        await Result<WeatherForecastListRequest>
+            .Create(new() { PageSize = pageSize, StartIndex = startIndex })
+            .MapResultAsync<ListItemsProvider<DmoWeatherForecast>>(entityProvider.ListItemsRequest)
+            .OutputAsync(success: (provider) => listItemsProvider = provider, failure: (ex) => result = true);
 
         Assert.True(result);
         Assert.Equal(testCount, listItemsProvider.TotalCount);
@@ -120,7 +115,7 @@ public partial class WeatherForecastTests
                 StartIndex = 0,
                 Summary = testSummary
             })
-            .MapAsync<ListItemsProvider<DmoWeatherForecast>>(entityProvider.WeatherListRequest)
+            .MapResultAsync<ListItemsProvider<DmoWeatherForecast>>(entityProvider.ListItemsRequest)
             .OutputAsync(success: (provider) =>
             {
                 listItemsProvider = provider;
@@ -166,7 +161,7 @@ public partial class WeatherForecastTests
                 SortColumn = "Date",
                 SortDescending = true
             })
-            .MapAsync<ListItemsProvider<DmoWeatherForecast>>(entityProvider.WeatherListRequest)
+            .MapResultAsync<ListItemsProvider<DmoWeatherForecast>>(entityProvider.ListItemsRequest)
             .OutputAsync(success: (provider) =>
             {
                 listItemsProvider = provider;
@@ -216,10 +211,10 @@ public partial class WeatherForecastTests
 
         var updatedRecord = testRecord with { Summary = "Test Edit" };
 
-        await WeatherForecastEntity.UpdateWeatherForecastAction.Create(updatedRecord)
+        await WeatherForecastEntity.UpdateWeatherForecastAction.CreateAction(updatedRecord)
             .AddSender(this)
-            .Execute(entity)
-            .MapAsync(entityProvider.EntityCommand)
+            .ExecuteAction(entity)
+            .MapResultAsync(entityProvider.EntityCommand)
             .OutputAsync(success: (id) =>
             {
                 result = true;
@@ -281,10 +276,11 @@ public partial class WeatherForecastTests
         DmoWeatherForecast testRecord = entity.WeatherForecast;
 
 
-        await WeatherForecastEntity.DeleteWeatherForecastAction.Create()
+        await WeatherForecastEntity.DeleteWeatherForecastAction
+            .CreateAction()
             .AddSender(this)
-            .Execute(entity)
-            .MapAsync(entityProvider.EntityCommand)
+            .ExecuteAction(entity)
+            .MapResultAsync(entityProvider.EntityCommand)
             .OutputAsync(success: (id) =>
             {
                 result = true;
@@ -362,19 +358,26 @@ public partial class WeatherForecastTests
         // check the query was successful
         Assert.True(result);
 
-        // Finally we get a record count and check it has increased by 1
+        result = false;
         ListItemsProvider<DmoWeatherForecast> listItemsProvider = default!;
 
-        await GridState<DmoWeatherForecast>
-            .Create(pageSize: 2, startIndex: 0)
-            .MapToResultAsync(entityProvider.ListRequest)
-            .OutputAsync(
-                success: (provider) =>
-                {
-                    listItemsProvider = provider;
-                    result = true;
-                });
+        // We create a Result from a new WeatherForecastListRequest defining our test parameters
+        // and then map it to the WeatherListRequest method of the entity provider
+        // This will execute the request and return a ListItemsProvider<DmoWeatherForecast> Result
+        // which we then match to get the items provider.
 
+        await Result<WeatherForecastListRequest>
+            .Create(new()
+            {
+                PageSize = 1,
+                StartIndex = 0,
+            })
+            .MapResultAsync<ListItemsProvider<DmoWeatherForecast>>(entityProvider.ListItemsRequest)
+            .OutputAsync(success: (provider) =>
+            {
+                listItemsProvider = provider;
+                result = true;
+            });
 
         // check the query was successful
         Assert.True(result);

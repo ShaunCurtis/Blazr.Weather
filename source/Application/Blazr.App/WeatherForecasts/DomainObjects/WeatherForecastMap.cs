@@ -7,12 +7,12 @@ using Blazr.App.Core;
 
 namespace Blazr.App.Infrastructure;
 
-public sealed class WeatherForecastMap 
+public sealed class WeatherForecastMap
 {
     public static DmoWeatherForecast Map(DvoWeatherForecast item)
         => new()
         {
-      Id = new(item.WeatherForecastID),
+            Id = new(item.WeatherForecastID),
             Date = new(item.Date),
             Temperature = new(item.Temperature),
             Summary = item.Summary ?? "Not Defined"

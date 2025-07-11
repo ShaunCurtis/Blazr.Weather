@@ -31,9 +31,11 @@ public partial record Result<T>
 
     public static Result<T> Failure(Exception exception) => new(exception);
 
+    public static Result<T> NoValueFailure() => new(new ResultException("No value was returned"));
+
     public static Result<T> Failure(string message) => new(new ResultException(message));
 
-    public Result<T> SideEffect(Action<T>? success = null, Action<Exception>? failure = null)
+    public Result<T> ResultSideEffect(Action<T>? success = null, Action<Exception>? failure = null)
     {
         if (_value is not null && success != null)
             success(_value!);
@@ -44,7 +46,7 @@ public partial record Result<T>
         return this;
     }
 
-    public Result<TOut> Map<TOut>(Func<T, Result<TOut>> success, Func<Exception, Result<TOut>>? failure = null)
+    public Result<TOut> MapResult<TOut>(Func<T, Result<TOut>> success, Func<Exception, Result<TOut>>? failure = null)
     {
         if (_exception is null)
             return success(_value!);
@@ -55,7 +57,7 @@ public partial record Result<T>
         return Result<TOut>.Failure(_exception!);
     }
 
-    public Result<TOut> Map<TOut>(Func<T, TOut> mapping)
+    public Result<TOut> MapResult<TOut>(Func<T, TOut> mapping)
     {
         if (_exception is not null)
             return Result<TOut>.Failure(_exception!);
@@ -74,7 +76,7 @@ public partial record Result<T>
         }
     }
 
-    public Result Map(Func<T, Result>? mapping = null)
+    public Result MapResult(Func<T, Result>? mapping = null)
     {
         if (_value is not null && mapping != null)
             return mapping(_value!);
@@ -85,7 +87,7 @@ public partial record Result<T>
         return Result.Failure(_exception ?? _defaultException);
     }
 
-    public async Task<Result<TOut>> MapAsync<TOut>(Func<T, Task<Result<TOut>>> success, Func<Exception, Task<Result<TOut>>>? failure = null)
+    public async Task<Result<TOut>> MapResultAsync<TOut>(Func<T, Task<Result<TOut>>> success, Func<Exception, Task<Result<TOut>>>? failure = null)
     {
         if (_value is not null && success != null)
             return await success(_value!);
@@ -96,7 +98,7 @@ public partial record Result<T>
         return Result<TOut>.Failure(_exception ?? _defaultException);
     }
 
-    public void Output(Action<T>? success = null, Action<Exception>? failure = null)
+    public void OutputResult(Action<T>? success = null, Action<Exception>? failure = null)
     {
         if (_exception is null && success != null)
             success(_value!);
