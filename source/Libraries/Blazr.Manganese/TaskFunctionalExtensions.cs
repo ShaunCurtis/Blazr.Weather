@@ -37,7 +37,7 @@ public static class TaskFunctionalExtensions
     }
 
     public static Task<Result<T>> TaskSideEffectAsync<T>(this Task<Result<T>> task, Action<T>? success = null, Action<Exception>? failure = null)
-        => task.HandleTaskCompletionAsync().ContinueWith((t) => t.Result.ResultSideEffect(success, failure));
+        => task.HandleTaskCompletionAsync().ContinueWith((t) => t.Result.ExecuteSideEffect(success, failure));
 
     public static Task<Result> TaskSideEffectAsync(this Task<Result> task, Action? success = null, Action<Exception>? failure = null)
         => task.HandleTaskCompletionAsync().ContinueWith((t) => t.Result.SideEffect(success, failure));

@@ -13,29 +13,21 @@ using Microsoft.AspNetCore.Components.QuickGrid;
 namespace Blazr.Cadmium.Presentation;
 
 // This is the boilerplate code for any GridUIBroker
-// It is an abstract class that implements the IGridUIBroker interface
 // It provides the basic functionality for a Grid Broker
 
-public class GridUIBroker<TRecord, TKey>
+public partial class GridUIBroker<TRecord, TKey>
     : IGridUIBroker<TRecord>, IDisposable
     where TRecord : class, new()
     where TKey : notnull, IEntityId
 {
-    // Services
-    protected readonly IMediatorBroker _dataBroker;
-    protected readonly IMessageBus _messageBus;
-    private readonly ScopedStateProvider _gridStateStore;
-    private readonly IEntityProvider<TRecord, TKey> _entityProvider;
-
     public Guid StateContextUid { get; private set; } = Guid.NewGuid();
     public GridState<TRecord> GridState { get; private set; } = new();
     public Result LastResult { get; protected set; } = Result.Success();
 
     public event EventHandler<EventArgs>? StateChanged;
 
-    public GridUIBroker(IMediatorBroker mediator, IMessageBus messageBus, IEntityProvider<TRecord, TKey> entityProvider, ScopedStateProvider scopedStateProvider)
+    public GridUIBroker(IMessageBus messageBus, IEntityProvider<TRecord, TKey> entityProvider, ScopedStateProvider scopedStateProvider)
     {
-        _dataBroker = mediator;
         _messageBus = messageBus;
         _gridStateStore = scopedStateProvider;
         _entityProvider = entityProvider;
@@ -83,20 +75,30 @@ public class GridUIBroker<TRecord, TKey>
 
         var asyncResult = await _entityProvider.GetItemsAsync(this.GridState);
  
-        LastResult = asyncResult.Map();
-
-        asyncResult.Output(success: (provider) => result = provider);
+        LastResult = asyncResult
+            .ExecuteSideEffect(success: (provider) => result = provider)
+            .MapResult();
 
         return result;
-    }
-
-    private void OnStateChanged(object? message)
-    {
-        this.StateChanged?.Invoke(this, EventArgs.Empty);
     }
 
     public void Dispose()
     {
         _messageBus.UnSubscribe<TRecord>(this.OnStateChanged);
+    }
+}
+public partial class GridUIBroker<TRecord, TKey>
+    : IGridUIBroker<TRecord>, IDisposable
+    where TRecord : class, new()
+    where TKey : notnull, IEntityId
+{
+    // Services
+    protected readonly IMessageBus _messageBus;
+    private readonly ScopedStateProvider _gridStateStore;
+    private readonly IEntityProvider<TRecord, TKey> _entityProvider;
+
+    private void OnStateChanged(object? message)
+    {
+        this.StateChanged?.Invoke(this, EventArgs.Empty);
     }
 }

@@ -33,7 +33,7 @@ public partial record Result<T>
 
     public static Result<T> Failure(string message) => new(new ResultException(message));
 
-    public Result<T> ResultSideEffect(bool test, Action<T> isTrue, Action<T> isFalse)
+    public Result<T> ExecuteSideEffect(bool test, Action<T> isTrue, Action<T> isFalse)
     {
         if (_value is null)
             return this;
@@ -46,7 +46,7 @@ public partial record Result<T>
         return this;
     }
 
-    public Result<T> ResultSideEffect(Action<T>? success = null, Action<Exception>? failure = null)
+    public Result<T> ExecuteSideEffect(Action<T>? success = null, Action<Exception>? failure = null)
     {
         if (_value is not null && success != null)
             success(_value!);
