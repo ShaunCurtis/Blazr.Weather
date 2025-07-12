@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-/// ============================================================
+﻿/// ============================================================
 /// Author: Shaun Curtis, Cold Elm Coders
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
@@ -39,7 +37,7 @@ public partial record Result<T>
     {
         if (_value is null)
             return this;
-        
+
         if (test)
             isTrue(_value!);
         else
@@ -75,10 +73,10 @@ public partial record Result<T>
         if (_exception is not null)
             return Result<TOut>.Failure(_exception!);
 
-         return test.Map<TOut>(
-            isTrue: () => isTrue(_value!),
-            isFalse: () => isFalse(_value!)
-        );
+        return test.Map<TOut>(
+           isTrue: () => isTrue(_value!),
+           isFalse: () => isFalse(_value!)
+       );
     }
 
     public Result<TOut> MapResult<TOut>(Func<T, TOut> mapping)
@@ -138,7 +136,7 @@ public partial record Result<T>
         if (_exception is not null)
             return Result<TOut>.Failure(_exception!);
 
-        return test? await isTrue(_value!): await isFalse(_value!);
+        return test ? await isTrue(_value!) : await isFalse(_value!);
     }
 
     public async Task<Result> MapResultAsync(bool test, Func<T, Task<Result>> isTrue)
