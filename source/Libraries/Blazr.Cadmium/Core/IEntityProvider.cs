@@ -24,5 +24,4 @@ public interface IEntityProvider<TRecord, TKey>
     public Result<TKey> GetKey(object? obj);
 
     public TRecord NewRecord { get; }
-
 }

@@ -103,26 +103,19 @@ public partial class EditWeatherForecastUIBroker
         => LastResult = Result.Failure("The UIBroker has already been loaded. You can not reload it.");
 
     private async Task<Result<WeatherForecastEntity>> GetEntityAsync(WeatherForecastId id)
-    {
-        var broker = this;
-
-        LastResult = Result.Success();
-
-        return await id.IsDefault
-            .MapAsync<WeatherForecastEntity>(
-                isTrue: () => _entityProvider.NewEntityAsync,
-                isFalse: () => _entityProvider.EntityRequestAsync(id))
+        => await Result<WeatherForecastId>.Create(id)
+            .MapToResultAsync<WeatherForecastEntity>(_entityProvider.EntityRequestAsync)
             .TaskSideEffectAsync(
                 success: (entity) =>
                 {
-                    _entity = entity;
-                    broker.EditMutator = new();
-                    broker.EditMutator.Load(entity.WeatherForecast);
+                _entity = entity;
+                    this.EditMutator = new();
+                    this.EditMutator.Load(entity.WeatherForecast);
 
-                    broker.EditContext = new EditContext(EditMutator);
+                    this.EditContext = new EditContext(EditMutator);
 
                     _isLoaded = true;
-                });
+                );
     }
 
     private async ValueTask UpdateRecordAsync(bool refreshOnNew = true)
