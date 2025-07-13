@@ -43,12 +43,12 @@ public class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBroker<TRe
                 isTrue: id => this.State = EditState.New,
                 isFalse: id => this.State = EditState.Clean)
             // Check if the broker has already been loaded
-            .MapResult<TKey>(
+            .MapToResult<TKey>(
                 test: _isLoaded,
                 isTrue: id =>Result<TKey>.Failure("The UIBroker has already been loaded."),
                 isFalse: id => Result<TKey>.Create(id))
             // Get the record item.  This will return a new record if the id is default
-            .MapResultAsync<TRecord>(_entityProvider.RecordRequestAsync)
+            .MapToResultAsync<TRecord>(_entityProvider.RecordRequestAsync)
             // Set up the EditMutator and EditContext
             .TaskSideEffectAsync<TRecord>(
                 success: record =>
@@ -99,12 +99,12 @@ public class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBroker<TRe
              // Set the broker state to dirty
              .ExecuteSideEffect((value) => this.State = this.State.AsDirty)
              // Save the record item to the datastore
-             .MapResultAsync<TKey>((record) => _entityProvider.RecordCommandAsync(StateRecord<TRecord>.Create(record, this.State)))
+             .MapToResultAsync<TKey>((record) => _entityProvider.RecordCommandAsync(StateRecord<TRecord>.Create(record, this.State)))
              // Set the broker state to clean
              .TaskSideEffectAsync((id) => _isLoaded = false);
 
         // If the record is new, we want to refresh the broker with the new record
-        return await result.MapResultAsync(
+        return await result.MapToResultAsync(
             test: refreshOnNew,
             isTrue: async (id) => await LoadAsync(id));
     }

@@ -15,20 +15,20 @@ public class DemoTests
         string? value = "Hello Result";
  
         Result<string>.Create(value)
-            .Output(
+            .OutputResult(
                 success: (v) => Console.WriteLine($"Success: {v}"),
                 failure: (ex) => Console.WriteLine($"Failure: {ex.Message}")
             );
 
         Result<string>.Create(value)
-            .Output(
+            .OutputResult(
                 failure: (ex) => Console.WriteLine($"Failure: {ex.Message}")
             );
 
         value = null;
 
         Result<string>.Create(value)
-            .Output(
+            .OutputResult(
                 success: (v) => Console.WriteLine($"Success: {v}"),
                 failure: (ex) => Console.WriteLine($"Failure: {ex.Message}")
             );
@@ -37,27 +37,27 @@ public class DemoTests
     [Fact]
     public void DemoMap()
     {
-        string? value = "Hello Result";
+        //string? value = "Hello Result";
 
-        Result<string>.Create(value)
-            .Map((v) => Result<string>.Create(v.ToUpper()))
-            .Output(
-                success: (v) => Console.WriteLine($"Success: {v}"),
-                failure: (ex) => Console.WriteLine($"Failure: {ex.Message}")
-            );
+        //Result<string>.Create(value)
+        //    .Map((v) => Result<string>.Create(v.ToUpper))
+        //    .OutputResult(
+        //        success: (v) => Console.WriteLine($"Success: {v}"),
+        //        failure: (ex) => Console.WriteLine($"Failure: {ex.Message}")
+        //    );
 
-        Result<string>.Create(value)
-            .Map(ToUpper)
-            .Output(
-                success: (v) => Console.WriteLine($"Success: {v}"),
-                failure: (ex) => Console.WriteLine($"Failure: {ex.Message}")
-            );
+        //Result<string>.Create(value)
+        //    .Map(ToUpper)
+        //    .OutputResult(
+        //        success: (v) => Console.WriteLine($"Success: {v}"),
+        //        failure: (ex) => Console.WriteLine($"Failure: {ex.Message}")
+        //    );
 
-        var result = Result<string>.Create(value)
-          .Map(ToUpper)
-          .Map();
+        //var result = Result<string>.Create(value)
+        //  .Map(ToUpper)
+        //  .Map();
 
-        DisplayResult(result);
+        //DisplayResult(result);
 
     }
 

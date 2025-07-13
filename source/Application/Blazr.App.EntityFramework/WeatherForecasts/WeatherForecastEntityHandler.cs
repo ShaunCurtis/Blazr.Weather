@@ -23,7 +23,7 @@ public sealed class WeatherForecastEntityHandler : IRequestHandler<WeatherForeca
             .GetRecordAsync<DvoWeatherForecast>(new RecordQueryRequest<DvoWeatherForecast>(item => item.WeatherForecastID == request.Id.Value));
         //TODO - can we combine
         return asyncResult
-            .MapResult<DmoWeatherForecast>(WeatherForecastMap.Map)
-            .MapResult(WeatherForecastEntity.Load);
+            .MapToResult<DmoWeatherForecast>(WeatherForecastMap.Map)
+            .MapToResult(WeatherForecastEntity.Load);
     }
 }

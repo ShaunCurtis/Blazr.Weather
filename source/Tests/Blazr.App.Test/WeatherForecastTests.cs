@@ -74,7 +74,7 @@ public partial class WeatherForecastTests
 
         await Result<WeatherForecastListRequest>
             .Create(new() { PageSize = pageSize, StartIndex = startIndex })
-            .MapResultAsync<ListItemsProvider<DmoWeatherForecast>>(entityProvider.ListItemsRequestAsync)
+            .MapToResultAsync<ListItemsProvider<DmoWeatherForecast>>(entityProvider.ListItemsRequestAsync)
             .OutputTaskAsync(success: (provider) => listItemsProvider = provider, failure: (ex) => result = true);
 
         Assert.True(result);
@@ -115,7 +115,7 @@ public partial class WeatherForecastTests
                 StartIndex = 0,
                 Summary = testSummary
             })
-            .MapResultAsync<ListItemsProvider<DmoWeatherForecast>>(entityProvider.ListItemsRequestAsync)
+            .MapToResultAsync<ListItemsProvider<DmoWeatherForecast>>(entityProvider.ListItemsRequestAsync)
             .OutputTaskAsync(success: (provider) =>
             {
                 listItemsProvider = provider;
@@ -161,7 +161,7 @@ public partial class WeatherForecastTests
                 SortColumn = "Date",
                 SortDescending = true
             })
-            .MapResultAsync<ListItemsProvider<DmoWeatherForecast>>(entityProvider.ListItemsRequestAsync)
+            .MapToResultAsync<ListItemsProvider<DmoWeatherForecast>>(entityProvider.ListItemsRequestAsync)
             .OutputTaskAsync(success: (provider) =>
             {
                 listItemsProvider = provider;
@@ -214,7 +214,7 @@ public partial class WeatherForecastTests
         await WeatherForecastEntity.UpdateWeatherForecastAction.CreateAction(updatedRecord)
             .AddSender(this)
             .ExecuteAction(entity)
-            .MapResultAsync(entityProvider.EntityCommandAsync)
+            .MapToResultAsync(entityProvider.EntityCommandAsync)
             .OutputTaskAsync(success: (id) =>
             {
                 result = true;
@@ -280,7 +280,7 @@ public partial class WeatherForecastTests
             .CreateAction()
             .AddSender(this)
             .ExecuteAction(entity)
-            .MapResultAsync(entityProvider.EntityCommandAsync)
+            .MapToResultAsync(entityProvider.EntityCommandAsync)
             .OutputTaskAsync(success: (id) =>
             {
                 result = true;
@@ -372,7 +372,7 @@ public partial class WeatherForecastTests
                 PageSize = 1,
                 StartIndex = 0,
             })
-            .MapResultAsync<ListItemsProvider<DmoWeatherForecast>>(entityProvider.ListItemsRequestAsync)
+            .MapToResultAsync<ListItemsProvider<DmoWeatherForecast>>(entityProvider.ListItemsRequestAsync)
             .OutputTaskAsync(success: (provider) =>
             {
                 listItemsProvider = provider;

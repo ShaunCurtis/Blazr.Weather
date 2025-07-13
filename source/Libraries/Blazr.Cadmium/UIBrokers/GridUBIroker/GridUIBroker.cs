@@ -77,7 +77,7 @@ public partial class GridUIBroker<TRecord, TKey>
  
         LastResult = asyncResult
             .ExecuteSideEffect(success: (provider) => result = provider)
-            .MapResult();
+            .MapToResult();
 
         return result;
     }

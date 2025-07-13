@@ -111,7 +111,7 @@ public partial class EditWeatherForecastUIBroker
         return await id.IsDefault
             .MapAsync<WeatherForecastEntity>(
                 isTrue: () => _entityProvider.NewEntityAsync,
-                isFalse: () => _entityProvider.EntityRequest(id))
+                isFalse: () => _entityProvider.EntityRequestAsync(id))
             .TaskSideEffectAsync(
                 success: (entity) =>
                 {
@@ -131,7 +131,7 @@ public partial class EditWeatherForecastUIBroker
             .CreateAction(EditMutator.AsRecord)
             .AddSender(this)
             .ExecuteAction(_entity)
-            .MapResultAsync(_entityProvider.EntityCommandAsync)
+            .MapToResultAsync(_entityProvider.EntityCommandAsync)
             .MapTaskAsync<WeatherForecastId, WeatherForecastEntity>(_entityProvider.EntityRequestAsync)
             .MapTaskAsync();
     }
