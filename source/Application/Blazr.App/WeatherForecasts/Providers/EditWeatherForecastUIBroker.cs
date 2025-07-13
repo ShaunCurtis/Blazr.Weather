@@ -27,54 +27,54 @@ public partial class EditWeatherForecastUIBroker
         this.EditContext = new EditContext(EditMutator);
     }
 
-    public ValueTask LoadAsync(WeatherForecastId id)
+    public async ValueTask LoadAsync(WeatherForecastId id)
     {
-        _isLoaded.Output(
-            isTrue: LoadedErrorResult,
-            isFalse: async () =>
-            {
-                LastResult = Result.Success();
-                await this.GetEntityAsync(id);
-            }
-        );
-
-        return ValueTask.CompletedTask;
+        LastResult = await Result<WeatherForecastId>.Create(id)
+            .MapToResultAsync(
+                test: _isLoaded,
+                isTrue: id => Task.FromResult(LoadedResult),
+                isFalse: id => this.LoadEntityAsync(id));
     }
 
     public ValueTask ResetItemAsync()
     {
-        _isLoaded.Output(
-            isTrue: LoadedErrorResult,
-            isFalse: () =>
-            {
-                LastResult = Result.Success();
-                EditMutator.Reset();
-
-                // Create a new EditContext.
-                // This will reset and rebuild the whole Edit Form
-                this.EditContext = new EditContext(EditMutator);
-            }
-        );
-
-        return ValueTask.CompletedTask;
-    }
-
-    public ValueTask SaveItemAsync(bool refreshOnNew = true)
-    {
-        _isLoaded.Output(
-            isFalse: NotLoadedErrorResult,
-            isTrue: async () =>
-            {
-                LastResult = Result.Success();
-                await this.UpdateRecordAsync(refreshOnNew);
-            }
-        );
+        LastResult = Result.Success()
+            .MapToResult(
+                test: _isLoaded,
+                isTrue: () => Result.Success(),
+                isFalse: () => NotLoadedResult
+            )
+            .SideEffect(
+            success: () =>
+                {
+                    // Reset the EditMutator
+                    EditMutator.Reset();
+                    // Create a new EditContext.
+                    // This will reset and rebuild the whole Edit Form
+                    this.EditContext = new EditContext(EditMutator);
+                }
+            );
 
         return ValueTask.CompletedTask;
     }
 
-    public ValueTask DeleteItemAsync()
+    public async ValueTask SaveItemAsync(bool refreshOnNew = true)
     {
+        LastResult = await Result.Success()
+            .MapToResultAsync(
+                test: _isLoaded,
+                isTrue: () => this.UpdateEntityAsync(refreshOnNew),
+                isFalse: () => Task.FromResult(NotLoadedResult));
+    }
+
+    public async ValueTask DeleteItemAsync()
+    {
+        LastResult = await Result.Success()
+            .MapToResultAsync(
+                test: _isLoaded,
+                isTrue: () => this.DeleteEntityAsync(),
+                isFalse: () => Task.FromResult(NotLoadedResult));
+
         _isLoaded.Output(
             isFalse: NotLoadedErrorResult,
             isTrue: async () =>
@@ -83,8 +83,6 @@ public partial class EditWeatherForecastUIBroker
                 await this.DeleteItemAsync();
             }
         );
-
-        return ValueTask.CompletedTask;
     }
 }
 
@@ -96,49 +94,44 @@ public partial class EditWeatherForecastUIBroker
     private WeatherForecastEntity _entity = default!;
     private bool _isLoaded;
 
+    private Result NotLoadedResult
+        => Result.Failure("The UIBroker has not been loaded. There is nothing to save.");
+
+    private Result LoadedResult
+        => Result.Failure("The UIBroker has already been loaded. You can not reload it.");
+
     private void NotLoadedErrorResult()
         => LastResult = Result.Failure("The UIBroker has not been loaded. There is nothing to save.");
 
-    private void LoadedErrorResult()
-        => LastResult = Result.Failure("The UIBroker has already been loaded. You can not reload it.");
-
-    private async Task<Result<WeatherForecastEntity>> GetEntityAsync(WeatherForecastId id)
+    private async Task<Result> LoadEntityAsync(WeatherForecastId id)
         => await Result<WeatherForecastId>.Create(id)
             .MapToResultAsync<WeatherForecastEntity>(_entityProvider.EntityRequestAsync)
             .TaskSideEffectAsync(
                 success: (entity) =>
                 {
-                _entity = entity;
+                    _entity = entity;
                     this.EditMutator = new();
                     this.EditMutator.Load(entity.WeatherForecast);
-
                     this.EditContext = new EditContext(EditMutator);
-
                     _isLoaded = true;
-                );
-    }
+                })
+            .MapTaskToResultAsync();
 
-    private async ValueTask UpdateRecordAsync(bool refreshOnNew = true)
-    {
-        LastResult = await WeatherForecastEntity.UpdateWeatherForecastAction
+    private async Task<Result> UpdateEntityAsync(bool refreshOnNew = true)
+        => await WeatherForecastEntity.UpdateWeatherForecastAction
             .CreateAction(EditMutator.AsRecord)
             .AddSender(this)
             .ExecuteAction(_entity)
             .MapToResultAsync(_entityProvider.EntityCommandAsync)
             .MapTaskAsync<WeatherForecastId, WeatherForecastEntity>(_entityProvider.EntityRequestAsync)
-            .MapTaskAsync();
-    }
+            .MapTaskToResultAsync();
 
-    private async ValueTask DeleteRecordAsync()
-    {
-        var entityResult = WeatherForecastEntity.DeleteWeatherForecastAction
+    private async Task<Result> DeleteEntityAsync()
+        => await WeatherForecastEntity.DeleteWeatherForecastAction
             .CreateAction()
             .AddSender(this)
-            .ExecuteAction(_entity);
-
-        LastResult = await _entityProvider.EntityCommandAsync(_entity)
-            .MapTaskAsync<WeatherForecastId, WeatherForecastEntity>(_entityProvider.EntityRequestAsync)
-            .MapTaskAsync();
-    }
+            .ExecuteAction(_entity)
+            .MapToResultAsync(_entityProvider.EntityCommandAsync)
+            .MapTaskToResultAsync();
 
 }

@@ -24,7 +24,7 @@ public sealed partial class WeatherForecastEntity
                     success: () => entity.StateHasChanged?.Invoke(this.sender, entity.WeatherForecast.Id),
                     failure: ex => entity._weatherForecast.RollBackLastUpdate(this.TransactionId)
                 )
-                .Map<WeatherForecastEntity>(() => Result<WeatherForecastEntity>.Success(entity));
+                .MapToResult<WeatherForecastEntity>(() => Result<WeatherForecastEntity>.Success(entity));
 
         public static DeleteWeatherForecastAction CreateAction()
             => new() { TransactionId = Guid.NewGuid() };

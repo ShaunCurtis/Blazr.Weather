@@ -25,12 +25,12 @@ public partial record Result
     public static Result Failure(Exception? exception) => new(exception);
     public static Result Failure(string message) => new(new ResultException(message));
 
-    public Result Map(Func<Result> mapping)
+    public Result MapToResult(Func<Result> mapping)
         => _exception is null
             ? mapping()
             : this;
 
-    public Result<T> Map<T>(Func<Result<T>> success, Func<Exception, Result<T>>? failure = null)
+    public Result<T> MapToResult<T>(Func<Result<T>> success, Func<Exception, Result<T>>? failure = null)
     {
         if (_exception is null)
             return success();
@@ -39,6 +39,25 @@ public partial record Result
             return failure(_exception);
 
         return Result<T>.Failure(_exception!);
+    }
+
+    public Result MapToResult(bool test, Func<Result> isTrue, Func<Result> isFalse)
+    {
+        if (_exception is not null)
+            return this;
+
+        if (test)
+            return isTrue();
+
+        return isFalse();
+    }
+
+    public async Task<Result> MapToResultAsync(bool test, Func<Task<Result>> isTrue, Func<Task<Result>> isFalse)
+    {
+        if (_exception is not null)
+            return Result.Failure(_exception!);
+
+        return test ? await isTrue() : await isFalse();
     }
 
     public Result SideEffect(Action? success = null, Action<Exception>? failure = null)

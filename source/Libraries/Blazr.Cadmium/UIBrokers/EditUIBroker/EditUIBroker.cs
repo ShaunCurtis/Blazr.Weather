@@ -58,7 +58,7 @@ public class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBroker<TRe
                     this.EditContext = new EditContext(EditMutator);
                     _isLoaded = true;
                 })
-            .MapTaskAsync();
+            .MapTaskToResultAsync();
 
         return this.LastResult;
     }

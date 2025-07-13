@@ -16,34 +16,28 @@ public static class TaskFunctionalExtensions
             .MapTaskAsync(mapping);
 
     public static async Task OutputTaskAsync<T>(this Task<Result<T>> task, Action<T>? success = null, Action<Exception>? failure = null)
-    {
-        var result = await task.HandleTaskCompletionAsync();
-
-        result.OutputResult(success: success, failure: failure);
-    }
+        => await task.HandleTaskCompletionAsync()
+            .ContinueWith((t) => t.Result.OutputResult(success: success, failure: failure));
 
     public static async Task OutputTaskAsync<T>(this Task<Result<T>> task, Action<T> success)
+        => await task.HandleTaskCompletionAsync()
+            .ContinueWith((t) => t.Result.OutputResult(success: success));
+
+    public static async Task<Result<T>> MapTaskToResultAsync<T>(this Task<Result<T>> task, bool test, Func<T, Task<Result<T>>> isTrue, Func<T, Task<Result<T>>> isFalse)
     {
         var result = await task.HandleTaskCompletionAsync();
-
-        result.OutputResult(success: success);
-    }
-
-    public static async Task<Result<T>> MapTaskAsync<T>(this Task<Result<T>> task, bool test, Func<T, Task<Result<T>>> isTrue, Func<T, Task<Result<T>>> isFalse)
-    {
-        var result = await task.HandleTaskCompletionAsync();
-
+ 
         return await result.MapToResultAsync<T>(test, isTrue, isFalse);
     }
+
+    public static Task<Result> MapTaskToResultAsync<T>(this Task<Result<T>> task)
+        => task.HandleTaskCompletionAsync().ContinueWith((t) => t.Result.MapToResult());
 
     public static Task<Result<T>> TaskSideEffectAsync<T>(this Task<Result<T>> task, Action<T>? success = null, Action<Exception>? failure = null)
         => task.HandleTaskCompletionAsync().ContinueWith((t) => t.Result.ExecuteSideEffect(success, failure));
 
     public static Task<Result> TaskSideEffectAsync(this Task<Result> task, Action? success = null, Action<Exception>? failure = null)
         => task.HandleTaskCompletionAsync().ContinueWith((t) => t.Result.SideEffect(success, failure));
-
-    public static Task<Result> MapTaskAsync<T>(this Task<Result<T>> task)
-        => task.HandleTaskCompletionAsync().ContinueWith((t) => t.Result.MapToResult());
 
     private static Task<Result<T>> HandleTaskCompletionAsync<T>(this Task<Result<T>> task)
     {

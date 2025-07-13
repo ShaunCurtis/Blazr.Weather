@@ -51,7 +51,7 @@ public partial class ReadUIBroker<TRecord, TKey> : IReadUIBroker<TRecord, TKey>,
             .ExecuteSideEffect((recordId) => _key = recordId)
             .MapToResultAsync(_entityProvider.RecordRequestAsync)
             .TaskSideEffectAsync(success: (record) => this.Item = record ?? _entityProvider.NewRecord)
-            .MapTaskAsync();
+            .MapTaskToResultAsync();
 
     private async void OnRecordChanged(object? obj)
     {
