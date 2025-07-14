@@ -12,8 +12,6 @@ namespace Blazr.Cadmium.Presentation;
 
 public partial class EditWeatherForecastUIBroker
 {
-    public EditState State => _entity.WeatherForecastRecord.State;
-
     public Result LastResult { get; protected set; } = Result.Success();
 
     public WeatherForecastEditContext EditMutator { get; protected set; } = new();
@@ -74,19 +72,8 @@ public partial class EditWeatherForecastUIBroker
                 test: _isLoaded,
                 isTrue: () => this.DeleteEntityAsync(),
                 isFalse: () => Task.FromResult(NotLoadedResult));
-
-        _isLoaded.Output(
-            isFalse: NotLoadedErrorResult,
-            isTrue: async () =>
-            {
-                LastResult = Result.Success();
-                await this.DeleteItemAsync();
-            }
-        );
     }
 }
-
-// ============================================================
 
 public partial class EditWeatherForecastUIBroker
 {
@@ -94,14 +81,11 @@ public partial class EditWeatherForecastUIBroker
     private WeatherForecastEntity _entity = default!;
     private bool _isLoaded;
 
-    private Result NotLoadedResult
+    private static Result NotLoadedResult
         => Result.Failure("The UIBroker has not been loaded. There is nothing to save.");
 
-    private Result LoadedResult
+    private static Result LoadedResult
         => Result.Failure("The UIBroker has already been loaded. You can not reload it.");
-
-    private void NotLoadedErrorResult()
-        => LastResult = Result.Failure("The UIBroker has not been loaded. There is nothing to save.");
 
     private async Task<Result> LoadEntityAsync(WeatherForecastId id)
         => await Result<WeatherForecastId>.Create(id)
