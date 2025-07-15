@@ -69,13 +69,15 @@ public partial class WeatherForecastTests
         var testFirstRecord = this.AsDmoWeatherForecast(testFirstItem);
 
         //Outputs from the process that need to be tested
-        bool result = false;
+        bool result = true;
         ListItemsProvider<DmoWeatherForecast> listItemsProvider = default!;
 
-        await Result<WeatherForecastListRequest>
-            .Create(new() { PageSize = pageSize, StartIndex = startIndex })
+        var listRequest = await Result<WeatherForecastListRequest>
+            .Create(new WeatherForecastListRequest { PageSize = pageSize, StartIndex = startIndex })
             .MapToResultAsync<ListItemsProvider<DmoWeatherForecast>>(entityProvider.ListItemsRequestAsync)
-            .OutputTaskAsync(success: (provider) => listItemsProvider = provider, failure: (ex) => result = true);
+            .TaskSideEffectAsync(
+                success: (provider) => listItemsProvider = provider, 
+                failure: (ex) => result = false);
 
         Assert.True(result);
         Assert.Equal(testCount, listItemsProvider.TotalCount);
@@ -321,24 +323,25 @@ public partial class WeatherForecastTests
         var CurrentItemCount = _testDataProvider.WeatherForecasts.Count();
 
         // Create a new WeatherForecastEntity with a new DmoWeatherForecast
-        var entity = WeatherForecastEntity.Create(new DmoWeatherForecast
-        {
-            Id = new(Guid.CreateVersion7()),
-            Date = new(DateTime.Now),
-            Summary = "Test Add",
-            Temperature = new(30)
-        });
+        var entity = WeatherForecastEntity.Load(new DmoWeatherForecast
+            {
+                Id = new(Guid.CreateVersion7()),
+                Date = new(DateTime.Now),
+                Summary = "Test Add",
+                Temperature = new(30)
+            },
+            isNew: true);
 
         bool result = false;
         WeatherForecastId newId = default!;
 
         // Execute the entity command to add the new record
-        await entityProvider.EntityCommandAsync.Invoke(entity)
-            .OutputTaskAsync(success: (id) =>
-            {
-                result = true;
-                newId = id;
-            });
+        var commandResult = await entityProvider.EntityCommandAsync.Invoke(entity)
+            .TaskSideEffectAsync(success: (id) =>
+                {
+                    result = true;
+                    newId = id;
+                });
 
         // check the update was successful
         Assert.True(result);

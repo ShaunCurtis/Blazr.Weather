@@ -11,6 +11,8 @@ public readonly record struct WeatherForecastId(Guid Value) : IEntityId
     public static WeatherForecastId Create => new(Guid.CreateVersion7());
     public static WeatherForecastId Default => new(Guid.Empty);
 
+    public WeatherForecastId ValidatedId => this.IsDefault ? Create : this;
+
     public override string ToString()
     {
         return this.IsDefault ? "Default" : Value.ToString();

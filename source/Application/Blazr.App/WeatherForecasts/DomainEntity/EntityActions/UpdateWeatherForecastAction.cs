@@ -11,31 +11,23 @@ namespace Blazr.App.Core;
 // And if the rules fail, we roll back the update and return the error
 public sealed partial class WeatherForecastEntity
 {
-    public record UpdateWeatherForecastAction
+    public record UpdateWeatherForecastAction : BaseAction<UpdateWeatherForecastAction>
     {
         public DmoWeatherForecast Item { get; private init; } = default!;
-        public Guid TransactionId { get; private init; } = default!;
-        public object? sender { get; private init; } = default!;
 
         private UpdateWeatherForecastAction() { }
 
         public Result<WeatherForecastEntity> ExecuteAction(WeatherForecastEntity entity)
             =>  entity._weatherForecast
                 .Update(this.Item, this.TransactionId)
-                .MapToResult(() => entity.ApplyRules(this.sender))
+                .MapToResult(() => entity.ApplyRules(this.Sender))
                 .SideEffect(
-                    success: () => entity.StateHasChanged?.Invoke(this.sender, this.Item.Id),
+                    success: () => entity.StateHasChanged?.Invoke(this.Sender, this.Item.Id),
                     failure: ex => entity._weatherForecast.RollBackLastUpdate(this.TransactionId)
                 )
                 .MapToResult<WeatherForecastEntity>(() => Result<WeatherForecastEntity>.Success(entity));
 
         public static UpdateWeatherForecastAction CreateAction(DmoWeatherForecast item)
             => new() { Item = item, TransactionId = Guid.NewGuid() };
-
-        public UpdateWeatherForecastAction AddSender(object? sender)
-            => this with { sender = sender };
-
-        public UpdateWeatherForecastAction AddTransactionId(Guid transactionId)
-            => this with { TransactionId = transactionId };
     }
 }

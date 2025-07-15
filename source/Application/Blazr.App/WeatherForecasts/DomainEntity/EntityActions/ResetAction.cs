@@ -11,17 +11,12 @@ public sealed partial class WeatherForecastEntity
     /// Resets the Weather Forecast to the original state
     /// </summary>
     /// <returns></returns>
-    public record ResetAction
+    public record ResetAction : BaseAction<ResetAction>
     {
-        public object? Sender { get; private init; }
-
         private ResetAction() { }
 
         public static ResetAction Create()
-            => new() { Sender = null };
-
-        public ResetAction WithSender(object sender)
-            => this with { Sender = sender };
+            => new() { Sender = null, TransactionId = Guid.CreateVersion7() };
 
         public Result Execute(WeatherForecastEntity entity)
             => entity._weatherForecast.Reset(entity._baseWeatherForecast)

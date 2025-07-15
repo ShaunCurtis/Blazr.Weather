@@ -1,4 +1,6 @@
-﻿/// ============================================================
+﻿using static System.Net.Mime.MediaTypeNames;
+
+/// ============================================================
 /// Author: Shaun Curtis, Cold Elm Coders
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
@@ -8,12 +10,18 @@ namespace Blazr.Manganese;
 public static class TaskFunctionalExtensions
 {
     public static async Task<Result<TOut>> MapTaskAsync<T, TOut>(this Task<Result<T>> task, Func<T, Task<Result<TOut>>> mapping)
-        => await task.HandleTaskCompletionAsync()
-            .MapTaskAsync(mapping);
+    {
+        var result = await task.HandleTaskCompletionAsync();
+
+        return await result.MapToResultAsync<TOut>(mapping);
+    }
 
     public static async Task<Result> MapTaskAsync<T>(this Task<Result<T>> task, Func<T, Task<Result>> mapping)
-        => await task.HandleTaskCompletionAsync()
-            .MapTaskAsync(mapping);
+    {
+        var result = await task.HandleTaskCompletionAsync();
+
+        return await result.MapToResultAsync(mapping);
+    }
 
     public static async Task OutputTaskAsync<T>(this Task<Result<T>> task, Action<T>? success = null, Action<Exception>? failure = null)
         => await task.HandleTaskCompletionAsync()

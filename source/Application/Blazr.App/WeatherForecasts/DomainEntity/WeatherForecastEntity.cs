@@ -26,11 +26,17 @@ public sealed partial class WeatherForecastEntity
         _baseWeatherForecast = _weatherForecast.AsRecord;
     }
 
-    public static WeatherForecastEntity Create(DmoWeatherForecast weatherForecast)
-            => new WeatherForecastEntity(weatherForecast, true);
+    public Result<WeatherForecastEntity> AsResult 
+        => Result<WeatherForecastEntity>.Create(this);
+
+    public static WeatherForecastEntity Create()
+            => new WeatherForecastEntity(new(), true);
 
     public static WeatherForecastEntity Load(DmoWeatherForecast weatherForecast)
             => new WeatherForecastEntity(weatherForecast);
+
+    public static WeatherForecastEntity Load(DmoWeatherForecast weatherForecast, bool isNew)
+            => new WeatherForecastEntity(weatherForecast, isNew);
 }
 
 public sealed partial class WeatherForecastEntity

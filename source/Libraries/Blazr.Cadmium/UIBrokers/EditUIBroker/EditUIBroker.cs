@@ -6,7 +6,6 @@
 using Blazr.Cadmium.Core;
 using Blazr.Diode;
 using Microsoft.AspNetCore.Components.Forms;
-using System.Diagnostics;
 
 namespace Blazr.Cadmium.Presentation;
 
@@ -45,7 +44,7 @@ public class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBroker<TRe
             // Check if the broker has already been loaded
             .MapToResult<TKey>(
                 test: _isLoaded,
-                isTrue: id =>Result<TKey>.Failure("The UIBroker has already been loaded."),
+                isTrue: id => Result<TKey>.Failure("The UIBroker has already been loaded."),
                 isFalse: id => Result<TKey>.Create(id))
             // Get the record item.  This will return a new record if the id is default
             .MapToResultAsync<TRecord>(_entityProvider.RecordRequestAsync)

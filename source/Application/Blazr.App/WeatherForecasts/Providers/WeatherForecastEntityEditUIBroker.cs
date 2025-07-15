@@ -10,15 +10,17 @@ using Microsoft.AspNetCore.Components.Forms;
 
 namespace Blazr.Cadmium.Presentation;
 
-public partial class EditWeatherForecastUIBroker
+public partial class WeatherForecastEntityEditUIBroker
 {
+    public WeatherForecastId Id => _entity?.Id ?? WeatherForecastId.Default;
+
     public Result LastResult { get; protected set; } = Result.Success();
 
     public WeatherForecastEditContext EditMutator { get; protected set; } = new();
 
     public EditContext EditContext { get; protected set; }
 
-    public EditWeatherForecastUIBroker(IEntityProvider<DmoWeatherForecast, WeatherForecastId> entityProvider)
+    public WeatherForecastEntityEditUIBroker(IEntityProvider<DmoWeatherForecast, WeatherForecastId> entityProvider)
     {
         _entityProvider = entityProvider as WeatherForecastEntityProvider ?? throw new Exception("The provided EntityProvider is not a WeatherForecastEntityProvider ");
 
@@ -75,7 +77,7 @@ public partial class EditWeatherForecastUIBroker
     }
 }
 
-public partial class EditWeatherForecastUIBroker
+public partial class WeatherForecastEntityEditUIBroker
 {
     private readonly WeatherForecastEntityProvider _entityProvider;
     private WeatherForecastEntity _entity = default!;
@@ -102,14 +104,22 @@ public partial class EditWeatherForecastUIBroker
             .MapTaskToResultAsync();
 
     private async Task<Result> UpdateEntityAsync(bool refreshOnNew = true)
-        => await WeatherForecastEntity.UpdateWeatherForecastAction
+    { 
+        var result = await WeatherForecastEntity.UpdateWeatherForecastAction
             .CreateAction(EditMutator.AsRecord)
             .AddSender(this)
             .ExecuteAction(_entity)
             .MapToResultAsync(_entityProvider.EntityCommandAsync)
             .MapTaskAsync<WeatherForecastId, WeatherForecastEntity>(_entityProvider.EntityRequestAsync)
             .MapTaskToResultAsync();
-
+    
+        var x = WeatherForecastEntity.MarkAsPersistedAction
+            .CreateAction()
+            .AddSender(this)
+            .ExecuteAction(_entity)
+            .MapToResultAsync(_entityProvider.EntityCommandAsync)
+            .MapTaskToResultAsync();
+    }
     private async Task<Result> DeleteEntityAsync()
         => await WeatherForecastEntity.DeleteWeatherForecastAction
             .CreateAction()

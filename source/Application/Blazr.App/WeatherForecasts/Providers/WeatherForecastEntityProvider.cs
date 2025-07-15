@@ -66,7 +66,7 @@ public class WeatherForecastEntityProvider
         var result = (await _mediator.Send(new WeatherForecastRecordRequest(id)))
             .MapToResult<WeatherForecastEntity>((record) =>
             {
-                new WeatherForecastEntity(record);
+                WeatherForecastEntity.Load(record);
                 return Result<WeatherForecastEntity>.Failure($"No entity exists for Id{id}.  Created default entity.");
             });
 
@@ -92,7 +92,7 @@ public class WeatherForecastEntityProvider
         => (id) => _mediator.Send(new WeatherForecastEntityRequest(id));
 
     private Func<WeatherForecastId, Task<Result<WeatherForecastEntity>>> NewEntityRequestAsync
-        => (id) => Task.FromResult(Result<WeatherForecastEntity>.Create(WeatherForecastEntity.Create( new DmoWeatherForecast { Id = WeatherForecastId.Default })));
+        => (id) => Task.FromResult(Result<WeatherForecastEntity>.Create(WeatherForecastEntity.Create()));
 
     public DmoWeatherForecast NewRecord
         => new DmoWeatherForecast { Id = WeatherForecastId.Default };

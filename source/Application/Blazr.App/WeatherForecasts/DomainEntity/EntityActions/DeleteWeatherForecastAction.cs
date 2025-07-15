@@ -10,11 +10,8 @@ namespace Blazr.App.Core;
 // And if the rules fail, we roll back the update and return the error
 public sealed partial class WeatherForecastEntity
 {
-    public record DeleteWeatherForecastAction
+    public record DeleteWeatherForecastAction : BaseAction<DeleteWeatherForecastAction>
     {
-        public Guid TransactionId { get; private init; } = default!;
-        public object? sender { get; private init; } = default!;
-
         private DeleteWeatherForecastAction() { }
 
         public Result<WeatherForecastEntity> ExecuteAction(WeatherForecastEntity entity)
@@ -28,11 +25,5 @@ public sealed partial class WeatherForecastEntity
 
         public static DeleteWeatherForecastAction CreateAction()
             => new() { TransactionId = Guid.NewGuid() };
-
-        public DeleteWeatherForecastAction AddSender(object? sender)
-            => this with { sender = sender };
-
-        public DeleteWeatherForecastAction AddTransactionId(Guid transactionId)
-            => this with { TransactionId = transactionId };
     }
 }

@@ -7,9 +7,7 @@ using Blazr.App.Core;
 using Blazr.Cadmium;
 using Blazr.Cadmium.Core;
 using Blazr.Cadmium.Presentation;
-using Blazr.Diode.Mediator;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 
 namespace Blazr.App.UI;
 
@@ -41,6 +39,13 @@ public sealed record WeatherForecastUIEntityProvider : IUIEntityProvider<DmoWeat
         var presenter = ActivatorUtilities.CreateInstance<GridUIBroker<DmoWeatherForecast, WeatherForecastId>>(_serviceProvider);
 
         return ValueTask.FromResult<IGridUIBroker<DmoWeatherForecast>>(presenter);
+    }
+
+    public async ValueTask<WeatherForecastEntityEditUIBroker> GetEntityEditUIBrokerAsync(WeatherForecastId id)
+    {
+        var presenter = ActivatorUtilities.CreateInstance<WeatherForecastEntityEditUIBroker>(_serviceProvider);
+        await presenter.LoadAsync(id);
+        return presenter;
     }
 
     public async ValueTask<IEditUIBroker<WeatherForecastEditContext, WeatherForecastId>> GetEditUIBrokerAsync<WeatherForecastEditContext>(WeatherForecastId id)

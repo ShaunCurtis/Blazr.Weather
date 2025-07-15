@@ -21,7 +21,7 @@ public sealed class WeatherForecastMap
     public static DboWeatherForecast Map(DmoWeatherForecast item)
         => new()
         {
-            WeatherForecastID = item.Id.Value,
+            WeatherForecastID = item.Id.ValidatedId.Value,
             Date = item.Date.Value.ToDateTime(TimeOnly.MinValue),
             Temperature = item.Temperature.TemperatureC,
             Summary = item.Summary
