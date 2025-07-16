@@ -1,6 +1,4 @@
-﻿using static System.Net.Mime.MediaTypeNames;
-
-/// ============================================================
+﻿/// ============================================================
 /// Author: Shaun Curtis, Cold Elm Coders
 /// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
@@ -34,8 +32,36 @@ public static class TaskFunctionalExtensions
     public static async Task<Result<T>> MapTaskToResultAsync<T>(this Task<Result<T>> task, bool test, Func<T, Task<Result<T>>> isTrue, Func<T, Task<Result<T>>> isFalse)
     {
         var result = await task.HandleTaskCompletionAsync();
- 
+
         return await result.MapToResultAsync<T>(test, isTrue, isFalse);
+    }
+
+    public static async Task<Result<T>> MapTaskToResultAsync<T>(this Task<Result<T>> task, bool test, Func<T, Task<Result<T>>> isTrue)
+    {
+        var result = await task.HandleTaskCompletionAsync();
+
+        return await result.MapToResultAsync(test, isTrue);
+    }
+
+    public static async Task<Result> MapTaskToResultAsync<T>(this Task<Result<T>> task, bool test, Func<T, Task<Result>> isTrue)
+    {
+        var result = await task.HandleTaskCompletionAsync();
+
+        return await result.MapToResultAsync(test, isTrue);
+    }
+
+    public static async Task<Result> MapTaskToResultAsync<T>(this Task<Result<T>> task, Func<T, Task<Result>> mapping)
+    {
+        var result = await task.HandleTaskCompletionAsync();
+
+        return await result.MapToResultAsync(mapping);
+    }
+
+    public static async Task<Result> MapTaskToResultAsync<T>(this Task<Result<T>> task, Func<T, Result> mapping)
+    {
+        var result = await task.HandleTaskCompletionAsync();
+
+        return result.MapToResult(mapping);
     }
 
     public static Task<Result> MapTaskToResultAsync<T>(this Task<Result<T>> task)
@@ -43,6 +69,9 @@ public static class TaskFunctionalExtensions
 
     public static Task<Result<T>> TaskSideEffectAsync<T>(this Task<Result<T>> task, Action<T>? success = null, Action<Exception>? failure = null)
         => task.HandleTaskCompletionAsync().ContinueWith((t) => t.Result.ExecuteSideEffect(success, failure));
+
+    public static Task<Result<T>> TaskSideEffectAsync<T>(this Task<Result<T>> task, bool test, Action<T> isTrue)
+        => task.HandleTaskCompletionAsync().ContinueWith((t) => t.Result.ExecuteSideEffect(test, isTrue));
 
     public static Task<Result> TaskSideEffectAsync(this Task<Result> task, Action? success = null, Action<Exception>? failure = null)
         => task.HandleTaskCompletionAsync().ContinueWith((t) => t.Result.SideEffect(success, failure));

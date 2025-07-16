@@ -15,10 +15,10 @@ public sealed partial class WeatherForecastEntity
     {
         private ResetAction() { }
 
-        public static ResetAction Create()
+        public static ResetAction CreateAction()
             => new() { Sender = null, TransactionId = Guid.CreateVersion7() };
 
-        public Result Execute(WeatherForecastEntity entity)
+        public Result ExecuteAction(WeatherForecastEntity entity)
             => entity._weatherForecast.Reset(entity._baseWeatherForecast)
                 .MapToResult(() => entity.ApplyRules(this.Sender))
                 .SideEffect(() => entity.StateHasChanged?.Invoke(this.Sender, entity.Id));

@@ -10,7 +10,7 @@ public interface IRecordEditContext<TRecord>
 {
     public TRecord BaseRecord { get; }
     public TRecord AsRecord { get; }
-    public Result<TRecord> ToRecord { get; }
+    public Result<TRecord> ToResult { get; }
 
     public bool IsDirty { get; }
 

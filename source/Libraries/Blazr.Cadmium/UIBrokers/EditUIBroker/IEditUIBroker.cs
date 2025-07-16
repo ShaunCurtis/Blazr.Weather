@@ -17,7 +17,7 @@ public interface IEditUIBroker<TRecordEditContext, TKey>
     public EditState State { get; }
 
     public ValueTask<Result> LoadAsync(TKey id);
-    public ValueTask ResetItemAsync();
-    public ValueTask SaveItemAsync(bool refreshOnNew = true);
-    public ValueTask DeleteItemAsync();
+    public ValueTask<Result> ResetAsync();
+    public ValueTask<Result> SaveAsync(bool refreshOnNew = true);
+    public ValueTask<Result> DeleteAsync();
 }

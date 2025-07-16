@@ -5,7 +5,10 @@
 /// ============================================================
 
 using Blazr.App.Core;
+using Blazr.App.Infrastructure;
 using Blazr.App.Presentation;
+using Blazr.App.UI;
+using Blazr.Cadmium;
 using Blazr.Cadmium.Core;
 using Blazr.Diode;
 using Blazr.Manganese;
@@ -184,64 +187,64 @@ public partial class WeatherForecastTests
         // Get a fully stocked DI container
         var provider = GetServiceProvider();
 
-        //Injects the data broker
+        //VGet the providers
         var _entityProvider = provider.GetService<IEntityProvider<DmoWeatherForecast, WeatherForecastId>>()!;
         var entityProvider = (WeatherForecastEntityProvider)_entityProvider;
+        var _entityUIProvider = provider.GetService<IUIEntityProvider<DmoWeatherForecast, WeatherForecastId>>()!;
+        var entityUIProvider = (WeatherForecastUIEntityProvider)_entityUIProvider;
+
 
         // Get the test item and it's Id from the Test Provider
         var testItem = _testDataProvider.WeatherForecasts.First();
 
-        var testId = new WeatherForecastId(testItem.WeatherForecastID);
+        DmoWeatherForecast controlRecord = new()
+        {
+            Id = new(testItem.WeatherForecastID),
+            Date = new(testItem.Date),
+            Temperature = new(testItem.Temperature),
+            Summary = "Test Edit"
+        };
 
-        //Outputs from the process that need to be tested
+        var testId = controlRecord.Id;
+
+        //Set up the outputs from the process that need testing
         bool result = false;
-        WeatherForecastEntity entity = default!;
-        WeatherForecastId updatedId = default!;
 
-        var recordResult = await entityProvider.EntityRequestAsync(testId)
+        // Get a UI Broker instance
+        var uiBroker = await entityUIProvider.GetEditUIBrokerAsync<WeatherForecastEditContext>(testId);
+
+        // Edit the summary as would happen in the UI
+        uiBroker.EditMutator.Summary = controlRecord.Summary;
+
+        // check the Mutator generated record against the control
+        Assert.Equal(controlRecord, uiBroker.EditMutator.AsRecord);
+
+        await uiBroker.SaveAsync();
+
+        uiBroker.LastResult.Output(
+            success: () => result = true,
+            failure: (ex) => result = false
+            );
+
+        Assert.True(result);
+
+        DmoWeatherForecast dbRecord = default!;
+
+        // Get the record from the data store
+        var recordResult = await entityProvider.RecordRequestAsync(testId)
             .TaskSideEffectAsync(
-            success: (item) =>
-            {
-                entity = item;
-                result = true;
-            });
+                success: (item) =>
+                {
+                    dbRecord = item;
+                    result = true;
+                },
+                failure: (ex) => result = false
+            );
 
         // check the query was successful
         Assert.True(result);
-
-        DmoWeatherForecast testRecord = entity.WeatherForecast;
-
-        var updatedRecord = testRecord with { Summary = "Test Edit" };
-
-        await WeatherForecastEntity.UpdateWeatherForecastAction.CreateAction(updatedRecord)
-            .AddSender(this)
-            .ExecuteAction(entity)
-            .MapToResultAsync(entityProvider.EntityCommandAsync)
-            .OutputTaskAsync(success: (id) =>
-            {
-                result = true;
-                updatedId = id;
-            });
-
-        // check the update was successful
-        Assert.True(result);
-
-
-        result = false;
-        DmoWeatherForecast? dbRecord = null;
-
-        await entityProvider.RecordRequestAsync(updatedId)
-            .OutputTaskAsync(
-            success: (record) =>
-            {
-                dbRecord = record;
-                result = true;
-            });
-
-        // check the query was successful
-        Assert.True(result);
-        // check it matches the update record
-        Assert.Equal(updatedRecord, dbRecord);
+        // check the updated record matches the control record
+        Assert.Equal(controlRecord, dbRecord);
     }
 
     [Fact]

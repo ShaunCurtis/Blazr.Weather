@@ -44,16 +44,17 @@ public partial class WeatherForecastEntityEditUIBroker
                 isTrue: () => Result.Success(),
                 isFalse: () => NotLoadedResult
             )
+            .MapToResult(this.ResetEntity)
             .SideEffect(
-            success: () =>
-                {
-                    // Reset the EditMutator
-                    EditMutator.Reset();
-                    // Create a new EditContext.
-                    // This will reset and rebuild the whole Edit Form
-                    this.EditContext = new EditContext(EditMutator);
-                }
-            );
+                success: () =>
+                    {
+                        // Reset the EditMutator
+                        EditMutator.Reset();
+                        // Create a new EditContext.
+                        // This will reset and rebuild the whole Edit Form
+                        this.EditContext = new EditContext(EditMutator);
+                    }
+                );
 
         return ValueTask.CompletedTask;
     }
@@ -61,6 +62,7 @@ public partial class WeatherForecastEntityEditUIBroker
     public async ValueTask SaveItemAsync(bool refreshOnNew = true)
     {
         LastResult = await Result.Success()
+            // check if the UIBroker is loaded and only update if it is
             .MapToResultAsync(
                 test: _isLoaded,
                 isTrue: () => this.UpdateEntityAsync(refreshOnNew),
@@ -104,28 +106,31 @@ public partial class WeatherForecastEntityEditUIBroker
             .MapTaskToResultAsync();
 
     private async Task<Result> UpdateEntityAsync(bool refreshOnNew = true)
-    { 
-        var result = await WeatherForecastEntity.UpdateWeatherForecastAction
+        => await WeatherForecastEntity.UpdateWeatherForecastAction
+            // Update the entity with the values from the EditMutator
             .CreateAction(EditMutator.AsRecord)
             .AddSender(this)
             .ExecuteAction(_entity)
+            // Persist the update to the data store
             .MapToResultAsync(_entityProvider.EntityCommandAsync)
+            // If the update was successful, we need to reload the entity
             .MapTaskAsync<WeatherForecastId, WeatherForecastEntity>(_entityProvider.EntityRequestAsync)
             .MapTaskToResultAsync();
-    
-        var x = WeatherForecastEntity.MarkAsPersistedAction
+
+    private Result ResetEntity()
+        => WeatherForecastEntity.ResetAction
+            // Set the entity as deleted
             .CreateAction()
             .AddSender(this)
-            .ExecuteAction(_entity)
-            .MapToResultAsync(_entityProvider.EntityCommandAsync)
-            .MapTaskToResultAsync();
-    }
+            .ExecuteAction(_entity);
+
     private async Task<Result> DeleteEntityAsync()
         => await WeatherForecastEntity.DeleteWeatherForecastAction
+            // Set the entity as deleted
             .CreateAction()
             .AddSender(this)
             .ExecuteAction(_entity)
+            // Persist the deletion to the data store
             .MapToResultAsync(_entityProvider.EntityCommandAsync)
             .MapTaskToResultAsync();
-
 }

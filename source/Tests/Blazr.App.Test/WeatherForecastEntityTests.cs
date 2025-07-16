@@ -53,25 +53,25 @@ public partial class WeatherForecastEntityTests
         //Execute the Save - the method linked to the save button in the UI
         await uiBroker.SaveItemAsync(true);
 
-        // Check the result of the save
-        result = false;
+        // Output the result of the save
         uiBroker.LastResult.SideEffect(
             success: () => result = true,
             failure: (ex) => result = false);
 
-        // check the update was successful
+        // And check the update was successful
         Assert.True(result);
 
-        result = false;
         DmoWeatherForecast? dbRecord = null;
 
+        // Get the record we just updated
         await entityProvider.RecordRequestAsync(testId)
             .OutputTaskAsync(
             success: (record) =>
             {
                 dbRecord = record;
                 result = true;
-            });
+            },
+            failure: (ex) => result = false);
 
         // check the query was successful
         Assert.True(result);

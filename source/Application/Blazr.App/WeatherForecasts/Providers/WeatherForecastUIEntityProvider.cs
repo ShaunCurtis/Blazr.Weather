@@ -48,10 +48,10 @@ public sealed record WeatherForecastUIEntityProvider : IUIEntityProvider<DmoWeat
         return presenter;
     }
 
-    public async ValueTask<IEditUIBroker<WeatherForecastEditContext, WeatherForecastId>> GetEditUIBrokerAsync<WeatherForecastEditContext>(WeatherForecastId id)
-        where WeatherForecastEditContext : IRecordEditContext<DmoWeatherForecast>, new()
+    public async ValueTask<IEditUIBroker<TEditContext, WeatherForecastId>> GetEditUIBrokerAsync<TEditContext>(WeatherForecastId id)
+        where TEditContext : IRecordEditContext<DmoWeatherForecast>, new()
     {
-        var presenter = ActivatorUtilities.CreateInstance<EditUIBroker<DmoWeatherForecast, WeatherForecastEditContext, WeatherForecastId>>(_serviceProvider);
+        var presenter = ActivatorUtilities.CreateInstance<EditUIBroker<DmoWeatherForecast, TEditContext, WeatherForecastId>>(_serviceProvider);
         await presenter.LoadAsync(id);
         return presenter;
     }

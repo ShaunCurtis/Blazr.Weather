@@ -46,6 +46,17 @@ public partial record Result<T>
         return this;
     }
 
+    public Result<T> ExecuteSideEffect(bool test, Action<T> isTrue)
+    {
+        if (_value is null)
+            return this;
+
+        if (test)
+            isTrue(_value!);
+
+        return this;
+    }
+
     public Result<T> ExecuteSideEffect(Action<T>? success = null, Action<Exception>? failure = null)
     {
         if (_value is not null && success != null)
@@ -149,12 +160,44 @@ public partial record Result<T>
         return Result.Success();
     }
 
+    public async Task<Result<T>> MapToResultAsync(bool test, Func<T, Task<Result<T>>> isTrue)
+    {
+        if (_exception is not null)
+            return Result<T>.Failure(_exception!);
+        if (test)
+            return await isTrue(_value!);
+
+        return Result<T>.Success(_value!);
+    }
+
     public async Task<Result> MapToResultAsync(bool test, Func<T, Task<Result>> isTrue, Func<T, Task<Result>> isFalse)
     {
         if (_exception is not null)
             return Result.Failure(_exception!);
 
         return test ? await isTrue(_value!) : await isFalse(_value!);
+    }
+
+    public async Task<Result<T>> MapToResultAsync(bool test, Func<T, Task<Result<T>>> isTrue, Func<T, Task<Result<T>>> isFalse)
+    {
+        if (_exception is not null)
+            return Result<T>.Failure(_exception!);
+
+        return test ? await isTrue(_value!) : await isFalse(_value!);
+    }
+
+    public Result<T> MapToException(bool test, string message)
+        => this.MapToException(test, new ResultException(message));
+
+    public Result<T> MapToException(bool test, Exception exception)
+    {
+        if (_exception is not null)
+            return this;
+
+        if (test)
+            return Result<T>.Failure(exception);
+
+        return this;
     }
 
     public void OutputResult(Action<T>? success = null, Action<Exception>? failure = null)
@@ -165,4 +208,10 @@ public partial record Result<T>
         if (_exception is not null && failure != null)
             failure(_exception!);
     }
+
+    public ValueTask<Result<T>> CompletedValueTask
+        => ValueTask.FromResult(this);
+
+    public Task<Result<T>> CompletedTask
+        => Task.FromResult(this);
 }

@@ -9,16 +9,12 @@ using Microsoft.AspNetCore.Components.Forms;
 
 namespace Blazr.Cadmium.Presentation;
 
-public class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBroker<TRecordEditContext, TKey>
+public partial class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBroker<TRecordEditContext, TKey>
     where TRecord : class, new()
     where TRecordEditContext : IRecordEditContext<TRecord>, new()
     where TKey : notnull, IEntityId
 {
-    private readonly IEntityProvider<TRecord, TKey> _entityProvider;
-
-    protected TKey EntityId = default!;
-    private bool _isLoaded;
-    public EditState State { get; private set; } = EditState.Clean;
+    public EditState State { get; protected set; } = EditState.Clean;
 
     public Result LastResult { get; protected set; } = Result.Success();
 
@@ -35,7 +31,42 @@ public class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBroker<TRe
 
     public async ValueTask<Result> LoadAsync(TKey recordId)
     {
-        this.LastResult = await Result<TKey>.Create(recordId)
+        this.LastResult = await LoadRecordAsync(recordId);
+
+        return this.LastResult;
+    }
+
+    public ValueTask<Result> ResetAsync()
+    {
+        this.LastResult = ResetItem();
+
+        return LastResult.CompletedValueTask;
+    }
+
+    public async ValueTask<Result> SaveAsync(bool refreshOnNew = true)
+    {
+        this.LastResult = await this.UpdateRecordAsync(refreshOnNew);
+        return this.LastResult;
+    }
+
+    public async ValueTask<Result> DeleteAsync()
+    {
+        this.LastResult = await DeleteItemAsync();
+        return this.LastResult;
+    }
+}
+
+public partial class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBroker<TRecordEditContext, TKey>
+    where TRecord : class, new()
+    where TRecordEditContext : IRecordEditContext<TRecord>, new()
+    where TKey : notnull, IEntityId
+{
+    private readonly IEntityProvider<TRecord, TKey> _entityProvider;
+
+    private bool _isLoaded;
+
+    private async Task<Result> LoadRecordAsync(TKey recordId)
+        => await Result<TKey>.Create(recordId)
             // Set the broker state
             .ExecuteSideEffect(
                 test: recordId.IsDefault,
@@ -59,52 +90,42 @@ public class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBroker<TRe
                 })
             .MapTaskToResultAsync();
 
-        return this.LastResult;
-    }
+    private async Task<Result> UpdateRecordAsync()
+        => await UpdateRecordAsync(refreshOnNew: true);
 
-    public ValueTask ResetItemAsync()
-    {
-        var result = _isLoaded.SideEffect(
-            isTrue: () =>
-            {
-                EditMutator.Reset();
-                // Create a new EditContext - will reset and rebuild the whole Edit Form
-                this.EditContext = new EditContext(EditMutator);
-            });
-
-        return ValueTask.CompletedTask;
-    }
-
-    public async ValueTask SaveItemAsync(bool refreshOnNew = true)
-    {
-        this.LastResult = await this.UpdateRecordAsync(refreshOnNew);
-    }
-
-    public ValueTask DeleteItemAsync()
-    {
-        var result = _isLoaded.SideEffect(
-          isTrue: async () =>
-          {
-              this.State = EditState.Deleted;
-              this.LastResult = await this.UpdateRecordAsync();
-          });
-
-        return ValueTask.CompletedTask;
-    }
-
-    private async Task<Result> UpdateRecordAsync(bool refreshOnNew = true)
-    {
-        var result = await EditMutator.ToRecord
+    private async Task<Result> UpdateRecordAsync(bool refreshOnNew)
+        => await Result.Success()
+            // Check we're loaded
+            .MapToException(!_isLoaded, "No record is loaded.")
+            // Get the record item from the EditMutator
+            .MapToResult<TRecord>(() => EditMutator.ToResult)
              // Set the broker state to dirty
-             .ExecuteSideEffect((value) => this.State = this.State.AsDirty)
+             .ExecuteSideEffect(success: (value) => this.State = this.State.AsDirty)
              // Save the record item to the datastore
-             .MapToResultAsync<TKey>((record) => _entityProvider.RecordCommandAsync(StateRecord<TRecord>.Create(record, this.State)))
-             // Set the broker state to clean
-             .TaskSideEffectAsync((id) => _isLoaded = false);
+             .MapToResultAsync<TKey>(success: (record) => _entityProvider.RecordCommandAsync(StateRecord<TRecord>.Create(record, this.State)))
+             // Set the broker state to not loaded
+             .TaskSideEffectAsync(test: refreshOnNew, isTrue: (id) => _isLoaded = false)
+             // Refresh the record if refreshOnNew is set
+             .MapTaskToResultAsync(test: refreshOnNew, isTrue: LoadRecordAsync);
 
-        // If the record is new, we want to refresh the broker with the new record
-        return await result.MapToResultAsync(
-            test: refreshOnNew,
-            isTrue: async (id) => await LoadAsync(id));
-    }
+    private Result ResetItem()
+        => Result.Success()
+            // Check we're loaded
+            .MapToException(!_isLoaded, "No record is loaded.")
+            // Set the broker state
+            .SideEffect(() =>
+                {
+                    EditMutator.Reset();
+                    // Create a new EditContext - will reset and rebuild the whole Edit Form
+                    this.EditContext = new EditContext(EditMutator);
+                });
+
+    private async ValueTask<Result> DeleteItemAsync()
+        => await Result.Success()
+            // Check we're loaded
+            .MapToException(!_isLoaded, "No record is loaded.")
+            // Set the broker state
+            .SideEffect(() => this.State = EditState.Deleted)
+            // Delete the record item from the datastore
+            .MapToResultAsync(this.UpdateRecordAsync);
 }
