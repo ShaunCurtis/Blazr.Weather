@@ -70,23 +70,14 @@ public partial class GridUIBroker<TRecord, TKey>
     /// </summary>
     /// <returns></returns>
     public async ValueTask<GridItemsProviderResult<TRecord>> GetItemsAsync()
-    {
-        var result = GridItemsProviderResult.From<TRecord>(new List<TRecord>(), 0);
-
-        var asyncResult = await _entityProvider.GetItemsAsync(this.GridState);
- 
-        LastResult = asyncResult
-            .ExecuteSideEffect(success: (provider) => result = provider)
-            .MapToResult();
-
-        return result;
-    }
+        => await this.ItemsAsync();
 
     public void Dispose()
     {
         _messageBus.UnSubscribe<TRecord>(this.OnStateChanged);
     }
 }
+
 public partial class GridUIBroker<TRecord, TKey>
     : IGridUIBroker<TRecord>, IDisposable
     where TRecord : class, new()
@@ -96,6 +87,20 @@ public partial class GridUIBroker<TRecord, TKey>
     protected readonly IMessageBus _messageBus;
     private readonly ScopedStateProvider _gridStateStore;
     private readonly IEntityProvider<TRecord, TKey> _entityProvider;
+
+    private async ValueTask<GridItemsProviderResult<TRecord>> ItemsAsync()
+    {
+        var result = GridItemsProviderResult.From<TRecord>(new List<TRecord>(), 0);
+
+        this.LastResult = await Result<GridState<TRecord>>.Create(this.GridState)
+            .MapToResultAsync(_entityProvider.GetItemsAsync)
+            .TaskSideEffectAsync(
+                success: (provider) => result = provider,
+                failure: (ex) => this.LastResult = Result.Failure(ex.Message))
+            .MapTaskToResultAsync();
+
+        return result;
+    }
 
     private void OnStateChanged(object? message)
     {

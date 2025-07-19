@@ -1,6 +1,6 @@
 # Functional Programming in C#
 
-Applying the Functional Programming paradigm to Object Oriented Programming languages such as C# requires compromises on both sides.  There are some fundimental concepts that don't sit well on the other side.
+Applying the Functional Programming paradigm to Object Oriented Programming languages such as C# requires compromises: there are fundimental concepts that don't sit well on the other side.
 
 > Note: From here on Functional Programming is **FP** and Object Oriented Programming is **OOP**.  
 

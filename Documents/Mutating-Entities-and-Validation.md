@@ -1,10 +1,10 @@
 # Mutating and Validating Entities
 
-The flaw in using records is that they are immutable.  This is a good thing for the most part.  However, there are times when you need to mutate the data, normally in an edit form context.
+The problem in using records is that they are immutable.  There are times when you need to mutate the data, such as in an edit form context.
 
-This problem is addressed by building a editable class that mirrors the record.  The editable class is mutable and can be used to edit the data.  When the data is saved, the editable class is converted back to the record.
+This problem is addressed by building an editable class based on the record.
 
-First an interface to define the functionality:
+First an interface to define functionality:
 
 ```csharp
 public interface IRecordEditContext<TRecord>
@@ -12,6 +12,7 @@ public interface IRecordEditContext<TRecord>
 {
     public TRecord BaseRecord { get; }
     public TRecord AsRecord { get; }
+    public Result<TRecord> ToResult { get; }
     public bool IsDirty { get; }
 
     public IDataResult Load(TRecord record);
@@ -20,7 +21,7 @@ public interface IRecordEditContext<TRecord>
 }
 ```
 
-And then a base class to implement the interface:
+A base class to implement the boilerplate code:
 
 ```csharp
 public abstract class BaseRecordEditContext<TRecord, TKey>
@@ -81,10 +82,18 @@ public sealed class WeatherForecastEditContext : BaseRecordEditContext<DmoWeathe
         Temperature = new(this.Temperature)
     };
 
-    public override IDataResult Load(DmoWeatherForecast record)
+    public override Result<DmoWeatherForecast> ToResult 
+        => Result<DmoWeatherForecast>.Create(this.BaseRecord with
+            {
+                Date = new(this.Date ?? DateTime.MinValue),
+                Summary = this.Summary ?? string.Empty,
+                Temperature = new(this.Temperature)
+            });
+
+    public override Result Load(DmoWeatherForecast record)
     {
         if (!this.BaseRecord.Id.IsDefault)
-            return DataResult.Failure("A record has already been loaded.  You can't overload it.");
+            return Result.Failure("A record has already been loaded.  You can't overload it.");
 
         this.BaseRecord = record;
 
@@ -92,14 +101,14 @@ public sealed class WeatherForecastEditContext : BaseRecordEditContext<DmoWeathe
         this.Temperature = record.Temperature.TemperatureC;
         this.Date = record.Date.Value.ToDateTime(TimeOnly.MinValue);
 
-        return DataResult.Success();
+        return  Result.Success();
     }
 }
 ```
 
 We call `AsRecord` to get the record to save.
 
-The `[TrackState]` attribute is used by the *EditStateTracker* component in the `EditForm` to track edit state and control form functionsality such as which buttons to display and locking navigation.
+The `[TrackState]` attribute is used by the *EditStateTracker* component in the `EditForm` to track edit state and control form functionality such as which buttons to display and locking navigation.
 
 ## Validation
 

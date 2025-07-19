@@ -25,21 +25,18 @@ public partial class EditUIBroker<TRecord, TRecordEditContext, TKey> : IEditUIBr
     public EditUIBroker(IEntityProvider<TRecord, TKey> entityProvider)
     {
         _entityProvider = entityProvider;
-
         this.EditContext = new EditContext(EditMutator);
     }
 
     public async ValueTask<Result> LoadAsync(TKey recordId)
     {
         this.LastResult = await LoadRecordAsync(recordId);
-
         return this.LastResult;
     }
 
     public ValueTask<Result> ResetAsync()
     {
         this.LastResult = ResetItem();
-
         return LastResult.CompletedValueTask;
     }
 

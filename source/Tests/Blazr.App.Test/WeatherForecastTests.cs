@@ -26,31 +26,27 @@ public partial class WeatherForecastTests
         var provider = GetServiceProvider();
 
         //Injects the data broker
-        var entityProvider = provider.GetService<IEntityProvider<DmoWeatherForecast, WeatherForecastId>>()!;
+//        var entityProvider = provider.GetRequiredService<IEntityProvider<DmoWeatherForecast, WeatherForecastId>>()!;
+        var uIEntityProvider = provider.GetRequiredService<IUIEntityProvider<DmoWeatherForecast, WeatherForecastId>>()!;
 
         // Get the test item and it's Id from the Test Provider
-        var testItem = _testDataProvider.WeatherForecasts.First();
-
-        var testRecord = this.AsDmoWeatherForecast(testItem);
-
-        var testId = new WeatherForecastId(testItem.WeatherForecastID);
+        var controlItem = _testDataProvider.WeatherForecasts.Skip(Random.Shared.Next(50)).First();
+        var controlRecord = this.AsDmoWeatherForecast(controlItem);
+        var controlId =controlRecord.Id;
 
         //Outputs from the process that need to be tested
         bool result = false;
-        DmoWeatherForecast? dbRecord = null;
 
-        var recordResult = await entityProvider.RecordRequestAsync(testId)
-            .TaskSideEffectAsync(
-            success: (record) =>
-            {
-                dbRecord = record;
-                result = true;
-            });
+        var uiBroker = await uIEntityProvider.GetReadUIBrokerAsync(controlId);
+
+        uiBroker.LastResult.Output(
+            success: () => result = true,
+            failure: (ex) => result = false);
 
         // check the query was successful
         Assert.True(result);
         // check it matches the test record
-        Assert.Equal(testRecord, dbRecord);
+        Assert.Equal(controlRecord, uiBroker.Item);
     }
 
     [Theory]

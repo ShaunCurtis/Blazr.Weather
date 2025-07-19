@@ -44,13 +44,11 @@ public partial class ReadUIBroker<TRecord, TKey> : IReadUIBroker<TRecord, TKey>,
     private TKey _key = default!;
 
     private async Task<Result> GetRecordItemAsync(TKey id)
-        => await GetRecordItemAsync(Result<TKey>.Create(id));
-
-    private async Task<Result> GetRecordItemAsync(Result<TKey> id)
-        => await id
+        => await Result<TKey>.Create(id)
+            .MapToException(id.IsDefault, "The record Id is default.  Mo record retrieved.")
             .ExecuteSideEffect((recordId) => _key = recordId)
             .MapToResultAsync(_entityProvider.RecordRequestAsync)
-            .TaskSideEffectAsync(success: (record) => this.Item = record ?? _entityProvider.NewRecord)
+            .TaskSideEffectAsync(success: (record) => this.Item = record)
             .MapTaskToResultAsync();
 
     private async void OnRecordChanged(object? obj)

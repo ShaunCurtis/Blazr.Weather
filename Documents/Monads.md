@@ -1,12 +1,12 @@
 # Monads
 
-I know: not the **M** word.  To everyone it has a different meaning, and elicits the full gamut of reactions: The **F** word of programmers.
+I know: not the **M** word.  Everyone has their own interpretation.  It elicits a full spectrum of reactions: The **F** word of programmers.
 
 The internet is awash with articles that try to explain what a Monad is.  This is yet another, probably doomed to failure in enlightening the unenlightened.
 
-As a C# OOP programmer the most important thing to do is open your mind.  Forget the OOP dogma that has ruled your programming life.
+As a C# OOP programmer you need to open your mind.  Forget the OOP dogma that has ruled your programming life.
 
-Functional programming [**FP** from now on] requires a different way of thinking. It addresses  coding problems that constantly vex OOP programmers from a different direction.
+Functional programming [**FP** from now on] requires a different way of thinking. It has solutions for coding problems that constantly vex OOP programmers.
 
 Consider this ugly, horrible code [yes it's platform code produced by MS]:
 
@@ -14,7 +14,7 @@ Consider this ugly, horrible code [yes it's platform code produced by MS]:
 public static bool TryParse(string? s, IFormatProvider? provider, out int result);
 ```
 
-It sprouts results in all directions!
+It spouts results in all directions!
 
 Here's a classicaly coded console app using it:
 
@@ -56,11 +56,11 @@ input
     ));
 ```
 
-The rest of this article explains this code and how it works.
+The rest of this article explains this code is built and works.
 
 ## The Result Monad
 
-The `Result<T>` nomad is a variation of the common `Maybe<T>` and `Option<T>` nomads.  It's built for data pipelines to flow any errors up the pipeline. 
+The `Result<T>` monad is a variation of the common `Maybe<T>` and `Option<T>` monads.  It's built for data pipelines to handle nulls and flow any errors up the pipeline. 
 
 A result has two possible states:
 - **Success**: The operation completed successfully

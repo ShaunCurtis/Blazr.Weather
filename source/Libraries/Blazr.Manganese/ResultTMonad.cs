@@ -35,7 +35,7 @@ public partial record Result<T>
 
     public Result<T> ExecuteSideEffect(bool test, Action<T> isTrue, Action<T> isFalse)
     {
-        if (_value is null)
+        if (_exception is not null)
             return this;
 
         if (test)
@@ -48,7 +48,7 @@ public partial record Result<T>
 
     public Result<T> ExecuteSideEffect(bool test, Action<T> isTrue)
     {
-        if (_value is null)
+        if (_exception is not null)
             return this;
 
         if (test)
@@ -59,7 +59,7 @@ public partial record Result<T>
 
     public Result<T> ExecuteSideEffect(Action<T>? success = null, Action<Exception>? failure = null)
     {
-        if (_value is not null && success != null)
+        if (_exception is null && success != null)
             success(_value!);
 
         if (_exception is not null && failure != null)
@@ -68,13 +68,10 @@ public partial record Result<T>
         return this;
     }
 
-    public Result<TOut> MapToResult<TOut>(Func<T, Result<TOut>> success, Func<Exception, Result<TOut>>? failure = null)
+    public Result<TOut> MapToResult<TOut>(Func<T, Result<TOut>> success)
     {
         if (_exception is null)
             return success(_value!);
-
-        if (_exception is not null && failure != null)
-            return failure(_exception!);
 
         return Result<TOut>.Failure(_exception!);
     }
@@ -111,7 +108,7 @@ public partial record Result<T>
 
     public Result MapToResult(Func<T, Result>? mapping = null)
     {
-        if (_value is not null && mapping != null)
+        if (_exception is null && mapping != null)
             return mapping(_value!);
 
         if (_value is not null)
@@ -122,7 +119,7 @@ public partial record Result<T>
 
     public async Task<Result> MapToResultAsync(Func<T, Task<Result>> success, Func<Exception, Task<Result>>? failure = null)
     {
-        if (_value is not null && success != null)
+        if (_exception is null && success != null)
             return await success(_value!);
 
         if (_exception is not null && failure != null)
@@ -131,15 +128,20 @@ public partial record Result<T>
         return Result.Failure(_exception ?? _defaultException);
     }
 
-    public async Task<Result<TOut>> MapToResultAsync<TOut>(Func<T, Task<Result<TOut>>> success, Func<Exception, Task<Result<TOut>>>? failure = null)
+    public async Task<Result<TOut>> MapToResultAsync<TOut>(Func<T, Task<Result<TOut>>> success)
     {
-        if (_value is not null && success != null)
+        if (_exception is null)
             return await success(_value!);
 
-        if (_exception is not null && failure != null)
+        return Result<TOut>.Failure(_exception ?? _defaultException);
+    }
+
+    public async Task<Result<T>> MapExceptionAsync(Func<Exception, Task<Result<T>>> failure)
+    {
+        if (_exception is not null)
             return await failure(_exception!);
 
-        return Result<TOut>.Failure(_exception ?? _defaultException);
+        return this;
     }
 
     public async Task<Result<TOut>> MapToResultAsync<TOut>(bool test, Func<T, Task<Result<TOut>>> isTrue, Func<T, Task<Result<TOut>>> isFalse)
@@ -187,14 +189,16 @@ public partial record Result<T>
     }
 
     public Result<T> MapToException(bool test, string message)
-        => this.MapToException(test, new ResultException(message));
+    {
+        if (_exception is null && test)
+            return Result<T>.Failure(message);
+
+        return this;
+    }
 
     public Result<T> MapToException(bool test, Exception exception)
     {
-        if (_exception is not null)
-            return this;
-
-        if (test)
+        if (_exception is null && test)
             return Result<T>.Failure(exception);
 
         return this;
