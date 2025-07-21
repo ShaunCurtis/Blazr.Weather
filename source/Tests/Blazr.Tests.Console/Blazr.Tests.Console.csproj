@@ -7,9 +7,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\Blazr.Cadmium\Blazr.Cadmium.csproj" />
-    <ProjectReference Include="..\..\Libraries\Blazr.Manganese\Blazr.Manganese.csproj" />
-  </ItemGroup>
-
 </Project>

@@ -1,6 +1,16 @@
 ﻿using Blazr.Manganese;
 
-string? value = "Hello Result";
+string? value = Console.ReadLine();
+
+// monadic function
+await ParseForInt(value)
+    // Applying a Mapping function
+    .MapTaskToResultAsync(SquareRoot)
+    // Output the result
+    .OutputTaskAsync(
+        success: (value) => Console.WriteLine($"Success: {value}"),
+        failure: (exception) => Console.WriteLine($"Failure: {exception.Message}")
+    );
 
 //Result<string>.Create(value)
 //    .Output(
@@ -35,15 +45,31 @@ string? value = "Hello Result";
 //        failure: (ex) => Console.WriteLine($"Failure: {ex.Message}")
 //    );
 
-value = null;
+//value = null;
 
-var result = Result<string>.Create(value)
-  .MapToResult(ToUpper)
-  .MapToResult();
+//Result<string>
+//    .Create(value)
+//    .OutputResult(
+//        success: (value) => Console.WriteLine($"Success: {value}"),
+//        failure: (exception) => Console.WriteLine($"Failure: {exception.Message}")
+//    );
 
-DisplayError(result);
+//var result = Result<string>.Create(value)
+//  .MapToResult(ToUpper)
+//  .MapToResult();
 
+//DisplayError(result);
 
+Result<double> SquareRoot(int value)
+    => Result<double>.Create(Math.Sqrt(value));
+
+async Task<Result<int>> ParseForInt(string? input)
+{ 
+    await Task.Yield(); // Simulate async operation
+    return int.TryParse(input, out int result)
+        ? Result<int>.Create(result)
+        : Result<int>.Failure(new FormatException("Input is not a valid integer."));
+}
 
 Result<string> ToUpper(string value)
      => string.IsNullOrEmpty(value)
@@ -57,4 +83,12 @@ void DisplayError(Result result)
     );
 }
 
+public class myClass
+{
+    Func<string, Result<int>> ParseForInt => (string input) =>
+    {
+        var intResult = int.Parse(input);
+        return Result<int>.Create(intResult);
+    };
+}
 
